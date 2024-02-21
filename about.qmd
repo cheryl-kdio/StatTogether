@@ -1,9 +1,36 @@
 ---
-title: "About"
+title: "A propos"
+about:
+  template: trestles
+  image: chopper.png
+  links:
+    - icon: linkedin
+      text: linkedin
+      href: https://www.linkedin.com/in/cheryl-kouadio-251815206/
+    - icon: github
+      text: Github
+      href: https://github.com/cheryl-kdio
 ---
 
-About this site
 
-```{r}
-1 + 1
-```
+### Présentation
+
+Je m'appelle Cheryl KOUADIO, et je suis fièrement devenue étudiante à l'ENSAI en 2022, admise sur titre. Mon parcours académique avant l'ENSAI inclut un DUT en statistique et informatique décisionnelle. Mon ambition est de me spécialiser dans la filière [Gestion des Risques et Ingénierie Financière](https://ensai.fr/apres-lensai/les-metiers-de-la-data-2/la-gestion-des-risques-et-lingenierie-financiere/), un domaine qui m'attire particulièrement en raison de sa complexité et de son importance croissante dans le monde actuel.
+
+### A propos de ce site
+
+Ce site web a été conçu et généré à l'aide de Quarto, dans le but principal d'offrir un soutien aux étudiants de l'ENSAI qui pourraient se trouver face à des défis similaires à ceux que j'ai rencontrés au cours de mon parcours académique, notamment durant mes 2ème et 3ème années d'étude.
+
+L'intention derrière la création de ce site n'est pas de remplacer les enseignements prodigués par nos estimés professeurs. Au contraire, il vise à compléter leur travail remarquable en partageant mes expériences personnelles et les projets que j'ai réalisés. L'objectif est de fournir une ressource supplémentaire qui peut aider les étudiants à naviguer dans leurs propres projets et défis académiques.
+
+Compte tenu de cette orientation vers la gestion des risques, les contenus que je prévois de partager dans la section dédiée à la 3ème année (3A) porteront principalement sur les enseignements spécifiques à cette spécialisation. Je m'efforcerai de rendre ces partages aussi pertinents et enrichissants que possible, en espérant qu'ils serviront de guide précieux pour ceux qui suivront une voie similaire.
+
+### Mot de fin
+
+ce site web est conçu pour être une ressource ouverte à tous. Peu importe votre spécialisation ou votre année d'étude, vous êtes les bienvenus ici. Mon souhait est que "We Stat" devienne un lieu d'échange, d'apprentissage et de soutien pour tous les étudiants de l'ENSAI.
+
+Je vous souhaite la bienvenue sur We Stat et espère que vous trouverez les ressources partagées à la fois utiles et inspirantes dans votre parcours académique et professionnel.
+
+> #### ***`Let's stat !`***
+
+![](luffy.gif){fig-align="center"}

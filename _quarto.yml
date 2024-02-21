@@ -1,12 +1,17 @@
 project:
   type: website
 
+execute:
+  cache: true
+  freeze: true 
+
 website:
-  title: "cherry-san"
+  title: "We Stat"
   favicon: "favicon.ico"
+  back-to-top-navigation: true
   sidebar:
+    background: "#fff0f3"
     style: "docked"
-    search: true
     contents:
       - index.qmd
       - section: "Projet 2A"
@@ -27,9 +32,11 @@ website:
       - about.qmd
     
   navbar:
-    title: "cherry-san"
+    title: "We Stat"
+    search: true
+    background: "#a4133c"
     right:
-      - text: About
+      - text: A propos
         href: about.qmd
       - icon: linkedin
         href: https://www.linkedin.com/in/cheryl-kouadio-251815206/
