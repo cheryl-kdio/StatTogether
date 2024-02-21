@@ -1,0 +1,53 @@
+project:
+  type: website
+
+website:
+  title: "cherry-san"
+  favicon: "favicon.ico"
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - index.qmd
+      - section: "Projet 2A"
+        contents:
+          - href: projets/LAL/lal.qmd
+            text : Projet statistique
+          - href : projets/app_supervise/Tp_Cheryl_Kouadio.Rmd
+            text : Apprentissage supervisé
+          - section: "Séries temporelles"
+            contents:
+              - href : projets/app_supervise/ts1.Rmd
+                text : Series temporelles 1
+      - section: "Projets 3A"
+        contents:
+          - layout.qmd
+          - layout-knitr.qmd
+          - layout-jupyter.qmd
+      - about.qmd
+    
+  navbar:
+    title: "cherry-san"
+    right:
+      - text: About
+        href: about.qmd
+      - icon: linkedin
+        href: https://www.linkedin.com/in/cheryl-kouadio-251815206/
+      - icon: github
+        menu:
+          - text: Profile
+            url: https://github.com/cheryl-kdio
+          - text: Source Code
+            url:  https://code.com
+          - text: Report a Bug
+            url:  https://bugs.com
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    df-print: paged
+
+editor: visual
+

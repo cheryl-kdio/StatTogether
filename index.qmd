@@ -1,0 +1,13 @@
+---
+title: "Introduction"
+bibliography: references.bib
+---
+
+Ce site web a été généré par Quarto dans le but d'aider les étudiants de l'ENSAI qui sont confrontés à des problèmes de survie.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+```{r}
+1 + 1
+```
+

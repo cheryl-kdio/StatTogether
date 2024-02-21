@@ -1,0 +1,10 @@
+data.table
+ggplot2
+dplyr
+tidyr
+rpart
+rpart.plot
+lattice
+caret
+ranger
+reticulate

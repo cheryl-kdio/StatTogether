@@ -1,0 +1,19 @@
+.box {
+  background-color: #b0e0fb;          /* Une couleur d'arrière-plan légèrement plus claire */
+  border: 3px solid #003e7a;          /* Une bordure légèrement plus épaisse et plus foncée */
+  border-radius: 15px;                /* Un arrondi plus doux */
+  padding: 1.5em;                     /* Un peu plus d'espacement à l'intérieur de la boîte */
+  box-shadow: 0px 4px 12px rgba(0, 62, 122, 0.2);  /* Une légère ombre portée pour donner de la profondeur */
+  transition: all 0.3s ease;          /* Transition pour des effets hover doux */
+}
+
+/* Un effet hover pour rendre la boîte interactive lors du survol */
+.box:hover {
+  background-color: #a9d4f7;          /* Une couleur d'arrière-plan légèrement plus foncée lors du survol */
+  transform: translateY(-5px);        /* Un léger déplacement vers le haut pour un effet de "lévitation" */
+  box-shadow: 0px 6px 15px rgba(0, 62, 122, 0.25); /* Une ombre portée un peu plus prononcée lors du survol */
+}
+
+h1, h2{
+  color: #004085;
+}

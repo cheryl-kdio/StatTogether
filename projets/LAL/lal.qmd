@@ -1,0 +1,305 @@
+---
+title: "Projet statistique : Temps de survie ajusté sur la qualité de vie- Estimation de l’effet d’un traitement en vue d’une médecine personnalisée"
+sidebar: auto
+author:
+  - Cheryl Kouadio
+  - Néné Traore
+  - Suzanne Heidsieck
+bibliography: ../../references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,  message=FALSE, warning = FALSE,cache = TRUE)
+library(dplyr)
+library(gtsummary)
+library(tidyr)
+library(survival)
+library(ggplot2)
+library(ggsurvfit)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+qaly <- read.csv2("graaphR_ensai.csv", encoding = "latin1", na.strings = c("", " ", "NA", "NI"), dec = ".")
+
+qaly<-qaly %>%
+  mutate(ARPREMARAISON = case_when(
+    #ARPREMARAISON == 1 ~ "non RC",
+    ARPREMARAISON == 2 ~ "rechute",
+    #ARPREMARAISON == 3 ~ "toxicité",
+    ARPREMARAISON == 4 ~ "EIG",
+    #ARPREMARAISON == 5 ~ "grossesse",
+    ARPREMARAISON == 6 ~ "souhait malade",
+    ARPREMARAISON == 7 ~ "retrait cst",
+    ARPREMARAISON == 8 ~ "deces",
+    #ARPREMARAISON == 9 ~ "perdu vue",
+    ARPREMARAISON == 10 ~ "autre",
+    ARPREMARAISON == 11 ~ "réévolution moléculaire",
+    TRUE ~ as.character(ARPREMARAISON) # Garde la valeur originale si non correspondante
+  ))
+
+#reorder factor
+qaly$ARPREMARAISON <- factor(qaly$ARPREMARAISON, levels = c("rechute", "deces", "EIG",  "souhait malade", "retrait cst", "réévolution moléculaire", "autre"))
+#"perdu vue","non RC","toxicité","grossesse",
+
+# Conversion des types
+factor_columns <- c("R1", "sEXE", "tRANSCRIT", "sTRATE", "cNS", "gb10", "gb20", "gb30",
+                    "PS", "RATEDG", "FOIEDG", "MEDIASTINDG", "BLASTEMODIAG",
+                    "IKZF1","nO_IKZF1","tECH_IKZF1", "rES_IKZF1", "IKZF1_2", "eXONS_IKZF1",
+                    "eXONS2_IKZF1", "rES2_IKZF1","tECH2_IKZF1", "PLPREPHASE", "SNCDIAG",
+                    "SIGNCLI", "ATTBIO", "PLTRAUMA", "TLP","cNSTARDIF", "tLPTARDIF", "CSR",
+                    "Type.bmt", "cgvhd", "agvhd", "rech", "pfs","dc", "DEATH_CAUSE_C2",
+                    "DEATH_CAUSE_C3", "DEATH_CAUSE_C4", "greffe", "DEATH_CAUSE_C1",
+                    "ARPREMARAISON")
+
+date_columns <- c("randodt", "prephasdt", "C1dt", "C2dt", "C3dt", "C4dt", "Inter1dt",
+                  "Inter2dt","arrpremadt", "pnn1_dt", "pnn1dt", "pnn2_dt", "pnn2dt",
+                  "pnn3_dt", "pnn3dt", "pnn4_dt", "pnn4dt", "bmtdt", "cgvhdt", "agvhdt",
+                  "relapsdt", "deathdt", "Datemax","plq1_dt", "plq1dt", "plq3_dt","plq3dt",
+                  "plq4_dt", "plq4dt", "plq2_dt", "plq2dt")
+
+
+transform_data <- function(data,factor_columns, date_columns) {
+  # Conversion des colonnes spécifiques en facteurs
+  for (col in factor_columns) {
+    data[[col]] <- as.factor(data[[col]])
+  }
+  
+  # Conversion des colonnes spécifiques en dates
+  for (col in date_columns) {
+    data[[col]] <- as.Date(data[[col]], format = "%Y-%m-%d")
+  }
+  return(data)
+}
+
+qaly<-transform_data(qaly,factor_columns, date_columns)
+
+### liste des variables par type d'information
+
+randomisation <- c("R1", "randodt", "age", "sEXE", "bmi", "tRANSCRIT", "sTRATE", "cNS")
+
+diagnostic <- c("BLASTESDIAG","GBDIAG","gb10","gb20","gb30","PS",
+                "RATEDG","FOIEDG","MEDIASTINDG","BLASTEMODIAG","PBLASTEMODIAG",
+                "HBDIAG","PNNDIAG","LYMPHODIAG","MONODIAG","PLQDIAG")
+
+oncogenetique <- c("IKZF1", "nO_IKZF1", "tECH_IKZF1", "rES_IKZF1", "eXONS_IKZF1", "IKZF1_2", "tECH2_IKZF1", "rES2_IKZF1", "eXONS2_IKZF1")
+
+prephase <- c("prephasdt", "NBJRPREPHASE", "PLPREPHASE", "SNCDIAG", "SIGNCLI", "ATTBIO", "PLTRAUMA", "TLP", "cNSTARDIF", "tLPTARDIF", "GBJ1", "BLASTESJ1", "CSR")
+
+traitement = c(
+  "C1dt", "C2dt", "C3dt", "C4dt",
+  "pnn1_dt", "pnn1dt", "plq1_dt", "plq1dt",
+  "pnn2_dt", "pnn2dt", "plq2_dt", "plq2dt",
+  "pnn3_dt", "pnn3dt", "plq3_dt", "plq3dt",
+  "pnn4_dt", "pnn4dt", "plq4_dt", "plq4dt",
+  "Inter1dt", "Inter2dt", "arrpremadt", "ARPREMARAISON")
+
+greffe <- c("bmtdt", "Type.bmt", "agvhdt", "cgvhdt")
+
+suivi <- c("Suivi", "greffe", "agvhd", "cgvhd", "rech", "pfs", "dc", 
+           "DEATH_CAUSE_C1", "DEATH_CAUSE_C2", "DEATH_CAUSE_C3", 
+           "DEATH_CAUSE_C4", "relapsdt", "deathdt", "Datemax")
+```
+
+# Contexte
+
+La leucémie aiguë lymphoblastique est le cancer le plus fréquent chez les enfants en représentant environ 75-80% des leucémies des enfants de moins de 15 ans aux US et en Europe, et 20% des leucémies des adultes [@leucémie]. C’est un cancer dont l’origine a lieu dans les cellules souches du sang. Ces dernières se transforment pour se spécifier en une des trois types de cellules sanguines (les globules rouges, les globules blancs et les plaquettes). Cette différenciation a lieu dans la moelle osseuse. Or, lors d’une leucémie lymphoblastique, il y a une prolifération excessive de globules blancs ou de leurs précurseurs (cellules souches lymphoïques) qui se différencient de manière anormale en ne devenant pas matures, on les appelle les cellules blastiques. Elle est qualifiée d’aiguë lorsque la maladie débute de manière soudaine et se développe rapidement, en quelques semaines voire quelques jours.
+
+Pour lutter contre ce cancer, dont le taux de survie pour les enfants vivant dans les pays développés est de 90%, il y a une nécessité de mettre en place des traitements intensifs. C’est le cas des chimiothérapies ou encore de la greffe de moelle osseuse, dont le but est de modifier les cellules souches des malades. Les greffes s’effectuent sous deux formes : la greffe autologue quand les cellules proviennent du malade et la greffe allogénique quand les cellules proviennent d’un donneur.
+
+Pour mesurer l’effet du traitement sur l’évolution de celle-ci, le critère reconnu comme le plus important bénéfice est la survie globale des malades dans les essais randomisés. Toutefois, cet indicateur ne reflète pas pleinement la qualité de vie des patients. En hématologie, il s’agit le plus souvent de mesurer le risque de survenue d’une progression, ou d’un décès, tout en considérant également les évènements indésirables en lien avec la toxicité des traitements.
+
+Nous proposons donc d’utiliser une mesure résumée du temps passé sans toxicité ni maladie (« time without symptoms and treatment toxicity », TwIST) comme critère de jugement d’un essai, possiblement pondérée par des coefficients d’utilité (« quality-adjusted TwIST », q-TwIST), [@solem2020].
+
+Cette approche nous permettra ainsi d'examiner la possibilité de réduire l'intensité du traitement habituel des patients, traditionnellement associée à une forte toxicité, au profit d'un traitement plus ciblé et moins toxique, sans pour autant augmenter le risque de rechute.
+
+PLAN???
+
+# Présentation du sujet et des données
+
+L’essai clinique sur lequel nos données sont tirées est l’essai GRAAPH 2014, « Essai thérapeutique randomisé de phase III évaluant la diminution des doses de chimiothérapie en association avec du nilotinib (Tasigna ®) dans les leucémies aiguës lymphoblastiques à chromosome de Philadelphie positive (Ph+) de l’adulte jeune (18-59 ans) »[@h.e.c.t.].
+
+Nous avons ainsi à notre disposition des données démographiques, au diagnostic, des données cliniques et biologiques à l’inclusion dans l’essai clinique, ainsi que des données de suivi concernant les cures de traitement reçues par chaque malade, les greffes éventuellement réalisées, ainsi que les dates de rechute et de décès, le cas échéant, comptabilisant ainsi un total de 91 variables dont 31 variables de dates, 44 variables qualitatives, et 16 variables quantitatives.
+
+## Caractéristiques des patients
+
+Les 155 patients inclus dans notre étude participaient également à l'essai précédent, parmi lesquels 76 ont bénéficié du traitement standard de nature intensif (bras A) et 79 ont reçu une thérapie allégée (bras B). La répartition de notre échantillon se compose de 48 % de femmes, avec un âge moyen de 46 ans, et de 52 % d'hommes, âgés en moyenne de 50 ans .
+
+L'inclusion des patients s'est échelonnée de 2016 à 2019, avec un suivi moyen durant 4 ans, jusqu'en 2023. Avant l'initiation du traitement, 85,6 % des patients ne montraient aucun signe de blastes leucémiques, alors que 14,4 % en avaient, ce dernier groupe étant caractérisé par une inhibition de la production de cellules sanguines normales.
+
+Parmi les patients ayant des blastes dans le liquide cephalorachidien (LCR), 45 % présentaient également un taux de globules blancs inférieur à la normale (\< 5/ml), tandis que 55 % avaient un taux de globules blancs supérieur à la normale (\> 5/ml). En ce qui concerne l'indice de masse corporelle, 50 % des patients affichaient un IMC supérieur à 24,9, ce qui correspond à une situation de surpoids [@obésité].
+
+```{r, echo=FALSE}
+#résumé rando
+table1=qaly %>%
+  select(age, sEXE, bmi, cNS) %>%
+  tbl_summary(by=sEXE,
+              missing="no",
+              statistic = list(all_continuous() ~ "{median} ({p25}, {p75})",
+                               all_categorical() ~ "{n} ({p}%)"),
+              digits = all_categorical() ~ c(0,1),
+              label=list(age~"Age",bmi~"IMC",cNS~"CNS"),
+              ) %>%
+  add_overall() %>%
+  modify_header(label ~ "**Variables**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Médiane (Q1, Q3) or Fréquence (%)",
+  ) %>%
+  modify_caption("**Table 1. Caractéristiques des patients**") %>%
+  modify_table_styling(
+    columns = label,
+    rows = label == "CNS",
+    footnote = "**CNS** : Atteinte du système nerveux central; 
+    **CNS1** : pas de blastes dans le liquide céphalorachidien(LCR); 
+    **CNS 2**: nombre de GB inférieur à 5/ml avec blastes dans le LCR; 
+    **CNS 3**: nombre de GB équivalent ou supérieur à 5/ml avec blastes dans le LCR ou signes de propagation de la leucémie au CNS",
+  ) %>% 
+  bold_labels()
+table1
+```
+
+## Diagnostic des patients avant le traitement
+
+```{r}
+table2=qaly[c(diagnostic[!diagnostic %in% c("gb10", "gb20", "gb30")],"R1")] %>% 
+  mutate(
+    RATEDG=as.numeric(RATEDG)-1L,
+    FOIEDG=as.numeric(FOIEDG)-1L,
+    MEDIASTINDG=as.numeric(MEDIASTINDG)-1L,
+  ) %>% 
+  tbl_summary(by="R1",
+              missing = "no",
+              label = list(
+                BLASTESDIAG~"Nb blastes circulants au diagnostic, Giga/L",
+                GBDIAG~"Nb globules blancs au diagnostic, Giga/L",
+                PS ~ "PS",
+                RATEDG ~ "Atteinte de la rate",
+                FOIEDG ~ "Atteinte du foie",
+                MEDIASTINDG ~ "Atteinte du médiastin",
+                BLASTEMODIAG~"Nb blastes moelle, Giga/L",
+                PBLASTEMODIAG~"% blastes moelle",
+                HBDIAG~"Taux d'hémoglobine, g/dL",
+                PNNDIAG~"Nb de neutrophiles, Giga/L",
+                LYMPHODIAG~"Nb de lymphocytes, Giga/L",
+                MONODIAG~"Nb de monocytes, Giga/L",
+                PLQDIAG~"Nb de plaquettes, Giga/L"
+              ),
+              )%>%
+  add_overall() %>% 
+  modify_header(label ~ "**Variables**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Bras de randomisation**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Médiane (Q1, Q3) ou Fréquence (%)"
+  ) %>%
+  modify_caption("**Table 2. Diagnostic avant le traitement**") %>%
+  modify_table_styling(
+    columns = label,
+    rows = label == "PS",
+     footnote = " Échelle de statut de performance-ECOG ; **0**: Patient entièrement actif, capable d’effectuer les mêmes activités pré-morbides sans restriction; **1**: Patient restreint dans ses activités physiques, mais ambulatoires et capables d’effectuer des activités légères ou sédentaires, par ex. : travaux ménagers légers ou tâches administratives; **2**: Patient ambulatoire et capable de s'occuper de lui, mais incapable d'effectuer des activités. Debout > 50% de la journée; **3**: Patient capable de soins limités, alité ou au fauteuil > 50% de la journée."
+    ) %>%
+  bold_labels()
+table2
+```
+
+## Bilan de fin de traitement
+
+Au moment de l'analyse, nous observons que la moitié des participants ont prolongé leur participation à l'étude pour une durée supérieure à 46 mois. Néanmoins, 105 patients ont interrompu leur participation de manière anticipée, répartis équitablement entre le bras A (52 patients) et le bras B (53 patients). Les motifs d'interruption prématurée sont variés, incluant le décès, la rechute, le retrait pour raison de sécurité transfusionnelle (CST), des évènements de ré-évolution moléculaire, des effets secondaires sévères, entre autres raisons.
+
+Parmi ces interruptions, la rechute représente la cause principale, concernant 41,3% des arrêts prématurés. Elle est suivie de près par le décès des patients(26.1%).
+
+INTRODUIRE CENSURE ???
+
+```{r, echo=FALSE}
+table3=qaly %>%
+  mutate(arr_pre=ifelse(is.na(arrpremadt),1,0)) %>% 
+  select(R1,Suivi, arr_pre,ARPREMARAISON) %>%
+  tbl_summary(by=R1,
+              missing = "no",
+              statistic = list(all_continuous() ~ "{median} ({p25}, {p75})",
+                               all_categorical() ~ "{n} ({p}%)"),
+              digits = all_categorical() ~ c(0,1),
+              label=list(arr_pre~"Nbre d'arrêts prématurés",Suivi~"Nbre de mois de suivi",
+                         ARPREMARAISON~"Cause de l'arrêt prématuré")) %>%
+  add_overall() %>%
+  modify_header(label ~ "**Variables**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Bras de randomisation**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Médiane (Q1, Q3) ou Fréquence (%)"
+  ) %>%
+  modify_table_styling(
+    columns = label,
+    rows = label == "Cause de l'arrêt prématuré",
+    footnote = "**EIG** = Effet indésirable grave;  **RSP** = Retrait cst (chargé de sécurité transfusionnelle); **Autre** = Autre raison que celles citées précédemment ainsi que la toxicité, de grossesse, perte de vue ou non RC (réponse complète);.",
+  ) %>% 
+  modify_caption("**Table 3. Résumé du suivi de l'étude**") %>%
+  bold_labels()
+table3
+```
+
+Au total, 36 patients sont décédés. Parmi eux, 17 n'avaient pas rechuté (8 dans le bras A et 9 dans le bras B), 19 avaient rechuté. Les causes de décès sont diverses, la toxicité liée au traitement, les complications de la greffe, et la leucémie, entre autres. La cause principale des décès était la leucémie, représentant 36,1% des cas, suivie par les complications liées à la greffe, avec 25,0%.
+
+Il est également important de noter que 35 patients ont connu une rechute (11 dans le bras A et 24 dans le bras B). Par ailleurs, 133 patients ont reçu une greffe durant leur suivi, comprenant 93 greffes allogéniques (46 dans le bras A et 47 dans le bras B) et 40 greffes autologues (19 dans le bras A et 21 dans le bras B). Parmi ces patients greffés, 39 ont développé une maladie du greffon contre l'hôte (GVHD) aiguë (22 dans le bras A et 17 dans le bras B), et 11 ont souffert d'une GVHD chronique (6 dans le bras A et 5 dans le bras B), qui sont des complications graves de l'allogreffe de cellules souches [@rejetde2023].
+
+```{r, echo=FALSE}
+
+table4=qaly %>%
+  mutate(arr_pre=ifelse(is.na(arrpremadt),1,0),
+         greffe=as.numeric(qaly$greffe)-1L,
+         dc=as.numeric(qaly$dc)-1L,
+         agvhd=as.numeric(qaly$agvhd)-1L,
+         cgvhd=as.numeric(qaly$cgvhd)-1L,
+         c_dc=case_when(
+           DEATH_CAUSE_C1 == 1 ~ "Traitement",
+           DEATH_CAUSE_C2 == 1 ~ "Greffe",
+           DEATH_CAUSE_C3 == 1 ~ "Leucémie",
+           DEATH_CAUSE_C4 == 1 ~ "Autre",
+           dc == 1 & is.na(DEATH_CAUSE_C1) & is.na(DEATH_CAUSE_C2) & is.na(DEATH_CAUSE_C3) & is.na(DEATH_CAUSE_C4) ~ "Inconnu",
+           TRUE ~ NA_character_ # pour les cas où aucune condition n'est remplie
+         ),
+         c_dc = factor(c_dc, levels = c("Traitement", "Greffe", "Leucémie", "Autre","Inconnu"))
+         ) %>% 
+  select(R1,Type.bmt, agvhd, cgvhd,rech, dc, c_dc) %>%
+  tbl_summary(by=R1,
+              missing = "no",
+              statistic = list(all_continuous() ~ "{median} ({p25}, {p75})",
+                               all_categorical() ~ "{n} ({p}%)"),
+              digits = all_categorical() ~ c(0,1),
+              label=list(rech~"Rechute",dc~"Décès",
+                         Type.bmt~"Type de greffe",
+                         agvhd~"Maladie aigue du greffon",
+                         cgvhd~"Maladie chronique du greffon",
+                         c_dc~"Cause du décès")) %>%
+  add_overall() %>%
+  modify_header(label ~ "**Variables**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Bras de randomisation**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Médiane (Q1, Q3) ou Fréquence (%)"
+  ) %>%
+  modify_caption("**Table 4. Bilan à la fin du traitement**") %>%
+  bold_labels()
+table4
+```
+
+```{r, echo=FALSE}
+# table1<-qaly %>%
+#   select(R1, age, sEXE, bmi, cNS, rech, dc, greffe, Suivi) %>%
+#   tbl_strata(
+#     strata = R1, # Stratification par 'R1'
+#     .tbl_fun = 
+#       ~ .x %>%
+#         tbl_summary(
+#           by = sEXE, # Groupe par 'sEXE' dans chaque strate
+#           label = list(age ~ "Age", bmi ~ "IMC", cNS ~ "CNS", rech ~ "Rechute", dc ~ "Décès", greffe ~ "Greffe", Suivi ~ "Suivi en mois")
+#         ) %>%
+#         add_n() %>%
+#         add_overall() %>%
+#         modify_header(label ~ "**Variables**") %>%
+#         modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe**") %>%
+#         modify_footnote(
+#           all_stat_cols() ~ "Médiane (IQR) ou Fréquence (%)"
+#         ) %>%
+#       modify_caption("**Table 1. Caractéristiques des patients**") %>% 
+#         bold_labels()
+#   )
+
+```
