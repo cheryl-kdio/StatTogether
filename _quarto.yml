@@ -11,9 +11,9 @@ website:
   back-to-top-navigation: true
   sidebar:
     background: "#fff0f3"
+    #logo: "favicon.ico"
     style: "docked"
     contents:
-      - index.qmd
       - section: "Projet 2A"
         contents:
           - href: projets/LAL/lal.qmd
@@ -22,15 +22,20 @@ website:
             text : Apprentissage supervisé
           - section: "Séries temporelles"
             contents:
-              - href : projets/app_supervise/ts1.Rmd
+              - href : projets/TS/ts1.Rmd
                 text : Series temporelles 1
       - section: "Projets 3A"
         contents:
           - layout.qmd
           - layout-knitr.qmd
           - layout-jupyter.qmd
-      - about.qmd
-    
+      - section: "Articles"
+        contents:
+          - href : articles/ISR.qmd
+            text : Investissement socialement responsable
+          - layout-knitr.qmd
+          - layout-jupyter.qmd
+
   navbar:
     title: "We Stat"
     search: true

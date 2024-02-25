@@ -31,6 +31,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -60,7 +62,38 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -83,7 +116,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="./about.html" rel="" target="">
  <span class="menu-text">A propos</span></a>
   </li>  
   <li class="nav-item compact">
@@ -123,7 +156,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Introduction</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -135,12 +168,6 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Introduction</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
@@ -173,7 +200,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./projets/app_supervise/ts1.Rmd" class="sidebar-item-text sidebar-link">
+  <a href="./projets/TS/ts1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Series temporelles 1</span></a>
   </div>
 </li>
@@ -201,12 +228,29 @@ ul.task-list li input[type="checkbox"] {
   </li>
       </ul>
   </li>
-        <li class="sidebar-item">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Articles</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./about.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">A propos</span></a>
+  <a href="./articles/ISR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Investissement socialement responsable</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+ <span class="menu-text">layout-knitr.qmd</span>
+  </li>
+          <li class="sidebar-item">
+ <span class="menu-text">layout-jupyter.qmd</span>
+  </li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -214,7 +258,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    </div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(5)</span></div><div class="category" data-category="Apprentissage supervisé">Apprentissage supervisé <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Article">Article <span class="quarto-category-count">(1)</span></div><div class="category" data-category="CART">CART <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ESG">ESG <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ensai2A">Ensai2A <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Finance">Finance <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ISR">ISR <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Médecine personnalisée">Médecine personnalisée <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Qualité de vie">Qualité de vie <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Random forest">Random forest <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Temps de survie">Temps de survie <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UMAP">UMAP <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -238,7 +282,208 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="listing-actions-group">
+   <div class="input-group input-group-sm quarto-listing-sort">
+     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
+       <option value="" disabled="" selected="" hidden="">Order By</option>
+       <option value="index" data-direction="asc">Default</option>
+         <option value="listing-title" data-direction="asc">
+          Title
+        </option>
+     </select>
+  </div>
+</div>
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-listing-file-modified-sort="1708893777158" data-listing-reading-time-sort="2">
+<div class="thumbnail">
+<p><a href="./about.html"> <p class="card-img-top"><img src="luffy.gif"  class="thumbnail-image card-img"/></p> </a></p>
+</div>
+<div class="body">
+<a href="./about.html">
+<h3 class="no-anchor listing-title">
+A propos
+</h3>
+<div class="listing-subtitle">
+
+</div>
+<div class="listing-description">
+Je m’appelle Cheryl KOUADIO, et je suis fièrement devenue étudiante à l’ENSAI…
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./about.html">
+<div class="listing-author">
+Cheryl Kouadio
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="ISR,Finance,ESG,Article" data-listing-file-modified-sort="1708893670628" data-listing-reading-time-sort="6">
+<div class="thumbnail">
+<p><a href="./articles/ISR.html"> <p class="card-img-top"><img src="articles/ban_isr.png"  class="thumbnail-image card-img"/></p> </a></p>
+</div>
+<div class="body">
+<a href="./articles/ISR.html">
+<h3 class="no-anchor listing-title">
+Investissement Socialement Responsable (ISR): De quoi parle-t-on ?
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('ISR'); return false;">
+ISR
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Finance'); return false;">
+Finance
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ESG'); return false;">
+ESG
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Article'); return false;">
+Article
+</div>
+</div>
+<a href="./articles/ISR.html">
+<div class="listing-description">
+L’Investissement Socialement Responsable (ISR) représente une approche d’investissement qui privilégie l’intégration de critères…<span class="citation" data-cites="quest-c"><span><span></span><span></span></span></span>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./articles/ISR.html">
+<div class="listing-author">
+Cheryl Kouadio
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="R,Médecine personnalisée,Temps de survie,Qualité de vie,Ensai2A" data-listing-file-modified-sort="1708893696637" data-listing-reading-time-sort="24">
+<div class="thumbnail">
+<p><a href="./projets/LAL/lal.html"> <p class="card-img-top"><img src="projets/LAL/lal_files/figure-html/unnamed-chunk-5-1.png"  class="thumbnail-image card-img"/></p> </a></p>
+</div>
+<div class="body">
+<a href="./projets/LAL/lal.html">
+<h3 class="no-anchor listing-title">
+Projet statistique : Temps de survie ajusté sur la qualité de vie- Estimation de l’effet d’un traitement en vue d’une médecine personnalisée
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
+R
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Médecine personnalisée'); return false;">
+Médecine personnalisée
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Temps de survie'); return false;">
+Temps de survie
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Qualité de vie'); return false;">
+Qualité de vie
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Ensai2A'); return false;">
+Ensai2A
+</div>
+</div>
+<a href="./projets/LAL/lal.html">
+<div class="listing-description">
+La leucémie aiguë lymphoblastique…<span class="citation" data-cites="leucémie"><span></span></span>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./projets/LAL/lal.html">
+<div class="listing-author">
+Cheryl Kouadio, Néné Traore, Suzanne Heidsieck
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="3" data-listing-file-modified-sort="1708473754785" data-listing-reading-time-sort="12">
+<div class="thumbnail">
+<p><a href="./projets/TS/ts1.html"> <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div> </a></p>
+</div>
+<div class="body">
+<a href="./projets/TS/ts1.html">
+<h3 class="no-anchor listing-title">
+TD - Séries temporelles 1
+</h3>
+<div class="listing-subtitle">
+
+</div>
+<div class="listing-description">
+Dans cette section, il s’agit d’une proposition de réponse au TD de Séries temporelles 1 dispensé par Mr José GÓMEZ GARCÍA à l’ENSAI en 2023-2024 au deuxième année.
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./projets/TS/ts1.html">
+<div class="listing-author">
+Cheryl Kouadio
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="4" data-categories="R,Apprentissage supervisé,Ensai2A,Random forest,CART,UMAP" data-listing-file-modified-sort="1708893691737" data-listing-reading-time-sort="24">
+<div class="thumbnail">
+<p><a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html"> <p class="card-img-top"><img src="projets/app_supervise/Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-4-1.png"  class="thumbnail-image card-img"/></p> </a></p>
+</div>
+<div class="body">
+<a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html">
+<h3 class="no-anchor listing-title">
+Tp noté - Apprentissage supervisé 2A
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
+R
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Apprentissage supervisé'); return false;">
+Apprentissage supervisé
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Ensai2A'); return false;">
+Ensai2A
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Random forest'); return false;">
+Random forest
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('CART'); return false;">
+CART
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('UMAP'); return false;">
+UMAP
+</div>
+</div>
+<a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html">
+<div class="listing-description">
+Le jeu de données comprend des mesures effectuées 1599 vins. Ainsi, pour chaque vin, il a été mesuré 12 caractéristiques à savoir :
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html">
+<div class="listing-author">
+Cheryl Kouadio
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

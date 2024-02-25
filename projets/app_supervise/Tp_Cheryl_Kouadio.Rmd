@@ -1,6 +1,7 @@
 ---
 title: "Tp noté - Apprentissage supervisé 2A"
 author: "Cheryl Kouadio"
+categories: [R, Apprentissage supervisé, Ensai2A, Random forest, CART, UMAP]
 ---
 
 ```{r setup, include=FALSE}

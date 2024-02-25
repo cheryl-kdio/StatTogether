@@ -1,5 +1,6 @@
 ---
 title: "A propos"
+author : "Cheryl Kouadio"
 about:
   template: trestles
   image: chopper.png
@@ -11,7 +12,6 @@ about:
       text: Github
       href: https://github.com/cheryl-kdio
 ---
-
 
 ### Présentation
 
