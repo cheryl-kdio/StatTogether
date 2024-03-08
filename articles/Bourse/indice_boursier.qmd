@@ -1,0 +1,23 @@
+---
+title: "Tout sur les indices boursiers"
+sidebar: auto
+date: 2021-10-10
+author:
+  - Cheryl Kouadio
+categories: [ISR, Finance, ESG, Article]
+format: 
+  html:
+    fig-width: 6
+    fig-height: 4
+    fig-retina: 2
+bibliography: ../../references.bib
+---
+
+
+# Qu'est ce qu'un indice boursier?
+
+# Comment ça fonctionne?
+
+# Quels sont les indices boursiers les plus connus?
+
+# Investir dans les indices boursiers

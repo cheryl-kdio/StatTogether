@@ -20,7 +20,7 @@ library(gtsummary)
 
 #setwd("/Users/schevret/documents/enseignement/ensai/2023-2024/sujet qaly")
 
-qaly <- read.csv2("data/graaphR_ensai.csv", encoding = "latin1", na.strings = c("", " ", "NA", "NI"))
+qaly <- read.csv2("projets/LAL/graaphR_ensai.csv", encoding = "latin1", na.strings = c("", " ", "NA", "NI"))
 names(qaly)
 dim(qaly)
 

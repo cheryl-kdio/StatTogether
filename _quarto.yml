@@ -25,16 +25,13 @@ website:
               - href : projets/TS/ts1.Rmd
                 text : Series temporelles 1
       - section: "Projets 3A"
-        contents:
-          - layout.qmd
-          - layout-knitr.qmd
-          - layout-jupyter.qmd
       - section: "Articles"
         contents:
-          - href : articles/ISR.qmd
+          - href : articles/ISR/ISR.qmd
             text : Investissement socialement responsable
-          - layout-knitr.qmd
-          - layout-jupyter.qmd
+          - href : articles/Bourse/indice_boursier.qmd
+            text : Les indices boursiers
+
 
   navbar:
     title: "We Stat"
@@ -59,7 +56,7 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
-    df-print: paged
+    df-print: kable
 
 editor: visual
 

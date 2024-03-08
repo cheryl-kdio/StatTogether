@@ -17,6 +17,7 @@ bibliography: ../../references.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,  message=FALSE, warning = FALSE,cache = TRUE)
 library(dplyr)
+library(gt)
 library(gtsummary)
 library(ks)
 library(tidyr)
@@ -120,19 +121,55 @@ Nous proposons donc d’utiliser une mesure résumée du temps passé sans toxic
 
 Cette approche nous permettra ainsi d'examiner la possibilité de réduire l'intensité du traitement habituel des patients, traditionnellement associée à une forte toxicité, au profit d'un traitement plus ciblé et moins toxique, sans pour autant augmenter le risque de rechute.
 
-PLAN???
 
 # Présentation du sujet et des données
 
-L’essai clinique sur lequel nos données sont tirées est l’essai GRAAPH 2014, « Essai thérapeutique randomisé de phase III évaluant la diminution des doses de chimiothérapie en association avec du nilotinib (Tasigna ®) dans les leucémies aiguës lymphoblastiques à chromosome de Philadelphie positive (Ph+) de l’adulte jeune (18-59 ans) »[@h.e.c.t.].
+L’essai clinique sur lequel nos données sont tirées est l’essai GRAAPH 2014, « Essai thérapeutique randomisé de phase III évaluant la diminution des doses de chimiothérapie en association avec du nilotinib (Tasigna ®) dans les leucémies aiguës lymphoblastiques à chromosome de Philadelphie positive (Ph+) de l’adulte jeune (18-59 ans) »[@assistancepublique-hôpitauxdeparis2019].
 
-Nous avons ainsi à notre disposition des données démographiques, au diagnostic, des données cliniques et biologiques à l’inclusion dans l’essai clinique, ainsi que des données de suivi concernant les cures de traitement reçues par chaque malade, les greffes éventuellement réalisées, ainsi que les dates de rechute et de décès, le cas échéant, comptabilisant ainsi un total de 91 variables dont 31 variables de dates, 44 variables qualitatives, et 16 variables quantitatives.
+![Illustration de l'essai Graaph2014](essai_graph.png){fig-align="center" width="400"}
+
+Nous avons ainsi à notre disposition des données démographiques, au diagnostic, des données cliniques et biologiques à l’inclusion dans l’essai clinique, ainsi que des données de suivi concernant les cures de traitement reçues par chaque malade, les greffes éventuellement réalisées, ainsi que les dates de rechute et de décès, le cas échéant, comptabilisant ainsi un total de 91 variables dont 31 variables de dates, 44 variables qualitatives, et 16 variables quantitatives, sur un total de 155 patients.
+
+Notons également que les données dont nous disposons sont censurées. En effet, l'inclusion des patients dans l'étude se fait à différentes dates et l'évaluation de l'état des patients se fait à une date donnée. Nous avons donc des censures à droites[@klein2003]. On supposera de plus que les censures sont non informatives, c'est à dire qu'elles sont indépendantes des évènements d'intérêt en probabilité.
+
+![Illustration de la censure](censure.png){fig-align="center" width="400"}
+
+On distinguera 2 types de censure:
+
+-   Administrative (état connu après date)
+
+-   Interruption suivi avant date
 
 ## Caractéristiques des patients
 
 Les 155 patients inclus dans notre étude participaient également à l'essai précédent, parmi lesquels 76 ont bénéficié du traitement standard de nature intensif (bras A) et 79 ont reçu une thérapie allégée (bras B). La répartition de notre échantillon se compose de 48 % de femmes, avec un âge moyen de 46 ans, et de 52 % d'hommes, âgés en moyenne de 50 ans .
 
-L'inclusion des patients s'est échelonnée de 2016 à 2019, avec un suivi moyen durant 4 ans, jusqu'en 2023. Avant l'initiation du traitement, 85,6 % des patients ne montraient aucun signe de blastes leucémiques, alors que 14,4 % en avaient, ce dernier groupe étant caractérisé par une inhibition de la production de cellules sanguines normales.
+L'inclusion des patients s'est échelonnée de 2016 à 2019, avec un suivi moyen durant 4 ans, jusqu'en 2023. 
+
+```{r table_min_max, echo=FALSE}
+qaly %>% 
+  select(randodt, prephasdt, C1dt, Datemax) %>%
+  summarise(across(everything(), list(min = ~min(., na.rm = TRUE), max = ~max(., na.rm = TRUE)))) %>%
+  pivot_longer(everything(), names_to = "Variable_Stat", values_to = "Value") %>%
+  separate(Variable_Stat, into = c("Variable", "Stat"), sep = "_") %>%
+  pivot_wider(names_from = Stat, values_from = Value) %>%
+  mutate(Variable = factor(Variable,levels = c("randodt", "prephasdt", "C1dt", "Datemax"),labels = c("Date d'inclusion", "Date de pré-phase","Date de chimiothérapie(Cycle 1)", "Date de fin d'étude"))) %>%
+  gt() %>%
+  tab_header(
+    title = "Dates d'enregistrement de l'étude"
+  ) %>%
+  cols_label(
+    Variable = "Variables",
+    min = "Première date enregistrée",
+    max = "Dernière date enregistrée"
+  )
+# %>% 
+#   as_gt()%>% 
+#   gtsave("name.text")
+```
+
+
+Avant l'initiation du traitement constitué 4 cycles de chimiothérapie suivies ou non d'une greffe, 85,6 % des patients ne montraient aucun signe de blastes leucémiques, alors que 14,4 % en avaient, ce dernier groupe étant caractérisé par une inhibition de la production de cellules sanguines normales.
 
 Parmi les patients ayant des blastes dans le liquide cephalorachidien (LCR), 45 % présentaient également un taux de globules blancs inférieur à la normale (\< 5/ml), tandis que 55 % avaient un taux de globules blancs supérieur à la normale (\> 5/ml). En ce qui concerne l'indice de masse corporelle, 50 % des patients affichaient un IMC supérieur à 24,9, ce qui correspond à une situation de surpoids [@obésité].
 
@@ -147,7 +184,8 @@ randotbl<-qaly %>%
               digits = all_categorical() ~ c(0,1),
               label=list(age~"Age",bmi~"IMC",cNS~"CNS"),
               ) %>%
-  add_overall() %>%
+  add_overall() %>% 
+  add_n()%>%
   modify_header(label ~ "**Variables**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe**") %>%
   modify_footnote(
@@ -167,7 +205,7 @@ randotbl<-qaly %>%
 
 ## Diagnostic des patients avant le traitement
 
-Avant de subir des traitements liées à la lutte contre la leucémie, les patients ont été soumis à des examens cliniques et biologiques. Les résultats de ces examens sont résumés dans le tableau 2. Nous pouvons constater que dans les deux bras de l'essai, les patients présentaient des taux de globules blancs (GB) et de blastes circulants (BLASTES) au diagnostic, respectivement de 20,5 Giga/L et 0,1 Giga/L. Les patients présentaient également des taux d'hémoglobine (Hb) de 10,5 g/dL, et un taux de blastes dans la moelle osseuse (PBLASTEMODIAG) de 0,1 %. En ce qui concerne les atteintes de la rate, du foie et du médiastin, respectivement 10 %, 20 % et 30 % des patients présentaient des atteintes de ces organes.
+Avant de subir des traitements liées à la lutte contre la leucémie, les patients ont été soumis à des examens cliniques et biologiques. Les résultats de ces examens sont résumés dans le tableau 2. Nous pouvons constater que dans les deux bras de l'essai, les patients présentaient des taux de globules blancs (GB) et de blastes circulants au diagnostic, respectivement de 20,5 Giga/L et 0,1 Giga/L. Les patients présentaient également des taux d'hémoglobine (Hb) de 10,5 g/dL, et un taux de blastes dans la moelle osseuse de 0,1 %. En ce qui concerne les atteintes de la rate, du foie et du médiastin, respectivement 10 %, 20 % et 30 % des patients présentaient des atteintes de ces organes.
 
 ```{r, echo=FALSE}
 diagtbl<-qaly[c(diagnostic[!diagnostic %in% c("gb10", "gb20", "gb30")],"sEXE")] %>% 
@@ -195,6 +233,7 @@ diagtbl<-qaly[c(diagnostic[!diagnostic %in% c("gb10", "gb20", "gb30")],"sEXE")] 
               ),
               )%>%
   add_overall() %>% 
+  add_n()%>% 
   modify_header(label ~ "**Variables**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe des individus**") %>%
   modify_footnote(
@@ -210,22 +249,22 @@ diagtbl<-qaly[c(diagnostic[!diagnostic %in% c("gb10", "gb20", "gb30")],"sEXE")] 
 ```
 
 En ce qui concerne les examens biologiques, nous constatons que parmi les individus pour lesquels la recherche de délétion[^1] du gène IKZF1 a été réalisée, une majorité présente une mutation de ce gène. Deux délétions majeures ont été observées :
-```{r, echo=FALSE}
+
+[^1]: La délétion est une **mutation génétique caractérisée par la perte de matériel génétique sur un chromosome**. [@délétion2023]
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 oncotbl1<-qaly[c(oncogenetique1)] %>% 
   tbl_summary(by="IKZF1",missing = "no") %>% 
   add_overall() %>% 
   modify_header(label ~ "**Variables**") %>%
-  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe des individus**")
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe des individus**")%>% add_n()
 
 oncotbl2<-qaly[c(oncogenetique2)] %>% 
   tbl_summary(by="IKZF1_2",missing = "no") %>% 
   add_overall() %>% 
   modify_header(label ~ "**Variables**") %>%
-  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe des individus**")
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexe des individus**")%>% add_n()
 ```
-
-
-[^1]: La délétion est une **mutation génétique caractérisée par la perte de matériel génétique sur un chromosome**. [@délétion2023]
 
 -   La première est caractérisée par la perte des exons 4 à 7 ;
 
@@ -235,11 +274,10 @@ Ces délétions sont souvent associées à une grande incidence cumulative de re
 
 ```{r, echo=FALSE}
 prephasetbl<-qaly[c(prephase,"sEXE")] %>% 
-  tbl_summary(missing = "no") 
+  tbl_summary(missing = "no") %>% add_n()
 ```
 
-
-Des mesures ont été relevées sur les patients avant le début du traitement, lors de la période dite de pré-phase, qui, pour la moitié des individus, a duré entre 7 et 8 jours. Les résultats de ces prélèvements se trouvent en annexe. Parmi les interventions subies par les patients, les ponctions lombaires ont été pratiquées sur 92 % d'entre eux, entraînant des traumatismes chez 38 patients (dont 29 avec une ponction lombaire traumatisante négative [TLP-] et 9 avec une ponction lombaire traumatisante positive [TLP+]). Par ailleurs, 17 patients ont bénéficié d'un diagnostic du système nerveux central, parmi lesquels seulement 4 présentaient des signes cliniques et 15 présentaient une atteinte biologique.
+Des mesures ont été relevées sur les patients avant le début du traitement, lors de la période dite de pré-phase, qui, pour la moitié des individus, a duré entre 7 et 8 jours. Les résultats de ces prélèvements se trouvent en annexe. Parmi les interventions subies par les patients, les ponctions lombaires ont été pratiquées sur 92 % d'entre eux, entraînant des traumatismes chez 38 patients (dont 29 avec une ponction lombaire traumatisante négative \[TLP-\] et 9 avec une ponction lombaire traumatisante positive \[TLP+\]). Par ailleurs, 17 patients ont bénéficié d'un diagnostic du système nerveux central, parmi lesquels seulement 4 présentaient des signes cliniques et 15 présentaient une atteinte biologique.
 
 Nous avons également enregistré 7 cas d'atteinte tardive du système nerveux central, passant de CNS 2 à CNS 1, et un seul cas diagnostiqué CNS 2 devenu CNS 3 tardivement. De même, au premier jour de la pré-phase, 50 % des patients présentaient un taux de globules blancs situé entre 3 et 12 Giga/L, sans présence de blastes.
 
@@ -247,9 +285,14 @@ En outre, 93 patients ont montré une sensibilité aux corticoïdes.
 
 ## Bilan de fin de traitement
 
-Au moment de l'analyse, nous observons que la moitié des participants ont prolongé leur participation à l'étude pour une durée supérieure à 46 mois.
+Lors de l'examen des données, il est intéressant de noter que la moitié des patients ont étendu leur engagement dans l'étude au-delà de 46 mois, révélant un niveau de rétention significatif. De manière plus spécifique, l'analyse de la distribution de la durée de suivi des participants révèle la présence de deux pics dominants, ou modes, situés respectivement aux alentours de 18 mois et 46 mois. Cette observation suggère une tendance bimodale dans l'implication des participants, avec un groupe manifestant une adhésion à moyen terme autour de 18 mois et un autre démontrant un engagement à plus long terme, prolongeant leur participation jusqu'à 46 mois ou plus.
 
 ```{r, echo=FALSE, fig.align = 'center'}
+# #Modifier xmax à 74 pour obtenir l'autre mode
+# densite <- ks::kde(qaly$Suivi, xmin=0, xmax=30)
+# #Trouver le mode
+# densite$eval.points[which.max(densite$estimate)]
+
 plot(ks::kde(qaly$Suivi, xmin=0,xmax = 74), main="Distribution du nombre de mois de suivi de l'étude", xlab="Nombre de mois de suivi", ylab="Densité")
 rug(qaly$Suivi)
 ```
@@ -271,10 +314,8 @@ Néanmoins, 105 patients ont interrompu leur participation de manière anticipé
 
 Parmi ces interruptions, la rechute représente la cause principale, concernant 41,3% des arrêts prématurés. Elle est suivie de près par le décès des patients(26.1%).
 
-INTRODUIRE CENSURE ??? Notons que ces interruptions sont la cause de censure outre le décès des individus en analyse de survie. En effet, le décès étant l'évènement d'intérêt, lorsque les individus partent de l'étude sans avoir atteint l'évènement, ils sont censurés. De la même manière, lorsque l'étude se termine sans que l'évènement ne se soit produit, les individus sont censurés.
-
 ```{r, echo=FALSE}
-suivitbl=qaly %>%
+suivitbl<-qaly %>%
   mutate(arr_pre=ifelse(is.na(arrpremadt),1,0)) %>% 
   select(R1,Suivi, arr_pre,ARPREMARAISON) %>%
   tbl_summary(by=R1,
@@ -285,6 +326,7 @@ suivitbl=qaly %>%
               label=list(arr_pre~"Nbre d'arrêts prématurés",Suivi~"Nbre de mois de suivi",
                          ARPREMARAISON~"Cause de l'arrêt prématuré")) %>%
   add_overall() %>%
+  add_n() %>% 
   modify_header(label ~ "**Variables**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Bras de randomisation**") %>%
   modify_footnote(
@@ -296,7 +338,7 @@ suivitbl=qaly %>%
     footnote = "**EIG** = Effet indésirable grave;  **RSP** = Retrait cst (chargé de sécurité transfusionnelle); **Autre** = Autre raison que celles citées précédemment ainsi que la toxicité, de grossesse, perte de vue ou non RC (réponse complète);.",
   ) %>% 
   modify_caption("**Table 3. Résumé du suivi de l'étude**") %>%
-  bold_labels()
+  bold_labels() 
 
 ```
 
@@ -333,7 +375,8 @@ bilantbl<-qaly %>%
                          agvhd~"Maladie aigue du greffon",
                          cgvhd~"Maladie chronique du greffon",
                          c_dc~"Cause du décès")) %>%
-  add_overall() %>%
+  add_overall()%>%
+  add_n() %>%
   modify_header(label ~ "**Variables**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Bras de randomisation**") %>%
   modify_footnote(
@@ -369,17 +412,17 @@ bilantbl<-qaly %>%
 
 # Méthodes statistiques utilisées
 
-L’objectif est de d'évaluer la possibilité de réduire l'intensité du traitement habituel des patients, traditionnellement associée à une forte toxicité, au profit d'un traitement plus ciblé et moins toxique, sans pour autant augmenter le risque de rechute. Pour mesurer cela, nous allons utiliser le principe du TWiST et la méthode Q-TWiST.
+L’objectif est de mesurer le bénéfice d'un nouveau traitement en intégrant, outre la quantité, la qualité de la survie en tenant compte par exemple des toxicités ou d’une rechute. Pour mesurer cela, nous allons utiliser le principe du TWiST et la méthode Q-TWiST.
 
 Le principe du TWiST est de définir une partition des délais de survie, tenant compte d’évènements d’intérêt [@gelber1986]. Il est défini comme le temps moyen passé après la fin du traitement (ici, en 4 cycles de chimiothérapie) et avant la rechute.
 
 La méthode Q-TWiST, quant à elle, permet ensuite aux médecins et aux patients qui envisagent une approche thérapeutique donnée d’intégrer dans leur prise de décision la valeur relative du temps passé avec des effets indésirables, du temps passé après une rechute de la maladie et du « bon » temps qui n’est pas dans l’un ou l’autre de ces états de santé.
 
-Plusieurs autres partitions seront définies en prenant en compte les traitements secondaires comme les greffes de moelle (et leurs toxicités comme la maladie du greffon contre l’hôte). Après avoir mesuré les TwIST moyens selon ces partitions, dans chaque groupe de randomisation, on étudiera s’il existe des valeurs des coefficients d’utilité (donc des préférences des patients) qui conduisent à préférer un traitement sur l’autre [@levy2001] .
+Plusieurs autres partitions seront définies en prenant en compte les traitements secondaires comme les greffes de moelle (et leurs toxicités comme la maladie du greffon contre l’hôte). Après avoir mesuré les TWiST moyens selon ces partitions, dans chaque groupe de randomisation, on étudiera s’il existe des valeurs des coefficients d’utilité (donc des préférences des patients) qui conduisent à préférer un traitement sur l’autre [@levy2001].
 
-## TWiST
+## Estimation de la moyenne du temps de survie sans maladie (rechute) ni toxicité (TWiST)
 
-Nous avons décidé de nous intéresser à quatre évènements ponctuels qui sont susceptibles d’arriver au cours de notre étude. Il s’agit du début du traitement, de la fin du traitement, de la rechute et du décès. La période entre le début du traitement et sa fin correspond au nombre de jours des quatre cycles, tandis que celle entre la fin du traitement et la rechute correspond à l’estimation du temps écoulé avant l’apparition de nouveau des symptômes de la maladie. De plus, après le choix de ces quatre évènements, nous avons défini trois périodes d’intérêt :
+Nous avons décidé de nous intéresser à quatre évènements ponctuels qui sont susceptibles d’arriver au cours de notre étude. Il s’agit du début du traitement, de la fin du traitement, de la rechute et du décès. La période entre le début du traitement et sa fin correspond au nombre de jours des quatre cycles, tandis que celle entre la fin du traitement et la rechute correspond à l’estimation du temps écoulé avant l’apparition de nouveau des symptômes de la maladie. De plus, après le choix de ces quatre évènements, nous avons défini trois états d’intérêt :
 
 -   TOX qui correspond à la période de toxicité du traitement du à la chimiothérapie et/ou les greffes qui sont sont associées à des effets indésirables.
 
@@ -387,11 +430,21 @@ Nous avons décidé de nous intéresser à quatre évènements ponctuels qui son
 
 -   REL : la période suivant la rechute jusqu'au décès du patient.
 
-Une analyse de survie dépend du partitionnement et permet d’analyser les avantages/ désavantages d’un traitement par rapport à un autre en fonction des évènements choisis. Ainsi, nous pourrons faire évoluer ces différents phases en répartition nant pour affiner l’analyse. Nous pourrions, par exemple, inclure une autre phase dans la période sous traitement, i.e une phase dans laquelle le traitement ne présente plus de toxicité.
+![](etats_survie.png){fig-align="center" width="500"}
 
-## Q-TWiST
+Notre étude de survie s'appuiera sur le partitionnement des données en ces trois états spécifiques, ce qui nous permettra d'examiner le bénéfice d'un traitement par rapport à un autre en fonction des évènements ciblés. Faire varier ce partitionnement nous permettra, par ailleurs, d'enrichir nos analyses.
+
+Nous prévoyons d'évaluer les durées moyennes de survie associées à chaque état, en utilisant des méthodes bien établies dans le domaine de l'analyse de survie, notamment la méthode de Kaplan-Meier [@kaplan1958]. Cette approche est reconnue pour sa capacité à fournir une estimation fiable de la fonction de survie, facilitant ainsi la comparaison des probabilités de survie entre différents groupes de traitement au cours du temps.
+
+De plus, nous accorderons une attention particulière à la troncature pour avoir un temps moyen de survie restreint (RMST). Cette procédure est essentielle pour prévenir la surestimation des durées moyennes de survie dans chaque état, mais aussi pour mesurer les différences entre groupes de traitement[@han2022].
+
+En adoptant cette stratégie, nous nous assurons que notre analyse produit des estimations de survie précises et représentatives, améliorant ainsi la robustesse et la fiabilité de nos conclusions concernant l'impact des traitements étudiés. Le point temporel choisi pour obtenir une RMST afin de refléter l'horizon temporel cliniquement pertinent est de ??? ans.
+
+## Pondération de chaque durée par un coefficient « d’utilité » (Q-TWiST)
 
 Le Q-TWiST permet de calculer le temps moyen passé dans chaque état en tenant compte de la qualité de vie du patient dans chacun de ces états. Le temps moyen est estimé pour chaque groupe de traitement grâce aux aires sous les courbes de survie. Une troncature est utilisée qui est égale à la médiane du temps de survie. La qualité de vie est estimée par une utilité associée à chaque état. En somme, le Q-TWiST peut s’écrire sous la forme suivante : $$Q-TWiST = U\_TOX \times TOX + TWiST + U\_REL \times REL$$ Avec $U \in [0, 1]$, 0 = mauvais comme la mort et 1 le meilleur état possible, c’est le poids qu’on accorde aux différents états. Par définition, U_TWiST = 1 puisque le patient n’a plus de symptôme de la maladie. Les variables de périodes sont en unités de jours donc le Q-TWiST est calculé en jours.
+
+Cette étude nous permettra de determiner pour quelle(s) combinaison(s) de coefficients le bénéfice du traitement est-il modifié.
 
 **Attention** : les estimations des utilités sont fondamentales car celles-ci influent sur les critères d'évaluation d’un traitement. Ainsi changer les utilités peut amener à changer de traitement pour un même traitement. Ce sont des estimations car nous ne possédons pas de table dans notre base de données avec les utilités de chaque patient, ni de leur ressenti Pour avoir une meilleure fiabilité des estimations des écarts-types, nous pouvons utiliser des méthodes de : bootstrapping non-paramétrique ou encore de ré-échantillonnage numérique.
 
@@ -399,12 +452,20 @@ Le Q-TWiST permet de calculer le temps moyen passé dans chaque état en tenant 
 
 # Annexes
 
+### Liste des variables
+
+```{r, echo=FALSE}
+names(qaly)
+```
+
 ### Données démographiques des patients
+
 ```{r, echo=FALSE}
 randotbl
 ```
 
 ### Données au diagnostic
+
 ```{r, echo=FALSE}
 diagtbl
 ```
@@ -412,6 +473,7 @@ diagtbl
 ### Données cliniques & biologiques des patients
 
 #### Oncogénétique
+
 Une donnée oncogénétique fait référence à toute information génétique donc biologique liée au développement, à la progression ou à la prédisposition aux cancers.
 
 ```{r, echo=FALSE}
@@ -434,6 +496,7 @@ suivitbl
 ```
 
 ### Fin de traitement
+
 ```{r, echo=FALSE}
 bilantbl
 ```

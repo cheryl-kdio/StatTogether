@@ -1,8 +1,6 @@
 ---
-title: "Introduction"
 bibliography: references.bib
 listing: 
   sort-ui: [title, date]
   categories: true
 ---
-
