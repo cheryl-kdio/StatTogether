@@ -40,12 +40,12 @@ qaly<-qaly %>%
     ARPREMARAISON == 8 ~ "deces",
     #ARPREMARAISON == 9 ~ "perdu vue",
     ARPREMARAISON == 10 ~ "autre",
-    ARPREMARAISON == 11 ~ "réévolution moléculaire",
+    ARPREMARAISON == 11 ~ "réévaluation moléculaire",
     TRUE ~ as.character(ARPREMARAISON) # Garde la valeur originale si non correspondante
   ))
 
 #reorder factor
-qaly$ARPREMARAISON <- factor(qaly$ARPREMARAISON, levels = c("rechute", "deces", "EIG",  "souhait malade", "retrait cst", "réévolution moléculaire", "autre"))
+qaly$ARPREMARAISON <- factor(qaly$ARPREMARAISON, levels = c("rechute", "deces", "EIG",  "souhait malade", "retrait cst", "réévaluation moléculaire", "autre"))
 #"perdu vue","non RC","toxicité","grossesse",
 
 # Conversion des types
@@ -121,7 +121,6 @@ Nous proposons donc d’utiliser une mesure résumée du temps passé sans toxic
 
 Cette approche nous permettra ainsi d'examiner la possibilité de réduire l'intensité du traitement habituel des patients, traditionnellement associée à une forte toxicité, au profit d'un traitement plus ciblé et moins toxique, sans pour autant augmenter le risque de rechute.
 
-
 # Présentation du sujet et des données
 
 L’essai clinique sur lequel nos données sont tirées est l’essai GRAAPH 2014, « Essai thérapeutique randomisé de phase III évaluant la diminution des doses de chimiothérapie en association avec du nilotinib (Tasigna ®) dans les leucémies aiguës lymphoblastiques à chromosome de Philadelphie positive (Ph+) de l’adulte jeune (18-59 ans) »[@assistancepublique-hôpitauxdeparis2019].
@@ -144,7 +143,7 @@ On distinguera 2 types de censure:
 
 Les 155 patients inclus dans notre étude participaient également à l'essai précédent, parmi lesquels 76 ont bénéficié du traitement standard de nature intensif (bras A) et 79 ont reçu une thérapie allégée (bras B). La répartition de notre échantillon se compose de 48 % de femmes, avec un âge moyen de 46 ans, et de 52 % d'hommes, âgés en moyenne de 50 ans .
 
-L'inclusion des patients s'est échelonnée de 2016 à 2019, avec un suivi moyen durant 4 ans, jusqu'en 2023. 
+L'inclusion des patients s'est échelonnée de 2016 à 2019, avec un suivi moyen durant 4 ans, jusqu'en 2023.
 
 ```{r table_min_max, echo=FALSE}
 qaly %>% 
@@ -167,7 +166,6 @@ qaly %>%
 #   as_gt()%>% 
 #   gtsave("name.text")
 ```
-
 
 Avant l'initiation du traitement constitué 4 cycles de chimiothérapie suivies ou non d'une greffe, 85,6 % des patients ne montraient aucun signe de blastes leucémiques, alors que 14,4 % en avaient, ce dernier groupe étant caractérisé par une inhibition de la production de cellules sanguines normales.
 
@@ -297,7 +295,7 @@ plot(ks::kde(qaly$Suivi, xmin=0,xmax = 74), main="Distribution du nombre de mois
 rug(qaly$Suivi)
 ```
 
-Néanmoins, 105 patients ont interrompu leur participation de manière anticipée, répartis équitablement entre le bras A (52 patients) et le bras B (53 patients). Les motifs d'interruption prématurée sont variés, incluant le décès, la rechute, le retrait pour raison de sécurité transfusionnelle (CST), des évènements de ré-évolution moléculaire, des effets secondaires sévères, entre autres raisons.
+Néanmoins, 105 patients ont interrompu leur participation de manière anticipée, répartis équitablement entre le bras A (52 patients) et le bras B (53 patients). Les motifs d'interruption prématurée sont variés, incluant le décès, la rechute, le retrait par consentement (CST), des évènements de ré-évoluation moléculaire, des effets secondaires sévères, entre autres raisons.
 
 ```{r, echo=FALSE}
 # prev_arrprem<-qaly %>% mutate(Statut =ifelse(is.na(ARPREMARAISON), "Terminé", "Arrêt Prématuré")) %>% 
@@ -335,7 +333,7 @@ suivitbl<-qaly %>%
   modify_table_styling(
     columns = label,
     rows = label == "Cause de l'arrêt prématuré",
-    footnote = "**EIG** = Effet indésirable grave;  **RSP** = Retrait cst (chargé de sécurité transfusionnelle); **Autre** = Autre raison que celles citées précédemment ainsi que la toxicité, de grossesse, perte de vue ou non RC (réponse complète);.",
+    footnote = "**EIG** = Effet indésirable grave;  **Retrait cst** = Retrait par consentement; **Autre** = Autre raison que celles citées précédemment ainsi que la toxicité, de grossesse, perte de vue ou non RC (réponse complète);.",
   ) %>% 
   modify_caption("**Table 3. Résumé du suivi de l'étude**") %>%
   bold_labels() 
@@ -449,6 +447,83 @@ Cette étude nous permettra de determiner pour quelle(s) combinaison(s) de coeff
 **Attention** : les estimations des utilités sont fondamentales car celles-ci influent sur les critères d'évaluation d’un traitement. Ainsi changer les utilités peut amener à changer de traitement pour un même traitement. Ce sont des estimations car nous ne possédons pas de table dans notre base de données avec les utilités de chaque patient, ni de leur ressenti Pour avoir une meilleure fiabilité des estimations des écarts-types, nous pouvons utiliser des méthodes de : bootstrapping non-paramétrique ou encore de ré-échantillonnage numérique.
 
 # Résultats
+
+# Partition simple 
+
+```{r conversion}
+qaly$finctdt   <- apply(qaly[,c("C1dt","C2dt" , "C3dt" , "C4dt", "Inter1dt" )],1,max,na.rm=T)
+qaly$finct.dt <- as.Date(as.character(qaly$finctdt),format="%Y-%m-%d")
+
+```
+
+```{r calcul delais}
+qaly$suivi  <- as.numeric(qaly$Datemax-qaly$randodt)/(365.25/12)
+qaly$survie <- as.numeric(qaly$deathdt-qaly$randodt)/(365.25/12)
+qaly$delfinct <- as.numeric(qaly$finct.dt-qaly$randodt)/(365.25/12)
+qaly$delarr <- as.numeric(qaly$arrpremadt-qaly$randodt)/(365.25/12)
+qaly$delfinct[which(qaly$delfinct==0)]<- qaly$delarr[which(qaly$delfinct==0)]
+qaly$finct<- rep(1,length(qaly$delfinct))
+qaly$delrec<- as.numeric(qaly$relapsdt-qaly$randodt)/(365.25/12)
+qaly$delpfs<- qaly$suivi
+qaly$delpfs[!is.na(qaly$delrec)]<-qaly$delrec[!is.na(qaly$delrec)]
+qaly$delbmt <- as.numeric(qaly$bmtdt-qaly$randodt)/(365.25/12)
+
+qaly$delfinct2 <- qaly$delfinct
+qaly$delfinct2[!is.na(qaly$delbmt)]<-pmax(qaly$delfinct[!is.na(qaly$delbmt)],qaly$delbmt[!is.na(qaly$delbmt)])
+qaly$finct2 <- qaly$finct
+qaly$finct2[!is.na(qaly$delbmt)]<-1
+```
+
+```{r partition1}
+ct  <- survfit(Surv(delfinct,finct)~1,data=qaly,subset = (R1 == "Intensive arm (A)"))
+ct2  <- survfit(Surv(delfinct2,finct2)~1,data=qaly,subset = (R1 == "Intensive arm (A)"))
+sv  <- survfit(Surv(suivi,as.numeric(as.character(dc)))~1,data=qaly,subset = (R1 == "Intensive arm (A)"))
+efs <- survfit(Surv(delpfs,as.numeric(as.character(pfs)))~1, data=qaly,subset = (R1 == "Intensive arm (A)"))
+```
+
+
+```{r fig.width=6, fig.height=5.5}
+fit<-list(CT = ct, CT2 = ct2, SV=sv, EFS=efs)
+library(survminer)
+t<-ggsurvplot_combine(fit,
+          risk.table = TRUE,                  # Add risk table
+   xlab = "Time in days",   # customize X axis label.
+   ggtheme = theme_light(), # customize plot and risk table with a theme.
+ risk.table.y.text.col = T, # colour risk table text annotations.
+  risk.table.y.text = FALSE,
+  legend.labs = c("CT", "CT2","SV","EFS"))
+t
+```
+
+
+
+```{r }
+df<-t$plot$data
+df %>% mutate(strata = sub("x=", "", strata)) %>%
+  group_by(strata) %>%
+  summarise(time = c(time - 0.001, time),
+            surv = c(1, head(surv, -1), surv),
+            .groups = "drop") %>%
+  arrange(time) %>%
+  pivot_wider(names_from = "strata", values_from = "surv") %>%
+  fill(1:5, .direction = "downup") %>%
+  ggplot(aes(time, CT)) +
+  geom_step(aes(group = "CT")) +
+  geom_ribbon(aes(ymin = 0, ymax = CT, fill = "1"),alpha=0.5)+
+  geom_step(aes(y = CT2), group = "CT2",linewidth=0.9, colour="#0077b6") +
+  geom_ribbon(aes(ymin = CT, ymax = CT2, fill = "2"),alpha=0.5) +
+  geom_step(aes(y = EFS),group = "EFS",linewidth=0.9, colour="#48cae4") +
+  geom_ribbon(aes(ymin = CT2, ymax = EFS, fill = "3"),alpha=0.5)+
+  geom_step(aes(y = SV), group = "SV",linewidth=0.9, colour="#caf0f8")+
+  geom_ribbon(aes(ymin = EFS, ymax = SV, fill = "4"),alpha=0.5)+
+  scale_fill_manual(values = c("1" = "#03045e", "2" = "#0077b6", "3" = "#48cae4", "4" = "#caf0f8")) +
+  labs(x = "Time", y = "Survival Probability", group = "Duration", fill = "Events") +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+
+
 
 # Annexes
 

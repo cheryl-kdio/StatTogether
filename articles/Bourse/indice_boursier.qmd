@@ -13,8 +13,12 @@ format:
 bibliography: ../../references.bib
 ---
 
-
 # Qu'est ce qu'un indice boursier?
+
+Un indice boursier est un instrument financier qui permet de mesurer les performances d'un marché boursier ou d'un secteur économique. C'est tout simplement un indicateur chiffré qui sert à reflèter la valeur d'un marché financier. Il a trois fonctions principales:
+-   Informer les investisseurs sur l'évolution d'un marché financier
+-   Servir de base de comparaison pour les performances des portefeuilles d'investissement
+-   Indexer des produits financiers comme les fonds indiciels ou les ETFs
 
 # Comment ça fonctionne?
 

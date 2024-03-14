@@ -1,0 +1,649 @@
+---
+title: "Projet Stat"
+author: "Néné Traore"
+date: "2024-01-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+# require(survival)
+# require(gdata)
+# require(stringr)
+# require(xtable)
+# 
+# #Read Data 
+# library(ggplot2)
+# library(scales)
+# require(gridExtra)
+# 
+# library(ggplot2)
+# library(scales)
+# library(tableone)
+# library(ggplot2)
+# library(dplyr)
+# library(gtsummary)
+# library(survival)
+# library(survminer)
+# library(survRM2)
+# library(ggplot2)
+# library(grid)
+# library(gridExtra)
+# library(gridGraphics)
+# library(gtable)
+# library(cowplot)
+knitr::opts_chunk$set(echo = TRUE)
+require(survival)
+
+#Read Data 
+library(ggplot2)
+library(scales)
+require(gridExtra)
+
+library(survival)
+library(survminer)
+library(survRM2)
+```
+
+# Import du jeu de données
+
+```{r cars}
+qaly <- read.csv("data_rstudio.csv", 
+                 header = TRUE, 
+                 sep = ";", 
+                 row.names = "SUBJECT_REF",encoding = "latin1", na.strings = c("", " ", "NA", "NI"), check.names = T)
+#str(qaly)
+
+```
+
+# Modification de la base de données
+
+```{r pressure, echo=FALSE}
+qaly$R1 <- as.factor(qaly$R1)
+qaly$randodt <- as.Date(qaly$randodt, format = "%d/%m/%Y")
+qaly$sEXE <- as.factor(qaly$sEXE)
+qaly$tRANSCRIT <- as.factor(qaly$tRANSCRIT)
+qaly$sTRATE <- as.factor(qaly$sTRATE)
+qaly$cNS <- as.factor(qaly$cNS)
+qaly$gb10 <- as.factor(qaly$gb10)
+qaly$gb20 <- as.factor(qaly$gb20)
+qaly$gb30 <- as.factor(qaly$gb30)
+qaly$PS <- as.factor(qaly$PS)
+qaly$RATEDG <- as.factor(qaly$RATEDG)
+qaly$FOIEDG <- as.factor(qaly$FOIEDG)
+qaly$MEDIASTINDG <- as.factor(qaly$MEDIASTINDG)
+qaly$BLASTEMODIAG <- as.factor(qaly$BLASTEMODIAG)
+qaly$IKZFoui <- as.factor(qaly$IKZFoui)
+qaly$nO_IKZF1 <- as.factor(qaly$nO_IKZF1)
+qaly$tECH_IKZF1 <- as.factor(qaly$tECH_IKZF1)
+qaly$rES_IKZF1 <- as.factor(qaly$rES_IKZF1)
+qaly$IKZFoui_2 <- as.factor(qaly$IKZFoui_2)
+qaly$eXONS_IKZF1 <- as.factor(qaly$eXONS_IKZF1)
+qaly$eXONS2_IKZF1 <- as.factor(qaly$eXONS2_IKZF1)
+qaly$rES2_IKZF1 <- as.factor(qaly$rES2_IKZF1)
+qaly$tECH2_IKZF1 <- as.factor(qaly$tECH2_IKZF1)
+qaly$prephasdt <- as.Date(qaly$prephasdt, format = "%d/%m/%Y")
+qaly$PLPREPHASE <- as.factor(qaly$PLPREPHASE)
+qaly$SNCDIAG <- as.factor(qaly$SNCDIAG)
+qaly$SIGNCLI <-as.factor(qaly$SIGNCLI)
+qaly$ATTBIO <- as.factor(qaly$ATTBIO)
+qaly$PLTRAUMA <- as.factor(qaly$PLTRAUMA)
+qaly$TLP <- as.factor(qaly$TLP)
+qaly$cNSTARDIF <- as.factor(qaly$cNSTARDIF)
+qaly$tLPTARDIF <- as.factor(qaly$tLPTARDIF)
+qaly$CSR <- as.factor(qaly$CSR)
+qaly$C1dt <- as.Date(qaly$C1dt, format = "%d/%m/%Y")
+qaly$C2dt <- as.Date(qaly$C2dt, format = "%d/%m/%Y")
+qaly$C3dt <- as.Date(qaly$C3dt, format = "%d/%m/%Y")
+qaly$C4dt <- as.Date(qaly$C4dt, format = "%d/%m/%Y")
+qaly$Inter1dt <- as.Date(qaly$Inter1dt, format = "%d/%m/%Y")
+qaly$Inter2dt <- as.Date(qaly$Inter2dt, format = "%d/%m/%Y")
+qaly$arrpremadt <- as.Date(qaly$arrpremadt, format = "%d/%m/%Y")
+qaly$pnn1_dt <- as.Date(qaly$pnn1_dt, format = "%d/%m/%Y")
+qaly$pnn1dt <- as.Date(qaly$pnn1dt, format = "%d/%m/%Y")
+qaly$pnn2_dt <- as.Date(qaly$pnn2_dt, format = "%d/%m/%Y")
+qaly$pnn2dt <- as.Date(qaly$pnn2dt, format = "%d/%m/%Y")
+qaly$pnn3_dt <- as.Date(qaly$pnn3_dt, format = "%d/%m/%Y")
+qaly$pnn3dt <- as.Date(qaly$pnn3dt, format = "%d/%m/%Y")
+qaly$pnn4_dt <- as.Date(qaly$pnn4_dt, format = "%d/%m/%Y")
+qaly$pnn4dt <- as.Date(qaly$pnn4dt, format = "%d/%m/%Y")
+qaly$bmtdt <- as.Date(qaly$bmtdt, format = "%d/%m/%Y")
+qaly$Type.bmt <- as.factor(qaly$Type.bmt)
+qaly$cgvhdt <- as.Date(qaly$cgvhdt, format = "%d/%m/%Y")
+qaly$agvhdt <- as.Date(qaly$agvhdt, format = "%d/%m/%Y")
+qaly$cgvhd <- as.factor(qaly$cgvhd)
+qaly$agvhd <- as.factor(qaly$agvhd)
+qaly$rech <- as.factor(qaly$rech)
+qaly$pfs <- as.factor(qaly$pfs)
+qaly$dc <- as.factor(qaly$dc)
+qaly$DEATH_CAUSE_C2 <- as.factor(qaly$DEATH_CAUSE_C2)
+qaly$DEATH_CAUSE_C3 <- as.factor(qaly$DEATH_CAUSE_C3)
+qaly$DEATH_CAUSE_C4 <- as.factor(qaly$DEATH_CAUSE_C4)
+qaly$relapsdt <- as.Date(qaly$relapsdt, format = "%d/%m/%Y")
+qaly$deathdt <- as.Date(qaly$deathdt, format = "%d/%m/%Y")
+qaly$Datemax <- as.Date(qaly$Datemax, format = "%d/%m/%Y")
+qaly$greffe <- as.factor(qaly$greffe)
+qaly$DEATH_CAUSE_Coui <- as.factor(qaly$DEATH_CAUSE_Coui)
+qaly$ARPREMARAISON <- as.factor(qaly$ARPREMARAISON)
+qaly$plq1_dt <- as.Date(qaly$plq1_dt, format = "%d/%m/%Y")
+qaly$plq1dt <- as.Date(qaly$plq1dt, format = "%d/%m/%Y")
+qaly$plq3_dt <- as.Date(qaly$plq3_dt, format = "%d/%m/%Y")
+qaly$plq3dt <- as.Date(qaly$plq3dt, format = "%d/%m/%Y")
+qaly$plq4_dt <- as.Date(qaly$plq4_dt, format = "%d/%m/%Y")
+qaly$plq4dt <- as.Date(qaly$plq4dt, format = "%d/%m/%Y")
+qaly$plq2_dt <- as.Date(qaly$plq2_dt, format = "%d/%m/%Y")
+qaly$plq2dt <- as.Date(qaly$plq2dt, format = "%d/%m/%Y")
+
+```
+
+### Dupliquer les variables d'intérêts et les renommer avec des noms plus explicites
+
+```{r}
+
+qaly$date_de_mort <- qaly$deathdt
+qaly$date_de_rando <- qaly$randodt
+qaly$date_dernier_suivi <- qaly$Datemax
+qaly$date_de_rechute <- qaly$relapsdt
+qaly$date_derniere_cure <- apply(qaly[,c("C1dt","C2dt" , "C3dt" , "C4dt", "Inter1dt" )],1,max,na.rm=T)
+qaly$date_derniere_cure <- as.Date(as.character(qaly$date_derniere_cure),format="%Y-%m-%d")
+qaly$date_arret_etude <- qaly$arrpremadt
+qaly$date_de_greffe <- qaly$bmtdt
+qaly$indicatrice_deces <- qaly$dc
+
+```
+
+```{r}
+
+qaly$duree_suivi <- as.numeric(qaly$date_dernier_suivi-qaly$date_de_rando)/(365.25/12)
+qaly$time_until_deces <- as.numeric(qaly$date_de_mort-qaly$date_de_rando)/(365.25/12)
+qaly$time_until_arret <- as.numeric(qaly$date_arret_etude-qaly$date_de_rando)/(365.25/12)
+
+```
+
+# Le traitement
+
+```{r}
+# Pour les patients qui n'ont pas de durée de traitement on utilise la date d'arrêt de l'étude à la place, seulement 2 patients sont concernés.
+
+qaly$duree_traitement <- as.numeric(qaly$date_derniere_cure-qaly$date_de_rando)/(365.25/12)
+
+qaly$duree_traitement[which(qaly$duree_traitement==0)] <- qaly$time_until_arret[which(qaly$duree_traitement==0)]
+
+qaly$indicatrice_traitement <- rep(1,length(qaly$duree_traitement))
+
+```
+
+# La rechute
+
+```{r}
+
+qaly$time_until_rechute<- as.numeric(qaly$date_de_rechute-qaly$date_de_rando)/(365.25/12)
+
+# La variable rechute ==> Temps jusqu'à la rechute ou durée du suivi pour les individus qui n'ont pas connu la rechute !
+
+qaly$rechute <- qaly$duree_suivi
+
+qaly$rechute[!is.na(qaly$time_until_rechute)]<-qaly$time_until_rechute[!is.na(qaly$time_until_rechute)]
+
+qaly$indicatrice_rechute <- qaly$pfs
+
+```
+
+# La greffe
+
+```{r}
+# Traitement greffe : On crée une seconde variable avec la durée du traitement
+# Pour les personnes qui ont subit une greffe on prend le max(rando/greffe; rando/cure)
+
+qaly$time_until_greffe <- as.numeric(qaly$date_de_greffe-qaly$date_de_rando)/(365.25/12)
+
+qaly$greffe <- qaly$duree_traitement
+qaly$greffe[!is.na(qaly$time_until_greffe)]<- 
+          pmax(qaly$duree_traitement[!is.na(qaly$time_until_greffe)],
+               qaly$time_until_greffe[!is.na(qaly$time_until_greffe)])
+
+qaly$indicatrice_greffe <- rep(1,length(qaly$duree_traitement))
+
+qaly$indicatrice_greffe[!is.na(qaly$time_until_greffe)] <- 1
+
+
+```
+
+# La maladie du greffon
+
+```{r}
+
+qaly$time_until_agvhd <- as.numeric(qaly$agvhdt-qaly$date_de_rando)/(365.25/12)
+qaly$time_until_cgvhd <- as.numeric(qaly$cgvhdt-qaly$date_de_rando )/(365.25/12)
+qaly$time_until_gvhd <- pmax(qaly$time_until_agvhd,qaly$time_until_cgvhd, na.rm = TRUE)
+
+# PRENDRE GREFFE OU TRAITEMENT 
+
+qaly$gvhd <- qaly$greffe
+qaly$gvhd[!is.na(qaly$time_until_gvhd)]<- 
+          pmax(qaly$greffe[!is.na(qaly$time_until_gvhd)],
+               qaly$time_until_gvhd[!is.na(qaly$time_until_gvhd)])
+
+qaly$indicatrice_gvhd <- rep(1,length(qaly$duree_traitement))
+
+qaly$indicatrice_gvhd[!is.na(qaly$time_until_gvhd)] <- 1
+
+```
+
+# Encodage des variables
+
+```{r}
+
+
+qaly$indicatrice_deces <- ifelse(qaly$indicatrice_deces == "oui", 1, 0)
+qaly$indicatrice_rechute <- ifelse(qaly$indicatrice_rechute == "aucun evenement",0, 1)
+
+```
+
+### Fonction de survie & Calcul de RMST
+
+```{r}
+# Pour calculer le RMST à un temps fixe on peut utiliser :
+
+#survival:::survmean(surv_traitement_grpA, rmean = 221) 
+#print(surv_traitement_grpA, print.rmean = TRUE, rmean = 200)
+
+```
+
+```{r}
+# Fonction de survie traitement par groupe de rando
+
+surv_traitement_grpA  <- survfit(Surv(duree_traitement,indicatrice_traitement)~1,data=qaly[qaly$R1 == "Intensive arm (A)",])
+
+surv_traitement_grpB  <- survfit(Surv(duree_traitement,indicatrice_traitement)~1,data = qaly[qaly$R1 == "Light arm (B)",])
+
+# RMST Traitement (Pour tronqué avant le dernier individu, on peut utiliser rmean=)
+
+rmst_traitement_grpA <- summary(surv_traitement_grpA)$table[5]
+rmst_traitement_grpB <- summary(surv_traitement_grpB)$table[5]
+```
+
+```{r}
+# Fonction de survie greffe 
+
+surv_greffe_grpA  <- survfit(Surv(greffe,indicatrice_greffe)~1,data=qaly[qaly$R1 == "Intensive arm (A)",])
+
+surv_greffe_grpB  <- survfit(Surv(greffe,indicatrice_greffe)~1,data=qaly[qaly$R1 == "Light arm (B)",])
+
+# RMST Greffe : Les derniers individus du groupe A et du groupe B sont censurés
+
+rmst_greffe_grpA = summary(surv_greffe_grpA)$table[5]
+rmst_greffe_grpB = summary(surv_greffe_grpB)$table[5]
+
+```
+
+```{r}
+# Fonction de survie suivi 
+
+surv_suivi_grpA  <- survfit(Surv(duree_suivi,indicatrice_deces)~1,data=qaly[qaly$R1 == "Intensive arm (A)",])
+
+surv_suivi_grpB  <- survfit(Surv(duree_suivi,indicatrice_deces)~1,data=qaly[qaly$R1 == "Light arm (B)",])
+
+# RMST Suivi
+rmst_suivi_grpA = survival:::survmean(surv_suivi_grpA, rmean=t_censure)[[1]]["rmean"]
+
+rmst_suivi_grpB = survival:::survmean(surv_suivi_grpB, rmean=t_censure)[[1]]["rmean"]
+
+```
+
+```{r}
+# Fonction de survie Rechute
+
+surv_rechute_grpA <- survfit(Surv(rechute,indicatrice_rechute)~1, data=qaly[qaly$R1 == "Intensive arm (A)",])
+
+surv_rechute_grpB <- survfit(Surv(rechute,indicatrice_rechute)~1, data=qaly[qaly$R1 == "Light arm (B)",])
+
+# RMST Rechute
+
+rmst_rechute_grpA = survival:::survmean(surv_rechute_grpA, rmean=t_censure)[[1]]["rmean"]
+
+rmst_rechute_grpB = survival:::survmean(surv_rechute_grpB, rmean=t_censure)[[1]]["rmean"]
+
+```
+
+```{r}
+# Fonction de survie maladie du greffon
+
+surv_gvhd_grpA  <- survfit(Surv(gvhd,indicatrice_gvhd)~1,data=qaly[qaly$R1 == "Intensive arm (A)",])
+
+surv_gvhd_grpB  <- survfit(Surv(gvhd,indicatrice_gvhd)~1,data=qaly[qaly$R1 == "Light arm (B)",])
+
+# RMST maladie du greffon
+
+rmst_gvhd_grpA = summary(surv_gvhd_grpA)$table[5]
+rmst_gvhd_grpB = summary(surv_gvhd_grpB)$table[5]
+
+```
+
+## Calcul des variables TOX, TWIST et REL par groupe de rando
+
+# Cas classique
+
+```{r}
+
+TOX_chimio_grpA <- rmst_traitement_grpA
+TOX_chimio_grpB <- rmst_traitement_grpB
+
+
+TWIST_chimio_grpA <- rmst_rechute_grpA - rmst_traitement_grpA
+TWIST_chimio_grpB <- rmst_rechute_grpB - rmst_traitement_grpB
+  
+REL_grpA <- rmst_suivi_grpA - rmst_rechute_grpA
+REL_grpB <- rmst_suivi_grpB - rmst_rechute_grpB
+
+
+```
+
+# Quand on prend en compte les greffes
+
+```{r}
+
+# TOX CHIMIO NE CHANGE PAS
+
+TOX_greffe_grpA <- rmst_greffe_grpA
+TOX_greffe_grpB <- rmst_greffe_grpB
+
+# TWIST1 ==> Différence entre la fin de greffe et la fin du traitement
+
+TWIST1_greffe_grpA <- rmst_greffe_grpA - rmst_traitement_grpA
+TWIST1_greffe_grpB <- rmst_greffe_grpA - rmst_traitement_grpB
+
+# TWIST 2 ==> Différentre ente date de rechute et fin de la greffe
+
+TWIST2_greffe_grpA <- rmst_rechute_grpA - rmst_greffe_grpA
+TWIST2_greffe_grpB <- rmst_rechute_grpB - rmst_greffe_grpB
+  
+
+```
+
+# Quand on prend en compte la maladie du greffon
+
+```{r}
+
+TOX_gvhd_grpA <- rmst_gvhd_grpA
+TOX_gvhd_grpB <- rmst_gvhd_grpB
+
+# TWIST1 ==> Différence entre gvhd et la fin du traitement
+
+TWIST1_gvhd_grpA <- rmst_gvhd_grpA - rmst_traitement_grpA
+TWIST1_gvhd_grpB <- rmst_gvhd_grpB - rmst_traitement_grpB
+
+# TWIST 2 ==> Différentre ente gvhd et date de greffe
+TWIST2_gvhd_grpA <- rmst_gvhd_grpA - rmst_greffe_grpA
+TWIST2_gvhd_grpB <- rmst_gvhd_grpB - rmst_greffe_grpB
+
+# TWIST 3 ==> Différentre ente date de rechute et fin de la greffe
+
+TWIST3_gvhd_grpA <- rmst_rechute_grpA - rmst_gvhd_grpA
+TWIST3_gvhd_grpB <- rmst_rechute_grpB - rmst_gvhd_grpB
+
+```
+
+# Plot des fonctions de survies
+
+```{r}
+
+# décès : OS
+plot_suivi_grpA <- ggsurvplot(surv_suivi_grpA,                
+                conf.int = F,        # Add the 95% confidence band
+                risk.table = TRUE,      # Add risk table
+                tables.height = 0.2,
+                legend.labs=c("Survie"),
+                tables.theme = theme_cleantable(),
+                palette = "#619CFF",
+                risk.table.height = 0.15,
+                ggtheme =  theme_classic())
+
+plot_suivi_grpB <- ggsurvplot(surv_suivi_grpB,                
+                conf.int = F,        # Add the 95% confidence band
+                risk.table = TRUE,      # Add risk table
+                tables.height = 0.2,
+                legend.labs=c("Survie"),
+                tables.theme = theme_cleantable(),
+                palette = "#619CFF",
+                ggtheme =  theme_classic())
+
+data.suivi_grpA <- plot_suivi_grpA$data.survplot
+data.suivi_grpB <- plot_suivi_grpB$data.survplot
+
+plot_suivi_grpA$plot 
+# Calcul des taux d'individus à risque
+
+# Pour le groupe A
+data.suivi_grpA <- data.suivi_grpA %>% 
+                    mutate(t.risk = (n.risk/76)*100)
+
+# Pour le groupe B
+data.suivi_grpB <- data.suivi_grpB %>% 
+                    mutate(t.risk = (n.risk/79)*100)
+
+# On peut en déduire le taux de censure t
+
+t_censure <- min(64.3285421,60.9774127)
+
+risk_table <- ggplotGrob(plot_suivi_grpA$table)
+
+```
+
+```{r}
+# Rechute :  EFS
+
+plot_rechute_grpA <- ggsurvplot(surv_rechute_grpA,
+                  conf.int = F,        # Add the 95% confidence band
+                  risk.table = TRUE,      # Add risk table
+                  tables.height = 0.2,
+                  legend.labs=c("Rechute ou décès"),
+                  tables.theme = theme_cleantable(),
+                  palette="#00BA38",
+                  ggtheme = theme_classic())
+
+
+plot_rechute_grpB <- ggsurvplot(surv_rechute_grpB,
+                  conf.int = F,        # Add the 95% confidence band
+                  risk.table = TRUE,      # Add risk table
+                  tables.height = 0.2,
+                  legend.labs=c("Rechute ou décès"),
+                  tables.theme = theme_cleantable(),
+                  palette="#00BA38",
+                  ggtheme = theme_classic())
+```
+
+```{r}
+# Durée du traitement : CT
+plot_traitement_grpA <- ggsurvplot(surv_traitement_grpA,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("Traitement"),
+                 tables.theme = theme_cleantable(),
+                 palette="#F8766D",
+                 ggtheme = theme_classic())
+
+plot_traitement_grpB <- ggsurvplot(surv_traitement_grpB,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("Traitement"),
+                 tables.theme = theme_cleantable(),
+                 palette="#F8766D",
+                 ggtheme = theme_classic())
+```
+
+```{r}
+# Durée du traitement + greffe : CT2
+
+plot_greffe_grpA <- ggsurvplot(surv_greffe_grpA,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("CT2"),
+                 tables.theme = theme_cleantable(),
+                 palette="#E69F00",
+                 ggtheme = theme_classic())
+
+plot_greffe_grpB <- ggsurvplot(surv_greffe_grpB,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("CT2"),
+                 tables.theme = theme_cleantable(),
+                 palette="#E69F00",
+                 ggtheme = theme_classic())
+```
+
+```{r}
+# Plot maladie du greffon
+plot_gvhd_grpA <- ggsurvplot(surv_gvhd_grpA,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("CT3"),
+                 tables.theme = theme_cleantable(),
+                 palette="#E69F00",
+                 ggtheme = theme_classic())
+
+plot_gvhd_grpB <- ggsurvplot(surv_gvhd_grpB,
+                 conf.int = F,           # Add the 95% confidence band
+                 risk.table = TRUE,      # Add risk table
+                 tables.height = 0.2,
+                 legend.labs=c("CT3"),
+                 tables.theme = theme_cleantable(),
+                 palette="#E69F00",
+                 ggtheme = theme_classic())
+
+
+```
+
+# Afficher toutes les fonctions de survie
+
+# Cas 3 : greffe + gvhd + traitement
+
+```{r}
+
+plot3.all_grpA <- plot_suivi_grpA$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpA$plot)$data[[1]], 
+            aes(x, y, color="EFS")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpA$plot)$data[[3]], 
+             aes(x, y, color="EFS"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpA$plot)$data[[1]], 
+            aes(x, y, color="CT")) + 
+  geom_step(data = ggplot_build(plot_greffe_grpA$plot)$data[[1]], aes(x, y, color="CT2") ) +
+  geom_step(data =ggplot_build(plot_gvhd_grpA$plot)$data[[1]], aes(x, y, color="CT3")) +
+  scale_color_manual(values=c("#E69F00","#3a0ca3","#F8766D", "#619CFF", "#00BA38"))+ labs(title="Intensive arm (A)") + theme(plot.title = element_text(hjust = 0.5))
+
+# Ajout greffe : geom_step(data = ggplot_build(plot_greffe_grpA$plot)$data[[1]], aes(x, y, color="CT2")) 
+
+
+plot3.all_grpB <- plot_suivi_grpB$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpB$plot)$data[[1]], 
+            aes(x, y, color="EFS")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpB$plot)$data[[3]], 
+             aes(x, y, color="EFS"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpB$plot)$data[[1]], 
+            aes(x, y, color="CT"))+ 
+  geom_step(data = ggplot_build(plot_greffe_grpB$plot)$data[[1]], aes(x, y, color="CT2") ) + 
+  geom_step(data =ggplot_build(plot_gvhd_grpB$plot)$data[[1]], aes(x, y, color="CT3") )+scale_color_manual(values=c("#E69F00","#3a0ca3","#F8766D", "#619CFF", "#00BA38"))+ labs(title = "Light arm (B)")+theme(plot.title = element_text(hjust = 0.5))
+
+
+grid.arrange(plot3.all_grpA, plot3.all_grpB, ncol=2)
+
+```
+
+# Cas 2 : greffe + traitement
+
+```{r}
+
+plot2.all_grpA <- plot_suivi_grpA$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpA$plot)$data[[1]], 
+            aes(x, y, color="EFS")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpA$plot)$data[[3]], 
+             aes(x, y, color="EFS"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpA$plot)$data[[1]], 
+            aes(x, y, color="CT")) + 
+  geom_step(data = ggplot_build(plot_greffe_grpA$plot)$data[[1]], aes(x, y, color="CT2") )+
+  scale_color_manual(values=c("#E69F00","#F8766D", "#619CFF", "#00BA38"))+ labs(title="Intensive arm (A)") + theme(plot.title = element_text(hjust = 0.5))
+
+
+plot2.all_grpB <- plot_suivi_grpB$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpB$plot)$data[[1]], 
+            aes(x, y, color="EFS")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpB$plot)$data[[3]], 
+             aes(x, y, color="EFS"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpB$plot)$data[[1]], 
+            aes(x, y, color="CT"))+ 
+  geom_step(data = ggplot_build(plot_greffe_grpB$plot)$data[[1]], aes(x, y, color="CT2") ) +scale_color_manual(values=c("#E69F00","#F8766D", "#619CFF", "#00BA38"))+ labs(title = "Light arm (B)")+theme(plot.title = element_text(hjust = 0.5))
+
+
+grid.arrange(plot2.all_grpA, plot2.all_grpB, ncol=2)
+```
+
+# Cas 1 : traitement
+
+```{r}
+
+# Plot pour le groupe A
+plot1.all_grpA <- plot_suivi_grpA$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpA$plot)$data[[1]], 
+            aes(x, y, color="Rechute ou décès")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpA$plot)$data[[3]], 
+             aes(x, y, color="Rechute ou décès"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpA$plot)$data[[1]], 
+            aes(x, y, color="Traitement")) +
+  scale_color_manual(values=c("#F8766D", "#619CFF", "#00BA38")) + 
+  labs(title="Intensive arm (A)") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Plot pour le groupe B
+plot1.all_grpB <- plot_suivi_grpB$plot + 
+  geom_step(data = ggplot_build(plot_rechute_grpB$plot)$data[[1]], 
+            aes(x, y, color="Rechute ou décès")) + 
+  geom_point(data = ggplot_build(plot_rechute_grpB$plot)$data[[3]], 
+             aes(x, y, color="Rechute ou décès"), shape=3)+ 
+  geom_step(data = ggplot_build(plot_traitement_grpB$plot)$data[[1]], 
+            aes(x, y, color="Traitement")) +
+  scale_color_manual(values=c("#F8766D", "#619CFF", "#00BA38")) + 
+  labs(title = "Light arm (B)")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Définir le thème personnalisé pour les deux graphiques
+custom_theme <- theme(
+  plot.title = element_text(size = 10, hjust = 0.5),  # Taille et centrage des titres
+  axis.title = element_text(size = 8),  # Taille des titres des axes
+  axis.text = element_text(size = 8, color = "black"),  # Taille et couleur des graduations sur les axes
+  legend.position = "none"  # Supprimer la légende
+)
+
+# Appliquer le thème personnalisé à chaque graphique
+plot1.all_grpA <- plot1.all_grpA +
+  labs(x = "Temps (mois)", y="Probabiblité de survie") +
+  theme_minimal() +
+  custom_theme + theme(legend.position = "top")
+
+plot1.all_grpB <- plot1.all_grpB + 
+  labs(x = "Temps (mois)", y = NULL) +
+  theme_minimal() +
+  custom_theme +
+  theme(axis.line.y = element_blank())  # Supprimer l'axe des ordonnées du plot B
+
+# Aligner les graphiques
+aligned_plots <- cowplot::align_plots(plot1.all_grpA, plot1.all_grpB, align = "hv", axis = "y")
+
+# Afficher les graphiques alignés
+grid.arrange(aligned_plots[[1]], aligned_plots[[2]], plot_suivi_grpA$table,plot_suivi_grpB$table,ncol = 2)
+```
+
+```{r}
+# Je souhaite ajouter ces deux tables en dessous du graphiques et que ce soit alignés du coup avec l'axe des x par exemple sous le 0 il doit y avoir 76 !J'ai tout essayé dans l'idéal il faudrait réduire la taille du nombre d'invidus à risque et aussi mettre un seul titre au bout de la ligne !
+
+plot_suivi_grpA$table
+plot_suivi_grpB$table
+
+```
+
+
