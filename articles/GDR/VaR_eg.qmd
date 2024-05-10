@@ -54,4 +54,43 @@ print(ts_close.head())
 
 # Test de stationarité du log-rendement
 
-Pour utiliser le log rendement comme variable profit et perte (PnL : Profit and Loss) pour impléter la VaR, nous devons tester sa stationarité.
+Pour utiliser le log rendement comme variable profit et perte (PnL : Profit and Loss) pour impléter la VaR, nous devons tester sa stationarité. En effet, la stationarité est une propriété importante des séries temporelles financières. Une série temporelle est dite stationnaire si ses propriétés statistiques telles que la moyenne, la variance et la covariance restent constantes au fil du temps.
+
+```{python}
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12, 12))
+
+fig, ax = plt.subplots(1)
+
+ax.set_xlabel('Date')
+ax.set_ylabel('historical log returns')
+ax.plot(ts_close.index, ts_close['log_return'], color='blue')
+ax.tick_params(axis='y')
+
+plt.title('Historical Log-returns of CAC40')
+plt.show()
+```
+
+Il semblerait que la série des rendements logarithmiques est stationnaire. Nous allons tout de même effectuer un test de stationarité pour confirmer cette hypothèse.
+
+```{python}
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+fig, ax = plt.subplots(1,2, figsize=(8, 4))
+plot_acf(ts_close['log_return'].dropna(), ax=ax[0],title='ACF')
+plot_pacf(ts_close['log_return'].dropna(), ax=ax[1],title='PACF')
+plt.show()
+```
+
+L'autocorrélation et l'autocorrélation partielle semblent être significatives pour les premières valeurs de la série. Nous allons effectuer un test de Dickey-Fuller augmenté (ADF) pour tester la stationarité de la série.
+
+
+```{python}
+from statsmodels.tsa.stattools import adfuller
+adf_result = adfuller(ts_close['log_return'].dropna(), regression='ct')
+print(f"ADF Statistic: {adf_result[0]}" and f"p-value: {adf_result[1]}")
+adf_result
+```
+
+La p-value est environ égale à 0, ce qui signifie que nous rejetons l'hypothèse nulle selon laquelle la série n'est pas stationnaire. Ainsi la série des log-rendements est stationnaire. Nous pouvons donc utiliser les rendements logarithmiques pour calculer la VaR.
+
+# Modélisation de la VaR
