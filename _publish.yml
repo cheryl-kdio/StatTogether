@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 92423f38-d8c5-4fd9-a235-9c5ea19196e8
+      url: 'https://cheryl-kdio.quarto.pub/stattogether'

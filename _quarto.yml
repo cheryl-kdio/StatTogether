@@ -6,37 +6,56 @@ execute:
   freeze: true 
 
 website:
-  title: "We Stat"
+  title: "StatTogether"
   favicon: "favicon.ico"
   back-to-top-navigation: true
   sidebar:
-    background: "#fff0f3"
+    background: "#bfc0c0"
     #logo: "favicon.ico"
     style: "docked"
     contents:
-      - section: "Projet 2A"
+      - section: "Ensai 2A"
         contents:
           - href: projets/LAL/lal.qmd
             text : Projet statistique
           - href : projets/app_supervise/Tp_Cheryl_Kouadio.Rmd
             text : Apprentissage supervisé
+          - href : projets/micro/micro_notes.qmd
+            text : Microénométrie
+          - href : projets/np_stat/np_stat_notes.qmd
+            text : Statistiques non paramétriques
           - section: "Séries temporelles"
             contents:
               - href : projets/TS/ts1.Rmd
                 text : Series temporelles 1
-      - section: "Projets 3A"
+      #- section: "Projets 3A"
+      - section: "Ensai 3A - Gestion des risques"
+        contents:
+          - href : articles/GDR/bilan_entreprise.qmd
+            text : "i - Le bilan d'entreprise"
+          - href : articles/GDR/resume_reglementation.qmd
+            text : ii - Les Accords de Bâle
+          - href : articles/GDR/risque_def.qmd
+            text : iii - Définition du risque
+          - section : "I - Le risque de marché"
+            contents:
+              - href : articles/GDR/reglementation_prudentielle.qmd
+                text : 1-La réglementation prudentielle
+              - href : articles/GDR/var.qmd
+                text : 2-La valeur en risque
+              - href : articles/GDR/VaR_def.qmd
+                text : 2.1 - Application VaR
       - section: "Articles"
         contents:
           - href : articles/ISR/ISR.qmd
             text : Investissement socialement responsable
-          - href : articles/Bourse/indice_boursier.qmd
-            text : Les indices boursiers
-
+          - href : articles/4-3-2/fluency.qmd
+            text : Improve Speaking Fluency
 
   navbar:
-    title: "We Stat"
+    title: "StatTogether"
     search: true
-    background: "#a4133c"
+    background: "#2d3142"
     right:
       - text: A propos
         href: about.qmd

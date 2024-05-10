@@ -1,0 +1,19 @@
+---
+title: "Cours de microéconométrie"
+sidebar: auto
+author:
+  - Cheryl Kouadio
+format: 
+  html:
+    fig-width: 6
+    fig-height: 4
+    fig-retina: 2
+bibliography: ../../references.bib
+---
+
+# Introduction
+
+Le document suivant est un résumé des cours de microéconométrie. Il regroupe toutes les méthodes enseignés au cours de Mr. Sun Yutec à l'Ensai pour la promotion 2024-2025 dont je fais parti.
+
+![](Courses.pdf){fig-align="center" width="1000" height="1000"}
+

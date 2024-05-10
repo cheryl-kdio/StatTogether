@@ -1,5 +1,4 @@
 ---
-title: "A propos"
 author : "Cheryl Kouadio"
 about:
   template: trestles
@@ -29,7 +28,7 @@ Compte tenu de cette orientation vers la gestion des risques, les contenus que j
 
 ce site web est conçu pour être une ressource ouverte à tous. Peu importe votre spécialisation ou votre année d'étude, vous êtes les bienvenus ici. Mon souhait est que "We Stat" devienne un lieu d'échange, d'apprentissage et de soutien pour tous les étudiants de l'ENSAI.
 
-Je vous souhaite la bienvenue sur We Stat et espère que vous trouverez les ressources partagées à la fois utiles et inspirantes dans votre parcours académique et professionnel.
+Je vous souhaite la bienvenue sur **StatTogether** et espère que vous trouverez les ressources partagées à la fois utiles et inspirantes dans votre parcours académique et professionnel.
 
 > #### ***`Let's stat !`***
 

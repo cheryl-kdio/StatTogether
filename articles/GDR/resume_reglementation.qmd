@@ -1,0 +1,31 @@
+---
+title: "Un bref résumé des règlementations financières"
+sidebar: auto
+author:
+  - Cheryl Kouadio
+categories: [finance, gdr]
+format: 
+  html:
+    fig-width: 6
+    fig-height: 4
+    fig-retina: 2
+bibliography: ../../references.bib
+---
+
+### L'importance des fonds propres dans l'activité bancaire.
+
+Dans le bilan simplifié, inspiré du modèle d'entreprise présenté dans la section [i- Le bilan d'entreprise](bilan_entreprise.qmd#sec-bilan-fonctionnel), la structure se divise en deux principales composantes : l'actif et le passif. L'actif regroupe les immobilisations de la banque, les crédits et prêts accordés aux ménages et aux entreprises, ainsi que les portefeuilles de titres, parmi d'autres éléments. Concernant le passif, il comprend les dépôts et les épargnes des ménages, les dettes, et surtout, les fonds propres ou capitaux propres.
+
+Les fonds propres sont cruciaux dans le passif d'une banque et se composent principalement d'actions ordinaires, de certificats d'investissement et de réserves de la banque. Ils jouent un triple rôle : ils favorisent la croissance, garantissent les activités de la banque (marquant ainsi la solidité bancaire), et constituent les ressources les plus onéreuses pour la couverture des risques. Ces fonds sont rémunérés via le ROE (Return on Equity), la banque s'efforçant de maximiser ce retour sur capitaux propres pour ses actionnaires, en minimisant les risques et en augmentant les profits.
+
+### Accords de Bâle I, II, III et IV : une évolution des régulations bancaires.
+
+Le comité de Bâle, en 1988, a instauré un ratio de solvabilité, le ratio Cooke, imposant aux banques de maintenir un minimum de 8% de fonds propres par rapport à leurs actifs pondérés en fonction des risques. Ce ratio a été remplacé en 2006 par le ratio McDonough dans le cadre des Accords de Bâle II (publiés en 2004), qui introduisaient une gestion des risques plus sophistiquée incluant les risques de crédit, de marché et opérationnels. Les principes de ces accords reposent sur trois piliers : le premier concerne les exigences minimales de fonds propres, le deuxième la surveillance prudentielle, et le troisième la transparence et la discipline de marché.
+
+Le premier pilier de Bâle II propose trois méthodes pour évaluer le risque de crédit : l'approche standard (Standard Approach, SA), l'approche fondée sur les notations internes (Internal Ratings-Based, IRB) et l'approche IRB avancée. L'approche standard, la plus simple, utilise des taux de pondération fixes définis par les régulateurs. L'approche IRB permet aux banques d'utiliser leurs propres évaluations des probabilités de défaillance (Probability of Default, PD), tandis que l'approche IRB avancée permet de modéliser des paramètres de risque de crédit plus détaillés tels que les taux de perte en cas de défaut (Loss Given Default, LGD) et l'exposition en cas de défaut (Exposure at Default, EAD).
+
+Pour le risque opérationnel, trois méthodes ont été introduites : l'approche de l'indicateur de base (Basic Indicator Approach, BIA), l'approche standardisée (Standardized Approach, TSA) et l'approche de mesure avancée (Advanced Measurement Approach, AMA). La méthode BIA est basique et repose sur un indicateur de charge en capital proposé par le comité de Bâle. La méthode TSA adapte la BIA en tenant compte de la nature des activités de la banque, et la méthode AMA permet aux banques de modéliser leurs propres paramètres de risque opérationnel.
+
+Avec l'essor des crises financières, comme celle de 2008, les régulations telles que Bâle III et Solvabilité II ont évolué pour renforcer les exigences en fonds propres et en liquidités. Le ratio de Bâle III, introduit en 2010, visait à améliorer la gestion des risques bancaires. Il comprenait un ratio de levier simple et un ratio de liquidité à court terme pour gérer des retraits massifs de dépôts. Bâle IV, publié en 2017, a poursuivi ces efforts en cherchant à standardiser et renforcer l'évaluation des risques pour accroître la stabilité financière. Bien qu'il continue sur la lignée de Bâle III, Bâle IV impacte significativement toutes les directions de banque, en particulier les directions des risques et financières, affectant le calcul des actifs pondérés par le risque (RWA) et l'évaluation du coût du capital et de l'impact sur les fonds propres.
+
+![Chronologie des accords de bâle](pictures/chronologie_reglementation.png){fig-align="center"}

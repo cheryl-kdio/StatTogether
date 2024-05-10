@@ -1,0 +1,652 @@
+---
+title: "partition"
+output: pdf_document
+date: "2024-03-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, set.seed("611"))
+```
+
+# Partition simple
+
+```{r}
+#setwd("~/Repositories/cherry-stats/projets/LAL")
+load("qaly.RData")
+library(dplyr)
+library(boot)
+library(survRM2)
+```
+
+```{r conversion}
+qaly$finctdt   <- apply(qaly[,c("C1dt","C2dt" , "C3dt" , "C4dt", "Inter1dt" )],1,max,na.rm=T)
+qaly$finct.dt <- as.Date(as.character(qaly$finctdt),format="%Y-%m-%d")
+
+```
+
+```{r calcul delais}
+qaly$suivi  <- as.numeric(qaly$Datemax-qaly$randodt)/(365.25/12)
+qaly$survie <- as.numeric(qaly$deathdt-qaly$randodt)/(365.25/12)
+qaly$delfinct <- as.numeric(qaly$finct.dt-qaly$randodt)/(365.25/12)
+qaly$delarr <- as.numeric(qaly$arrpremadt-qaly$randodt)/(365.25/12)
+qaly$delfinct[which(qaly$delfinct==0)]<- qaly$delarr[which(qaly$delfinct==0)]
+qaly$finct<- rep(1,length(qaly$delfinct))
+qaly$delrec<- as.numeric(qaly$relapsdt-qaly$randodt)/(365.25/12)
+qaly$delpfs<- qaly$suivi
+qaly$delpfs[!is.na(qaly$delrec)]<-qaly$delrec[!is.na(qaly$delrec)]
+qaly$delbmt <- as.numeric(qaly$bmtdt-qaly$randodt)/(365.25/12)
+qaly$delbmt1 <- as.numeric(qaly$cgvhdt-qaly$randodt)/(365.25/12)
+qaly$delbmt2 <- as.numeric(qaly$agvhdt-qaly$randodt)/(365.25/12)
+
+qaly$delfinct2 <- qaly$delfinct
+qaly$delfinct2[!is.na(qaly$delbmt)]<-pmax(qaly$delfinct[!is.na(qaly$delbmt)],qaly$delbmt[!is.na(qaly$delbmt)]) #add ,qaly$delbmt1[!is.na(qaly$delbmt1)],qaly$delbmt2[!is.na(qaly$delbmt2)]
+#It takes in account the complication ecountered after the transplant
+#finct
+qaly$finct2 <- qaly$finct
+qaly$finct2[!is.na(qaly$delbmt)]<-1
+```
+
+### Compute the survival curves for each arm
+
+```{r}
+library(survival)
+
+# Arm A
+ct_A  <- survfit(Surv(delfinct,finct)~1,data=qaly,subset = (R1 == "Intensive arm (A)")) # ct : Durée du traitement
+ct2_A  <- survfit(Surv(delfinct2,finct2)~1,data=qaly,subset = (R1 == "Intensive arm (A)")) #Durée du traitement avec complications
+sv_A  <- survfit(Surv(suivi,as.numeric(as.character(dc)))~1,data=qaly,subset = (R1 == "Intensive arm (A)")) # Durée de survie : Temps avant décès
+efs_A <- survfit(Surv(delpfs,as.numeric(as.character(pfs)))~1, data=qaly,subset = (R1 == "Intensive arm (A)")) # Durée de survie sans progression : Temps avant rechute 
+
+# Arm B
+ct_B  <- survfit(Surv(delfinct,finct)~1,data=qaly,subset = (R1 == "Light arm (B)"))
+ct2_B  <- survfit(Surv(delfinct2,finct2)~1,data=qaly,subset = (R1 == "Light arm (B)"))
+sv_B  <- survfit(Surv(suivi,as.numeric(as.character(dc)))~1,data=qaly,subset = (R1 == "Light arm (B)"))
+efs_B <- survfit(Surv(delpfs,as.numeric(as.character(pfs)))~1, data=qaly,subset = (R1 == "Light arm (B)"))
+
+
+```
+
+## Plot the survival curves for each arm
+
+```{r}
+ct<- survfit(Surv(delfinct,finct)~R1,data=qaly)
+plot(ct)
+
+survdiff(Surv(delfinct,finct)~R1,data=qaly)
+```
+
+### Bras A
+
+```{r }
+#fig.width=6, fig.height=5.5 => use later for website
+
+fit1<-list(CT = ct_A, CT2=ct2_A,SV=sv_A, EFS=efs_A)
+library(survminer)
+library(gridExtra)
+colors <- c("#A31621", "#053C5E", "#F3A712", "#1F7A8C", "#AFB3F7")
+
+t<-ggsurvplot_combine(fit1,
+          risk.table = TRUE,                  # Add risk table
+   xlab = "Time in days",   # customize X axis label.
+   ggtheme = theme_light(), # customize plot and risk table with a therme.
+ risk.table.y.text.col = T, # colour risk table text annotations.
+  risk.table.y.text = FALSE,
+  legend.labs = c("CT","CT2","SV","EFS"))
+
+sv_plot_A <- ggsurvplot(sv_A, risk.table = TRUE,
+                      ggtheme = theme_light(),
+                      # tables.theme = theme(
+                      #   axis.text.x = element_blank(),  # Hide x-axis text
+                      #   axis.ticks.x = element_blank(), # Hide x-axis ticks
+                      #   axis.title.x = element_blank()  # Optionally, hide the x-axis title as well
+                      # ),
+                      risk.table.y.text.col = TRUE,
+                      risk.table.y.text = FALSE,
+                      palette = colors[2])  
+
+library(dplyr)
+library(gt)
+library(gtsummary)
+library(ks)
+library(tidyr)
+library(survival)
+library(ggplot2)
+library(ggsurvfit)
+
+
+df<-t$plot$data
+surv_A<-df %>% mutate(strata = sub("x=", "", strata)) %>%
+  group_by(strata) %>%
+  summarise(time = c(time - 0.001, time),
+            surv = c(1, head(surv, -1), surv),
+            .groups = "drop") %>%
+  arrange(time) %>%
+  pivot_wider(names_from = "strata", values_from = "surv") %>%
+  fill(1:5, .direction = "downup") %>%
+  ggplot(aes(time, CT)) +
+  geom_step(aes(linetype = "CT")) +
+  geom_ribbon(aes(ymin = 0, ymax = CT, fill = "TOX1"),alpha=0.5)+
+  geom_step(aes(y = CT2, linetype = "CT2"),linewidth=0.9, colour="#0077b6") +
+  geom_ribbon(aes(ymin = CT, ymax = CT2, fill = "TOX2"),alpha=0.5) +
+  geom_step(aes(y = EFS,linetype = "EFS"),linewidth=0.9, colour="#48cae4") +
+  geom_ribbon(aes(ymin = CT2, ymax = EFS, fill = "TWiST"),alpha=0.5)+
+  geom_step(aes(y = SV,linetype = "SV"),linewidth=0.9, colour="#caf0f8")+
+  geom_ribbon(aes(ymin = EFS, ymax = SV, fill = "REL"),alpha=0.5)+
+  scale_fill_manual(values = c("TOX1" = "#03045e", "TOX2" = "#0077b6", "TWiST" = "#48cae4", "REL" = "#caf0f8")) +
+  labs(x = "Time", y = "Survival Probability", linetype = "Duration", fill = "Events") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+combined_plot <- grid.arrange(surv_A, sv_plot_A$table, ncol = 1,heights = c(6, 2))
+
+```
+
+#### Partition 1
+
+```{r}
+library(survminer)
+library(survival)
+library(gridExtra) # or library(patchwork)
+
+# Assuming ct, sv, and efs are survival objects
+fit1 <- list(CT = ct_A, SV = sv_A, EFS = efs_A)
+
+# custom color palette for CT, SV, EFS
+colors <- c("#A31621", "#053C5E", "#F3A712", "#1F7A8C", "#AFB3F7")
+
+# Step 1: Generate the Combined Survival Plot without a risk table
+surv1_A <- ggsurvplot_combine(fit1,
+                        risk.table = FALSE,  # Disable risk table here
+                        xlab = "Time in days",
+                        ggtheme = theme_light(),
+                        legend.labs = c("CT","SV","EFS"),
+                        palette=colors,
+                        title="Bras A")
+
+# Step 2: Generate a Separate Risk Table for "SV"
+# Note: This assumes 'sv' is a fit object from survival analysis.
+# If 'sv' is not directly usable, you might need to recreate the survival analysis for SV.
+sv_plot_A <- ggsurvplot(sv_A, risk.table = TRUE,
+                      ggtheme = theme_light(),
+                      # tables.theme = theme(
+                      #   axis.text.x = element_blank(),  # Hide x-axis text
+                      #   axis.ticks.x = element_blank(), # Hide x-axis ticks
+                      #   axis.title.x = element_blank()  # Optionally, hide the x-axis title as well
+                      # ),
+                      risk.table.y.text.col = TRUE,
+                      risk.table.y.text = FALSE,
+                      palette = colors[2])  # Adjust 'colors[2]' as per your color setup
+
+
+# Step 3: Combine the Plot and the Risk Table Manually
+# Option 1: Using gridExtra
+combined_plot <- grid.arrange(surv1_A$plot, sv_plot_A$table, ncol = 1,heights = c(6, 2))
+
+# Or Option 2: Using patchwork (Uncomment to use)
+# combined_plot <- g$plot / sv_plot$table
+
+# Print or save the combined plot
+print(combined_plot)
+
+```
+
+#### Partition 2
+
+```{r}
+library(survminer)
+library(survival)
+library(gridExtra) # or library(patchwork)
+
+# Assuming ct, sv, and efs are survival objects
+fit2 <- list(CT = ct_A, SV = sv_A, EFS = efs_A, CT2 = ct2_A)
+
+# custom color palette for CT, SV, EFS
+colors <- c("#A31621", "#053C5E", "#F3A712", "#1F7A8C", "#AFB3F7")
+
+# Step 1: Generate the Combined Survival Plot without a risk table
+surv2_A <- ggsurvplot_combine(fit2,
+                        risk.table = FALSE,  # Disable risk table here
+                        xlab = "Time in days",
+                        ggtheme = theme_light(),
+                        legend.labs = c("CT","SV","EFS","CT2"),
+                        palette=colors,
+                        title="Bras A")
+
+
+
+# Step 3: Combine the Plot and the Risk Table Manually
+# Option 1: Using gridExtra
+combined_plot <- grid.arrange(surv2_A$plot, sv_plot_A$table, ncol = 1,heights = c(6, 2))
+
+# Print or save the combined plot
+print(combined_plot)
+
+```
+
+```{r fig.width=6, fig.height=5.5}
+# fit2<-list(CT = ct, CT2 = ct2, SV=sv, EFS=efs)
+# library(survminer)
+# t<-ggsurvplot_combine(fit,
+#           risk.table = TRUE,                  # Add risk table
+#    xlab = "Time in days",   # customize X axis label.
+#    ggtheme = theme_light(), # customize plot and risk table with a therme.
+#  risk.table.y.text.col = T, # colour risk table text annotations.
+#   risk.table.y.text = FALSE,
+#   legend.labs = c("CT", "CT2","SV","EFS"))
+# t
+```
+
+### Bras B
+
+#### Partition 1
+
+```{r}
+library(survminer)
+library(survival)
+library(gridExtra) # or library(patchwork)
+
+# Assuming ct, sv, and efs are survival objects
+fit1 <- list(CT = ct_B, SV = sv_B, EFS = efs_B)
+
+# custom color palette for CT, SV, EFS
+colors <- c("#A31621", "#053C5E", "#F3A712", "#1F7A8C", "#AFB3F7")
+
+# Step 1: Generate the Combined Survival Plot without a risk table
+surv1_B <- ggsurvplot_combine(fit1,
+                        risk.table = FALSE,  # Disable risk table here
+                        xlab = "Time in days",
+                        ggtheme = theme_light(),
+                        legend.labs = c("CT","SV","EFS"),
+                        palette=colors,
+                        title="Bras B")
+
+# Step 2: Generate a Separate Risk Table for "SV"
+# Note: This assumes 'sv' is a fit object from survival analysis.
+# If 'sv' is not directly usable, you might need to recreate the survival analysis for SV.
+sv_plot_B <- ggsurvplot(sv_B, risk.table = TRUE,
+                      ggtheme = theme_light(),
+                      # tables.theme = theme(
+                      #   axis.text.x = element_blank(),  # Hide x-axis text
+                      #   axis.ticks.x = element_blank(), # Hide x-axis ticks
+                      #   axis.title.x = element_blank()  # Optionally, hide the x-axis title as well
+                      # ),
+                      risk.table.y.text.col = TRUE,
+                      risk.table.y.text = FALSE,
+                      palette = colors[2])  # Adjust 'colors[2]' as per your color setup
+
+
+# Step 3: Combine the Plot and the Risk Table Manually
+# Option 1: Using gridExtra
+combined_plot <- grid.arrange(surv1_B$plot, sv_plot_B$table, ncol = 1,heights = c(6, 2))
+
+# Or Option 2: Using patchwork (Uncomment to use)
+# combined_plot <- g$plot / sv_plot$table
+
+# Print or save the combined plot
+print(combined_plot)
+
+```
+
+#### Partition 2
+
+```{r}
+library(survminer)
+library(survival)
+library(gridExtra) # or library(patchwork)
+
+# Assuming ct, sv, and efs are survival objects
+fit2 <- list(CT = ct_B, SV = sv_B, EFS = efs_B, CT2 = ct2_B)
+
+# custom color palette for CT, SV, EFS
+colors <- c("#A31621", "#053C5E", "#F3A712", "#1F7A8C", "#AFB3F7")
+
+# Step 1: Generate the Combined Survival Plot without a risk table
+surv2_B <- ggsurvplot_combine(fit2,
+                        risk.table = FALSE,  # Disable risk table here
+                        xlab = "Time in days",
+                        ggtheme = theme_light(),
+                        legend.labs = c("CT","SV","EFS","CT2"),
+                        palette=colors,
+                        title="Bras B")
+
+
+
+# Step 3: Combine the Plot and the Risk Table Manually
+# Option 1: Using gridExtra
+combined_plot <- grid.arrange(surv2_B$plot, sv_plot_B$table, ncol = 1,heights = c(6, 2))
+
+# Print or save the combined plot
+print(combined_plot)
+
+```
+
+# RMST
+
+## Computing rmst for each arm
+
+```{r rmst_computing}
+# Charger les packages nécessaires
+library(survival)
+library(survRM2) # Assurez-vous que le package rmst2 est installé pour accéder à cette fonction
+library(boot)
+
+### 0 = Int arm A, 1 = Light arm B
+t_censure <- 60#min(64.3285421,60.9774127) # 20% de censure
+
+# For ct_rmst
+ct_rmst<-rmst2(qaly$delfinct, qaly$finct, as.factor(as.numeric(qaly$R1)-1), covariates = NULL, alpha = 0.05)
+
+ct_rmstB<-ct_rmst$RMST.arm1$rmst[1]
+ct_rmstA<-ct_rmst$RMST.arm0$rmst[1]
+
+# For ct2_rmst
+ct2_rmst<-rmst2(qaly$delfinct2, qaly$finct2, as.factor(as.numeric(qaly$R1)-1), covariates = NULL, alpha = 0.05)
+ct2_rmstB <- ct2_rmst$RMST.arm1$rmst[1]  # Assuming arm1 corresponds to arm B
+ct2_rmstA <- ct2_rmst$RMST.arm0$rmst[1]  # Assuming arm0 corresponds to arm A
+
+# For sv_rmst
+sv_rmst<-rmst2(qaly$suivi, as.numeric(as.character(qaly$dc)), as.factor(as.numeric(qaly$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+sv_rmstB <- sv_rmst$RMST.arm1$rmst[1]
+sv_rmstA <- sv_rmst$RMST.arm0$rmst[1]
+
+# For efs_rmst
+efs_rmst<-rmst2(qaly$delpfs, as.numeric(as.character(qaly$pfs)), as.factor(as.numeric(qaly$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+efs_rmstB <- efs_rmst$RMST.arm1$rmst[1]
+efs_rmstA <- efs_rmst$RMST.arm0$rmst[1]
+
+# Calculer TOX, TWiST, et REL en utilisant les RMST calculés
+tox1_A = ct_rmstA
+tox2_A = ct2_rmstA
+twist1_A = efs_rmstA - ct_rmstA
+twist2_A= efs_rmstA - ct2_rmstA
+rel_A = sv_rmstA - efs_rmstA
+
+
+# Calculer TOX, TWiST, et REL en utilisant les RMST calculés
+tox1_B = ct_rmstB
+tox2_B = ct2_rmstB
+twist1_B = efs_rmstB - ct_rmstB
+twist2_B= efs_rmstB - ct2_rmstB
+rel_B = sv_rmstB - efs_rmstB
+```
+
+#### Boostrapping
+
+##### TOX/TWISt/REL & their differences between group
+
+```{r}
+# Fonction pour calculer les RMST sur un échantillon bootstrapé
+
+calculate_rmst <- function(data, indices, uTWiST, uTOX, uREL, t_censure) {
+  sampled_data <- data[indices, ]
+  
+  # Calculer les RMST pour chaque bras et chaque étape
+  ct_rmst <- rmst2(sampled_data$delfinct, sampled_data$finct, as.factor(as.numeric(sampled_data$R1)-1), covariates = NULL, alpha = 0.05)
+  ct_rmstB <- ct_rmst$RMST.arm1$rmst[1]
+  ct_rmstA <- ct_rmst$RMST.arm0$rmst[1]
+  
+  ct2_rmst <- rmst2(sampled_data$delfinct2, sampled_data$finct2, as.factor(as.numeric(sampled_data$R1)-1), covariates = NULL, alpha = 0.05)
+  ct2_rmstB <- ct2_rmst$RMST.arm1$rmst[1]
+  ct2_rmstA <- ct2_rmst$RMST.arm0$rmst[1]
+  
+  sv_rmst <- rmst2(sampled_data$suivi, as.numeric(as.character(sampled_data$dc)), as.factor(as.numeric(sampled_data$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  sv_rmstB <- sv_rmst$RMST.arm1$rmst[1]
+  sv_rmstA <- sv_rmst$RMST.arm0$rmst[1]
+  
+  efs_rmst <- rmst2(sampled_data$delpfs, as.numeric(as.character(sampled_data$pfs)), as.factor(as.numeric(sampled_data$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  efs_rmstB <- efs_rmst$RMST.arm1$rmst[1]
+  efs_rmstA <- efs_rmst$RMST.arm0$rmst[1]
+  
+  # Calculer les tox, twists et rels pour chaque bras et chaque étape
+  tox1_A <- ct_rmstA
+  tox2_A <- ct2_rmstA
+  twist1_A <- efs_rmstA - ct_rmstA
+  twist2_A <- efs_rmstA - ct2_rmstA
+  rel_A <- sv_rmstA - efs_rmstA
+  
+  tox1_B <- ct_rmstB
+  tox2_B <- ct2_rmstB
+  twist1_B <- efs_rmstB - ct_rmstB
+  twist2_B <- efs_rmstB - ct2_rmstB
+  rel_B <- sv_rmstB - efs_rmstB
+  
+  # Calculer les différences entre les bras
+  tox1_diff <- tox1_A - tox1_B
+  tox2_diff <- tox2_A - tox2_B
+  twist1_diff <- twist1_A - twist1_B
+  twist2_diff <- twist2_A - twist2_B
+  rel_diff <- rel_A - rel_B
+  
+  # Calculer QTWiST pour chaque partition
+  q_twist1_A <- (uTOX * tox1_A) + (uTWiST * twist1_A) + (uREL * rel_A)
+  q_twist1_B <- (uTOX * tox1_B) + (uTWiST * twist1_B) + (uREL * rel_B)
+  q_twist1_diff <- q_twist1_A - q_twist1_B
+  
+  q_twist2_A <- (uTOX * (tox1_A + tox2_A)) + (uTWiST * (twist1_A + twist2_A)) + (uREL * rel_A)
+  q_twist2_B <- (uTOX * (tox1_B + tox2_B)) + (uTWiST * (twist1_B + twist2_B)) + (uREL * rel_A)
+  q_twist2_diff <- q_twist2_A - q_twist2_B
+  
+  # Retourner les résultats
+  return(c("TOX1 A" = tox1_A, "TOX2 A" = tox2_A, "TWiST1 A" = twist1_A, "TWiST2 A" = twist2_A, "REL A" = rel_A, 
+            "TOX1 B" = tox1_B, "TOX2 B" = tox2_B, "TWiST1 B" = twist1_B, "TWiST2 B" = twist2_B, "REL B" = rel_B, 
+            "TOX1diff" = tox1_diff, "TOX2 diff" = tox2_diff, "TWiST1 diff" = twist1_diff, "twist2_diff" = twist2_diff, 
+            "REL diff" = rel_diff,"q_TWiST1 A" = q_twist1_A, "q_TWiST1 B" = q_twist1_B, "q_TWiST1 diff" = q_twist1_diff, 
+            "q_TWiST2 A" = q_twist2_A, "q_TWiST2 B" = q_twist2_B, "q_TWiST2 diff" = q_twist2_diff))}
+
+# Appliquer le bootstrap sur le dataset 'qaly'
+t_censure <- min(64.3285421, 60.9774127) # 20% de censure
+qaly_cens<-qaly %>% select(delfinct, finct, delfinct2, finct2, suivi, dc, delpfs, pfs, R1)
+bootstrap_results1 <- censboot(qaly_cens, calculate_rmst, R = 1000, uTWiST = 1, uTOX = 0.5, uREL = 0.5, t_censure = t_censure)
+
+boot_summary<-summary(bootstrap_results1) %>% as.data.frame() 
+rownames(boot_summary) <- names(bootstrap_results1$t0)
+```
+
+### Threshold analysis for Q-TWIST diff with computed var-cov
+
+```{r boot1}
+resultsboot<-as.data.frame(bootstrap_results1$t) %>%
+  select("V1", "V3", "V5", "V6", "V8", "V10","V11","V13","V15") %>%
+  rename(toxA = "V1", twistA = "V3", relA = "V5", toxB = "V6", twistB = "V8", relB = "V10",toxDiff="V11", twistDiff="V13", relDiff="V15")
+
+# Attention, nous ne trouvons pas les mêmes var covariances pour les différences de qtwist
+var(resultsboot$toxDiff)
+var(resultsboot$twistDiff)
+var(resultsboot$relDiff)
+
+cov(resultsboot$toxDiff, resultsboot$twistDiff)
+cov(resultsboot$toxDiff, resultsboot$relDiff)
+cov(resultsboot$twistDiff, resultsboot$relDiff)
+```
+
+```{r}
+variance_QTwist <- function(U_TOX, U_REL, Var_TOX, Var_TWIST, Var_REL, Cov_TOX_TWIST, Cov_TOX_REL, Cov_TWIST_REL) {
+  variance <- (U_TOX^2) * Var_TOX + Var_TWIST + (U_REL^2) * Var_REL
+  variance <- variance + 2* (U_TOX * Cov_TOX_TWIST + U_TOX * U_REL * Cov_TOX_REL + U_REL * Cov_TWIST_REL)
+  return(variance)
+}
+
+# Matrice de variance-covariance des estimateurs bootstrappés
+
+# Var_TOX <- var(resultsdiff$toxDiff)
+# Var_TWIST <- var(resultsdiff$twistDiff)
+# Var_REL <- var(resultsdiff$relDiff)
+# Cov_TOX_TWIST <- cov(resultsdiff$toxDiff, resultsdiff$twistDiff)
+# Cov_TOX_REL <- cov(resultsdiff$toxDiff, resultsdiff$relDiff)
+# Cov_TWIST_REL <- cov(resultsdiff$twistDiff, resultsdiff$relDiff)
+
+Var_TOX <- 0.175**2
+Var_TWIST <- 3.73**2
+Var_REL <- 2.06**2
+Cov_TOX_TWIST <- 2.84e-2 
+Cov_TOX_REL <- -1.82e-2
+Cov_TWIST_REL <- -0.55
+
+
+# QTWiST
+
+results <- data.frame(uTOX=numeric(), uREL=numeric(), QTWiST1_Diff=numeric(), Lower=numeric(), Upper=numeric())
+uTWiST=1
+for (uTOX in seq(0, 1, by=0.25)) {
+  for (uREL in seq(0, 1, by=0.25)) {
+    
+  # Calculer les RMST pour chaque bras et chaque étape
+  ct_rmst <- rmst2(qaly$delfinct, qaly$finct, as.factor(as.numeric(qaly$R1)-1), covariates = NULL, alpha = 0.05)
+  ct_rmstB <- ct_rmst$RMST.arm1$rmst[1]
+  ct_rmstA <- ct_rmst$RMST.arm0$rmst[1]
+  
+  # ct2_rmst <- rmst2(qaly$delfinct2, qaly$finct2, as.factor(as.numeric(qaly$R1)-1), covariates = NULL, alpha = 0.05)
+  # ct2_rmstB <- ct2_rmst$RMST.arm1$rmst[1]
+  # ct2_rmstA <- ct2_rmst$RMST.arm0$rmst[1]
+  
+  sv_rmst <- rmst2(qaly$suivi, as.numeric(as.character(qaly$dc)), as.factor(as.numeric(qaly$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  sv_rmstB <- sv_rmst$RMST.arm1$rmst[1]
+  sv_rmstA <- sv_rmst$RMST.arm0$rmst[1]
+  
+  efs_rmst <- rmst2(qaly$delpfs, as.numeric(as.character(qaly$pfs)), as.factor(as.numeric(qaly$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  efs_rmstB <- efs_rmst$RMST.arm1$rmst[1]
+  efs_rmstA <- efs_rmst$RMST.arm0$rmst[1]
+  
+  # Calculer les tox, twists et rels pour chaque bras et chaque étape
+  tox1_A <- ct_rmstA
+  twist1_A <- efs_rmstA - ct_rmstA
+  rel_A <- sv_rmstA - efs_rmstA
+  
+  tox1_B <- ct_rmstB
+  twist1_B <- efs_rmstB - ct_rmstB
+  rel_B <- sv_rmstB - efs_rmstB
+  
+  # Calculer les différences entre les bras
+  tox1_diff <- tox1_A - tox1_B
+  twist1_diff <- twist1_A - twist1_B
+  rel_diff <- rel_A - rel_B
+  
+  # Calculer QTWiST pour chaque partition
+  q_twist1_A <- (uTOX * tox1_A) + (uTWiST * twist1_A) + (uREL * rel_A)
+  q_twist1_B <- (uTOX * tox1_B) + (uTWiST * twist1_B) + (uREL * rel_B)
+  q_twist1_diff <- q_twist1_A - q_twist1_B
+  
+  variance_qTwist <- variance_QTwist(uTOX, uREL, Var_TOX, Var_TWIST, Var_REL, Cov_TOX_TWIST, Cov_TOX_REL, Cov_TWIST_REL)
+  ic_qTwist_inf <- q_twist1_diff - 1.96*sqrt(variance_qTwist)
+  ic_qTwist_sup<-q_twist1_diff + 1.96*sqrt(variance_qTwist)
+  
+      # Ajouter les résultats dans le dataframe
+  results <- rbind(results, data.frame(
+      uTOX=uTOX, 
+      uREL=uREL, 
+      QTWiST1_Diff=q_twist1_diff, 
+      Lower=ic_qTwist_inf, # Lower CI
+      Upper=ic_qTwist_sup  # Upper CI
+    ))
+  }
+}
+```
+
+```{r}
+# Filtrer les résultats où l'intervalle de confiance contient 0
+diff_null <- results %>% filter(Lower <= 0, Upper >= 0) 
+
+# Tracer le graphique en utilisant uTOX sur l'axe x et QTWiST1_Diff sur l'axe y, et uREL en tant que couleur
+plot(diff_null$uTOX, diff_null$QTWiST1_Diff, pch = 19, col = "red", xlab = "uTOX", ylab = "QTWiST1_Diff", main = "Confidence interval contains 0")
+# Ajouter uREL comme troisième axe
+points(diff_null$QTWiST1_Diff, diff_null$uTOX, pch = 19, col = "blue")
+# Légende
+legend("bottomright", legend = c("QTWiST1_Diff", "uREL"), col = c("red", "blue"), pch = 19)
+
+
+# library(ggplot2)
+# # Créer le graphique
+# ggplot(diff_null, aes(x = uTOX, y = uREL)) +
+#   geom_point() + 
+#   scale_x_continuous(name = "Utility coefficient after relapse (μ_REL)", limits = c(0, 1)) +
+#   scale_y_continuous(name = "Utility coefficient for toxicity (μ_TOX)", limits = c(0, 1)) +
+#   geom_abline(diffQTWiST1_Diff, linetype = "dashed")
+```
+
+### Threshold analysis for Q-TWIST diff with bootstrapp var-cov
+
+```{r}
+delta_qtwist <- function(data, indices, uTWiST, uTOX, uREL, t_censure) {
+  sampled_data <- data[indices, ]
+  
+  # Calculer les RMST pour chaque bras et chaque étape
+  ct_rmst <- rmst2(sampled_data$delfinct, sampled_data$finct, as.factor(as.numeric(sampled_data$R1)-1), covariates = NULL, alpha = 0.05)
+  ct_rmstB <- ct_rmst$RMST.arm1$rmst[1]
+  ct_rmstA <- ct_rmst$RMST.arm0$rmst[1]
+  
+  # ct2_rmst <- rmst2(sampled_data$delfinct2, sampled_data$finct2, as.factor(as.numeric(sampled_data$R1)-1), covariates = NULL, alpha = 0.05)
+  # ct2_rmstB <- ct2_rmst$RMST.arm1$rmst[1]
+  # ct2_rmstA <- ct2_rmst$RMST.arm0$rmst[1]
+  
+  sv_rmst <- rmst2(sampled_data$suivi, as.numeric(as.character(sampled_data$dc)), as.factor(as.numeric(sampled_data$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  sv_rmstB <- sv_rmst$RMST.arm1$rmst[1]
+  sv_rmstA <- sv_rmst$RMST.arm0$rmst[1]
+  
+  efs_rmst <- rmst2(sampled_data$delpfs, as.numeric(as.character(sampled_data$pfs)), as.factor(as.numeric(sampled_data$R1)-1), tau = t_censure, covariates = NULL, alpha = 0.05)
+  efs_rmstB <- efs_rmst$RMST.arm1$rmst[1]
+  efs_rmstA <- efs_rmst$RMST.arm0$rmst[1]
+  
+  # Calculer les tox, twists et rels pour chaque bras et chaque étape
+  tox1_A <- ct_rmstA
+  twist1_A <- efs_rmstA - ct_rmstA
+  rel_A <- sv_rmstA - efs_rmstA
+  
+  tox1_B <- ct_rmstB
+  twist1_B <- efs_rmstB - ct_rmstB
+  rel_B <- sv_rmstB - efs_rmstB
+  
+  # Calculer les différences entre les bras
+  tox1_diff <- tox1_A - tox1_B
+  twist1_diff <- twist1_A - twist1_B
+  rel_diff <- rel_A - rel_B
+  
+  # Calculer QTWiST pour chaque partition
+  q_twist1_A <- (uTOX * tox1_A) + (uTWiST * twist1_A) + (uREL * rel_A)
+  q_twist1_B <- (uTOX * tox1_B) + (uTWiST * twist1_B) + (uREL * rel_B)
+  q_twist1_diff <- q_twist1_A - q_twist1_B
+  
+  
+  # Retourner les résultats
+  return("q_TWiST1 diff" = q_twist1_diff)}
+
+
+# delta_qtwist_boot <- censboot(qaly_cens, delta_qtwist, R = 1000, uTWiST = 1, uTOX = 0.5, uREL = 0.5, t_censure = t_censure)
+# boot.ci(delta_qtwist_boot,type="norm")$normal
+library(boot)
+# QTWiST
+results1 <- data.frame(uTOX=numeric(), uREL=numeric(), QTWiST1_Diff=numeric(), Lower=numeric(), Upper=numeric())
+
+for (uTOX in seq(0, 1, by=0.25)) {
+  for (uREL in seq(0, 1, by=0.25)) {
+    # Bootstrap analysis
+    delta_qtwist_boot <- censboot(qaly_cens, delta_qtwist, R = 1000, uTWiST = uTWiST, uTOX = uTOX, uREL = uREL, t_censure = t_censure)
+    boot_results <- boot.ci(delta_qtwist_boot, type="norm")
+    boot_results$normal[2]
+    # Ajouter les résultats dans le dataframe
+results1 <- rbind(results1, data.frame(
+      uTOX=uTOX, 
+      uREL=uREL, 
+      QTWiST1_Diff=q_twist1_diff, 
+      Lower=boot_results$normal[2], # Lower CI
+      Upper=boot_results$normal[3]  # Upper CI
+))
+    }
+}
+
+sum(!is.na(qaly$relapsdt))
+
+
+```
+
+## Export results in latex
+
+```{r}
+if (!require("xtable")) install.packages("xtable")
+library(xtable)
+
+rownames(results)
+print(xtable(results), type = "latex", include.rownames = FALSE)
+# # %>% 
+#   as_gt()%>% 
+#   gtsave("name.text")
+```

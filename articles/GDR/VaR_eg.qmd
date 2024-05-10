@@ -1,0 +1,57 @@
+---
+title: "Application de la VaR"
+sidebar: auto
+author:
+  - Cheryl Kouadio
+categories: [risque, finance, gdr]
+bibliography: ../../references.bib
+---
+
+# Introduction
+
+Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes potentielles d'un portefeuille d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def))
+
+# Import des données
+
+Nous utilisons les données du cac 40 du 01/03/1990 au 10/05/2024. Le CAC 40 (Cotation Assistée en Continu) est l'indice boursier le plus important de la Bourse de Paris. Son nom signifie que c'est un indice composé des 40 sociétés françaises les plus significatives et les plus liquides cotées sur Euronext Paris, qui est l'une des principales places boursières en Europe.
+
+```{python}
+# Librairie où importer les données
+import yfinance as yf
+
+cac_40 = yf.Ticker("^FCHI")
+ts_data = cac_40.history("max")
+ts_data.index = ts_data.index.strftime('%Y-%m-%d')
+ts_data.columns
+```
+
+Nous  nous interesserons plus particulièrement au prix de la clôture, c'est à dire, le prix final de l'indice à la fin de la session de trading sur Euronext Paris, qui est la bourse où l'indice est coté. Celà reflète l'impact des nouvelles économiques, des performances des entreprises comprises dans l'indice, et des mouvements généraux du marché.
+
+Dans notre cas, nous l'utiliserons pour calculer le rendement logarithmique.
+Le rendement logarithmique est le logarithme naturel du rapport entre le prix final et le prix initial d'un actif. Voici la formule mathématique :
+
+$$ R_{\text{log}} = \ln\left(\frac{P_{\text{fin}}}{P_{\text{début}}}\right) $$
+
+où :
+- $R_{\text{log}}$ est le rendement logarithmique,
+- $\ln$ représente le logarithme naturel,
+- $P_{\text{fin}}$ est la valeur de clôture de l'actif à la fin de la période,
+- $P_{\text{début}}$ est la valeur de clôture de l'actif au début de la période.
+
+```{python}
+ts_close = ts_data[[ 'Close']]
+import pandas as pd
+import numpy as np
+
+#Nbre de NA
+ts_close.isna().sum()
+
+ts_close['log_return'] = np.log(ts_close['Close'] / ts_close['Close'].shift(1))
+ts_close = ts_close.dropna(subset=['log_return'])
+print(ts_close.head())
+```
+
+
+# Test de stationarité du log-rendement
+
+Pour utiliser le log rendement comme variable profit et perte (PnL : Profit and Loss) pour impléter la VaR, nous devons tester sa stationarité.

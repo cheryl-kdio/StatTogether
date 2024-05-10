@@ -1,0 +1,14 @@
+---
+title: "Notes de statistique non paramétrique"
+sidebar: auto
+author:
+  - Cheryl Kouadio
+format: 
+  html:
+    fig-width: 6
+    fig-height: 4
+    fig-retina: 2
+bibliography: ../../references.bib
+---
+
+![](np%20stat%20notes.pdf){fig-align="center" width="1000" height="1000"}

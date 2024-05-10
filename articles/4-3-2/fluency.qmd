@@ -1,0 +1,44 @@
+---
+title: "Improve Speaking Fluency"
+sidebar: auto
+date: "2024-04-03"
+author:
+ - Cheryl Kouadio
+categories: [Anglais]
+format:
+  html:
+    fig-width: 6
+    fig-height: 4
+    fig-retina: 2
+bibliography: ../../references.bib
+---
+
+![Créateur : Romain Vignes ; Droits d'auteur : © Romain Vignes](fluency_illust.jpg){fig-align="center" width="311"}
+
+###### 
+
+This article goal is to provide a brief summary of the article "Improving Speaking Fluency" by Paul Nation written in 1989.
+
+His paper analyses the improvement of learners of English using the 4-3-2 method, secribed by Maurice (1983), which consists of 3 time lapses during which the participants have to talk about a particular topic. This method is a way to bring about long-term improvement in English fluency.
+
+### What is Fluency
+
+For Filmore (1979), Fluency is the ability to fill time with talk... a person who is fluent in this way does not have to stop many times to think of what t say next or how to phrase it". Hence, fluency is the ability to speak without hesitation, repetition, or self-correction.
+
+Brumfit (1984) sees fluency, rather, as the maximally effective operation of the language system so far acquired by the learner. To rephrase it, fluency is the ability to use the language system effectively as one may do for his mothertongue for example.
+
+### What is required to be fluent
+
+To develop fluency, one should focus on the message he wants to give. The speaker should not be worried, in a first time, about the grammatical accuracy of his speech. He should try to integrate encountered language itemps into an easily accessed, largely unconscious, language system. This is the result of focussing on the communication of the message.
+
+### The 4/3/2 technique
+
+The 4/3/2 technique integrated all the previous requirements. It is a way to help learners to develop fluency by giving them the opportunity to speak about a topic for a longer period of time. The technique is based on the idea that the more one speaks, the more he will be able to speak.
+
+It has three important step :
+
+-   4 minutes: the speaker talks about a topic for 4 minutes
+-   3 minutes: the speaker talks about the same topic for 3 minutes (if possible to another person)
+-   2 minutes: the speaker talks about the same topic for 2 minutes (if possible to another person)
+
+The efficiency of this method is based on the fact that the speaker has to talk about the same topic for a longer period of time. This allows him to develop his fluency and to integrate language items into his language system. Also, the fact that the speaker has to talk to different people during the 3 steps allows him to develop his fluency in different contexts but also reduce hesitation, false start and gain confidence.
