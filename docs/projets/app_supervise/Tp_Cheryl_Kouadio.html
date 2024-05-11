@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.554">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cheryl Kouadio">
+
+<title>StatTogether - Tp noté - Apprentissage supervisé 2A</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">StatTogether</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">A propos</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/cheryl-kouadio-251815206/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/cheryl-kdio">
+ <span class="dropdown-text">Profile</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://code.com">
+ <span class="dropdown-text">Source Code</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://bugs.com">
+ <span class="dropdown-text">Report a Bug</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../projets/LAL/lal.html">Ensai 2A</a></li><li class="breadcrumb-item"><a href="../../projets/app_supervise/Tp_Cheryl_Kouadio.html">Apprentissage supervisé</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Ensai 2A</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projets/LAL/lal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Projet statistique</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projets/app_supervise/Tp_Cheryl_Kouadio.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Apprentissage supervisé</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projets/micro/micro_notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microénométrie</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projets/np_stat/np_stat_notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistiques non paramétriques</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">Séries temporelles</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projets/TS/ts1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Series temporelles 1</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Ensai 3A - Gestion des risques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/bilan_entreprise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">i - Le bilan d’entreprise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/resume_reglementation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ii - Les Accords de Bâle</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/risque_def.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">iii - Définition du risque</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">I - Le risque de marché</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/reglementation_prudentielle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1-La réglementation prudentielle</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/var.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2-La valeur en risque</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/GDR/VaR_eg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.1 - Application VaR</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Articles</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/ISR/ISR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Investissement socialement responsable</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../articles/4-3-2/fluency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Improve Speaking Fluency</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#partie-1---chargement-du-jeu-de-données-analyse-exploratoire" id="toc-partie-1---chargement-du-jeu-de-données-analyse-exploratoire" class="nav-link active" data-scroll-target="#partie-1---chargement-du-jeu-de-données-analyse-exploratoire">Partie 1 - Chargement du jeu de données, analyse exploratoire</a>
+  <ul class="collapse">
+  <li><a href="#analyse-descriptive-univariée-des-variables" id="toc-analyse-descriptive-univariée-des-variables" class="nav-link" data-scroll-target="#analyse-descriptive-univariée-des-variables">1. Analyse descriptive univariée des variables</a>
+  <ul class="collapse">
+  <li><a href="#qualité-du-vin-quality" id="toc-qualité-du-vin-quality" class="nav-link" data-scroll-target="#qualité-du-vin-quality">1.1 Qualité du vin (quality)</a></li>
+  <li><a href="#acidité-fixe-fixed.acidity" id="toc-acidité-fixe-fixed.acidity" class="nav-link" data-scroll-target="#acidité-fixe-fixed.acidity">1.2 Acidité fixe (fixed.acidity)</a></li>
+  <li><a href="#acidité-volatile-volatile.acidity" id="toc-acidité-volatile-volatile.acidity" class="nav-link" data-scroll-target="#acidité-volatile-volatile.acidity">1.3 Acidité Volatile (volatile.acidity)</a></li>
+  <li><a href="#acide-citrique-citric.acid" id="toc-acide-citrique-citric.acid" class="nav-link" data-scroll-target="#acide-citrique-citric.acid">1.4 Acide Citrique (citric.acid)</a></li>
+  <li><a href="#sucre-résiduel-residual.sugar" id="toc-sucre-résiduel-residual.sugar" class="nav-link" data-scroll-target="#sucre-résiduel-residual.sugar">1.5 Sucre Résiduel (residual.sugar)</a></li>
+  <li><a href="#chlores-chlorides" id="toc-chlores-chlorides" class="nav-link" data-scroll-target="#chlores-chlorides">1.6 Chlores (chlorides)</a></li>
+  <li><a href="#dioxyde-de-soufre-libre-free.sulfur.dioxide" id="toc-dioxyde-de-soufre-libre-free.sulfur.dioxide" class="nav-link" data-scroll-target="#dioxyde-de-soufre-libre-free.sulfur.dioxide">1.7 Dioxyde de Soufre Libre (free.sulfur.dioxide)</a></li>
+  <li><a href="#dioxyde-de-soufre-total-total.sulfur.dioxide" id="toc-dioxyde-de-soufre-total-total.sulfur.dioxide" class="nav-link" data-scroll-target="#dioxyde-de-soufre-total-total.sulfur.dioxide">1.8 Dioxyde de Soufre Total (total.sulfur.dioxide)</a></li>
+  <li><a href="#densité-density" id="toc-densité-density" class="nav-link" data-scroll-target="#densité-density">1.9 Densité (density)</a></li>
+  <li><a href="#ph" id="toc-ph" class="nav-link" data-scroll-target="#ph">1.10 pH</a></li>
+  <li><a href="#sulfates-sulphates" id="toc-sulfates-sulphates" class="nav-link" data-scroll-target="#sulfates-sulphates">1.11 Sulfates (sulphates)</a></li>
+  <li><a href="#alcool-alcohol" id="toc-alcool-alcohol" class="nav-link" data-scroll-target="#alcool-alcohol">1.12 Alcool (alcohol)</a></li>
+  </ul></li>
+  <li><a href="#analyse-visuelle-bivariée-entre-les-variables" id="toc-analyse-visuelle-bivariée-entre-les-variables" class="nav-link" data-scroll-target="#analyse-visuelle-bivariée-entre-les-variables">2. Analyse visuelle bivariée entre les variables</a>
+  <ul class="collapse">
+  <li><a href="#les-relations-entre-les-variables-explicatives" id="toc-les-relations-entre-les-variables-explicatives" class="nav-link" data-scroll-target="#les-relations-entre-les-variables-explicatives">2.1 Les relations entre les variables explicatives :</a></li>
+  <li><a href="#les-variables-qui-influent-sur-la-qualité-du-vin" id="toc-les-variables-qui-influent-sur-la-qualité-du-vin" class="nav-link" data-scroll-target="#les-variables-qui-influent-sur-la-qualité-du-vin">2.2 Les variables qui influent sur la qualité du vin</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#partie-2-construction-des-échantillons-entraînement-des-modèles" id="toc-partie-2-construction-des-échantillons-entraînement-des-modèles" class="nav-link" data-scroll-target="#partie-2-construction-des-échantillons-entraînement-des-modèles">Partie 2 : Construction des échantillons, entraînement des modèles</a>
+  <ul class="collapse">
+  <li><a href="#construction-des-échantillons" id="toc-construction-des-échantillons" class="nav-link" data-scroll-target="#construction-des-échantillons">1. Construction des échantillons</a></li>
+  <li><a href="#algorithme-cart-classification-and-regression-trees" id="toc-algorithme-cart-classification-and-regression-trees" class="nav-link" data-scroll-target="#algorithme-cart-classification-and-regression-trees">2. Algorithme CART (Classification And Regression Trees)</a>
+  <ul class="collapse">
+  <li><a href="#entrainement-de-larbre-cart" id="toc-entrainement-de-larbre-cart" class="nav-link" data-scroll-target="#entrainement-de-larbre-cart">2.1 Entrainement de l’arbre CART</a></li>
+  <li><a href="#divisions-équireductrices-et-equidivisantes" id="toc-divisions-équireductrices-et-equidivisantes" class="nav-link" data-scroll-target="#divisions-équireductrices-et-equidivisantes">2.2 Divisions équireductrices et equidivisantes</a></li>
+  <li><a href="#visualisation-du-résultat" id="toc-visualisation-du-résultat" class="nav-link" data-scroll-target="#visualisation-du-résultat">2.3 Visualisation du résultat</a></li>
+  <li><a href="#erreur-de-généralisation-et-comparer-les-vraies-valeurs-aux-prédictions" id="toc-erreur-de-généralisation-et-comparer-les-vraies-valeurs-aux-prédictions" class="nav-link" data-scroll-target="#erreur-de-généralisation-et-comparer-les-vraies-valeurs-aux-prédictions">2.4 Erreur de généralisation et comparer les vraies valeurs aux prédictions</a></li>
+  <li><a href="#robustesse" id="toc-robustesse" class="nav-link" data-scroll-target="#robustesse">2.5 Robustesse</a></li>
+  </ul></li>
+  <li><a href="#forêt-aléatoire" id="toc-forêt-aléatoire" class="nav-link" data-scroll-target="#forêt-aléatoire">3. Forêt aléatoire</a>
+  <ul class="collapse">
+  <li><a href="#validation-croisée" id="toc-validation-croisée" class="nav-link" data-scroll-target="#validation-croisée">3.1 Validation croisée</a></li>
+  <li><a href="#re-entrainement-du-modèle" id="toc-re-entrainement-du-modèle" class="nav-link" data-scroll-target="#re-entrainement-du-modèle">3.2 Re-entrainement du modèle</a></li>
+  <li><a href="#erreur-de-généralisation-et-erreur-out-of-bag" id="toc-erreur-de-généralisation-et-erreur-out-of-bag" class="nav-link" data-scroll-target="#erreur-de-généralisation-et-erreur-out-of-bag">3.3 Erreur de généralisation et erreur Out-Of-Bag</a></li>
+  <li><a href="#mda-importance-mean-decreasing-accuracy" id="toc-mda-importance-mean-decreasing-accuracy" class="nav-link" data-scroll-target="#mda-importance-mean-decreasing-accuracy">3.4 MDA importance (Mean decreasing accuracy)</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#bonus-projection-umap" id="toc-bonus-projection-umap" class="nav-link" data-scroll-target="#bonus-projection-umap">Bonus : Projection UMAP</a>
+  <ul class="collapse">
+  <li><a href="#validation-croisée-des-paramètres-umap" id="toc-validation-croisée-des-paramètres-umap" class="nav-link" data-scroll-target="#validation-croisée-des-paramètres-umap">1. Validation croisée des paramètres UMAP</a></li>
+  <li><a href="#projection-inverse-et-denormalisation" id="toc-projection-inverse-et-denormalisation" class="nav-link" data-scroll-target="#projection-inverse-et-denormalisation">2. Projection inverse et denormalisation</a></li>
+  <li><a href="#prédictions-de-la-forêt-aléatoire-pour-ces-points" id="toc-prédictions-de-la-forêt-aléatoire-pour-ces-points" class="nav-link" data-scroll-target="#prédictions-de-la-forêt-aléatoire-pour-ces-points">3. Prédictions de la forêt aléatoire pour ces points</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../projets/LAL/lal.html">Ensai 2A</a></li><li class="breadcrumb-item"><a href="../../projets/app_supervise/Tp_Cheryl_Kouadio.html">Apprentissage supervisé</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Tp noté - Apprentissage supervisé 2A</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">Apprentissage supervisé</div>
+    <div class="quarto-category">Ensai2A</div>
+    <div class="quarto-category">Random forest</div>
+    <div class="quarto-category">CART</div>
+    <div class="quarto-category">UMAP</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Cheryl Kouadio </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-1_6b45d1618a8d249b63a0536c4a5f2ad7">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2023</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="partie-1---chargement-du-jeu-de-données-analyse-exploratoire" class="level1">
+<h1>Partie 1 - Chargement du jeu de données, analyse exploratoire</h1>
+<p>Le jeu de données comprend des mesures effectuées 1599 vins. Ainsi, pour chaque vin, il a été mesuré 12 caractéristiques à savoir :</p>
+<ul>
+<li>L’acidité fixe (<code>fixed.acidity</code>)</li>
+<li>L’acidité volatile (<code>volatile.acidity</code>)</li>
+<li>L’acide citrique (<code>citric.acid</code>)</li>
+<li>Le sucre résiduel (<code>residual.sugar</code>)</li>
+<li>Le chlorure (<code>chlorides</code>)</li>
+<li>Le dioxyde de soufre libre(<code>free.sulfur.dioxide</code>)</li>
+<li>Le dioxyde de soufre total(<code>total.sulfur.dioxide</code>)</li>
+<li>La densité(<code>density</code>)</li>
+<li>Le pH allant de 0 à 14 (plus le pH est bas, plus le vin est acide)</li>
+<li>Le sulfate (<code>sulphates</code>)</li>
+<li>L’alcool (<code>alcohol</code>)</li>
+<li>La note sur la qualité du vin (<code>quality</code>).</li>
+</ul>
+<p>Il s’agira à la fin de ce TP de prédire une note pour chaque vin, reflétant sa qualité.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-2_b68e06208d800a7fc6296a639993ffb0">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#chargement des données</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>wine_quality<span class="ot">&lt;-</span><span class="fu">fread</span>(<span class="st">"Donnees_qualite_vins.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(wine_quality)<span class="ot">&lt;-</span><span class="fu">make.names</span>(<span class="fu">names</span>(wine_quality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="analyse-descriptive-univariée-des-variables" class="level2">
+<h2 class="anchored" data-anchor-id="analyse-descriptive-univariée-des-variables">1. Analyse descriptive univariée des variables</h2>
+<p>Avant toute analyse descriptive de nos variables, il est important de vérifier que nos données ne contiennent aucune valeur manquante.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-3_dad10333c52667ec78e6e56117ab0f80">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(wine_quality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       fixed.acidity     volatile.acidity          citric.acid 
+                   0                    0                    0 
+      residual.sugar            chlorides  free.sulfur.dioxide 
+                   0                    0                    0 
+total.sulfur.dioxide              density                   pH 
+                   0                    0                    0 
+           sulphates              alcohol              quality 
+                   0                    0                    0 </code></pre>
+</div>
+</div>
+<p>Nous constatons que nos données ne contiennent aucune valeur manquante. Cette constatation est prometteuse car elle signifie que nos données sont <strong>complètes</strong>, ce qui est essentiel pour la construction d’un modèle de régression fiable.</p>
+<section id="qualité-du-vin-quality" class="level3">
+<h3 class="anchored" data-anchor-id="qualité-du-vin-quality">1.1 Qualité du vin (quality)</h3>
+<p>La variable <code>quality</code> constitue ici notre variable d’intérêt pour la régression à effectuer. Cette variable est discrète et prend des valeurs entières entre 3 (pour un vin de mauvaise qualité) et 8 (pour un vin de meilleur qualité).</p>
+<p>En moyenne, les vins ont une note de <span class="math inline">\(5,636\)</span>. De fait, nous constatons qu’au moins 50% des vins ont une note supérieur à la moyenne.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-4_4c58a832baa612e2b4286df51e99512a">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">x=</span>quality))<span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()<span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Répartition de la qualité des vins"</span>,<span class="at">x=</span><span class="st">"qualité des vins"</span>, <span class="at">y=</span><span class="st">"nombre de vins"</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">prop.table</span>(<span class="fu">table</span>(wine_quality<span class="sc">$</span>quality)),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   3    4    5    6    7    8 
+0.01 0.03 0.43 0.40 0.12 0.01 </code></pre>
+</div>
+</div>
+<p>Par ailleurs,la majorité de nos vins obtient une note de 5 (43% des vins) ou 6 (40% des vins).</p>
+<div class="box">
+<p>Nous pourrons considérer cette variable comme étant catégorielle étant donnée le faible nombre de valeurs qu’elle prend. Le problème posé ici peut être donc vu comme un problème de classification tout comme un problème de régression.</p>
+</div>
+</section>
+<section id="acidité-fixe-fixed.acidity" class="level3">
+<h3 class="anchored" data-anchor-id="acidité-fixe-fixed.acidity">1.2 Acidité fixe (fixed.acidity)</h3>
+<p>L’acidité fixe dans un vin correspond à la quantité d’acides fixes présents naturellement dans le vin. L’ensemble des vins de notre jeu de données présentent une acidité fixe moyenne de <span class="math inline">\(8,32\)</span>. Cependant, il est intéressant de noter que la médiane de l’acidité fixe se situe à 7,90, ce qui indique qu’un peu plus de la moitié des vins sont plus acides que d’autres.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-5_809116fe937168a02095975ec2ddbb8c">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">y=</span>fixed.acidity))<span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Niveau d'acidité fixe des vins"</span>)<span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De plus, l’acidité fixe des vins est compris entre <span class="math inline">\(4,60\)</span> à <span class="math inline">\(15,90\)</span> avec une dispersion de <span class="math inline">\(\sigma^2=3.03\)</span>. Cette variation signifie que certains vins affichent une acidité plus élevée que d’autres, ce qui contribue à une grande diversité au sein de l’échantillon.</p>
+</section>
+<section id="acidité-volatile-volatile.acidity" class="level3">
+<h3 class="anchored" data-anchor-id="acidité-volatile-volatile.acidity">1.3 Acidité Volatile (volatile.acidity)</h3>
+<p>L’acidité volatile dans un vin correspond à la quantité d’acides volatils qu’il contient, c’est à dire des acides qui sont capables de s’évaporer après la vinification.</p>
+<p>Dans notre jeu de données, nous constatons que l’acidité volatile s’étend de 0,1200 à 1,5800, avec une moyenne d’environ 0.5278. Ainsi, certains vins présentent une acidité volatile plus élevée que d’autres.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-6_3fe1762f0ac5b6ce8d35f7cd0cebd755">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">y=</span>volatile.acidity))<span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Niveau d'acidité volatile des vins"</span>)<span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="acide-citrique-citric.acid" class="level3">
+<h3 class="anchored" data-anchor-id="acide-citrique-citric.acid">1.4 Acide Citrique (citric.acid)</h3>
+<p>La teneur en acide citrique varie de 0 à 1, avec une moyenne d’environ 0,271. Tout comme l’aciditité fixe, 50% des vins ont un niveau d’acide citrique inférieur à la moyenne.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-7_0a5238da3e8951aa9fd6ec1ec291496c">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wine_quality<span class="sc">$</span>citric.acid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  0.000   0.090   0.260   0.271   0.420   1.000 </code></pre>
+</div>
+</div>
+<p>On observe également une certaine variabilité des teneurs en acide citrique dans cet échantillon. En effet, le premier quart des observations a une acidité inférieure à 0.09 , tandis que le dernier quart a une acidité supérieure à 0.42. De fait, certains vins sont quasi dépourvus en acide citrique tandis que d’autres sont riches en cet acide.</p>
+</section>
+<section id="sucre-résiduel-residual.sugar" class="level3">
+<h3 class="anchored" data-anchor-id="sucre-résiduel-residual.sugar">1.5 Sucre Résiduel (residual.sugar)</h3>
+<p>Le sucre résiduel fait référence à la quantité de sucre restant dans un vin après la fermentation alcoolique.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-8_b07e34d15f194d02e2ff3ae2725cc614">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wine_quality<span class="sc">$</span>residual.sugar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  0.900   1.900   2.200   2.539   2.600  15.500 </code></pre>
+</div>
+</div>
+<p>On constate une certaine variabilité des teneurs en sucre résiduel de nos vins. En effet, le premier quartile à 1,9 montre que 25% des vins ont un sucre résiduel inférieur à cette valeur. A l’opposé, 25% dépassent 2,6 d’après le troisième quartile.</p>
+<p>Bien que la majorité se concentre autour de la moyenne aux alentours de 2-3 , certains vins sont très faiblement dotés en sucre résiduel (minimum de 0,9) tandis que d’autres en contiennent des doses importantes, pouvant aller jusqu’à 15,5 (max).</p>
+</section>
+<section id="chlores-chlorides" class="level3">
+<h3 class="anchored" data-anchor-id="chlores-chlorides">1.6 Chlores (chlorides)</h3>
+<p>Le chlore (chloride) est un élément chimique présent naturellement dans le vin. Il s’agit de l’ion chlorure <span class="math inline">\(Cl-\)</span>.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-9_385077ccfb46717d785777810236c416">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wine_quality<span class="sc">$</span>chlorides)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.01200 0.07000 0.07900 0.08747 0.09000 0.61100 </code></pre>
+</div>
+</div>
+<p>Dans notre jeu de données, nous constatons que 25% des vins ont une teneur inférieure à 0.07 L. De plus, la moitié des vins ont moins de 0,079 de teneur en chlore, soit moins de la moyenne qui est de 0,08.</p>
+<p>La majorité des vins(50%) ont une concentration en chlorure située entre 0,07 et 0,09 g/L, avec quelques valeurs extrêmes plus faibles et plus élevées.</p>
+</section>
+<section id="dioxyde-de-soufre-libre-free.sulfur.dioxide" class="level3">
+<h3 class="anchored" data-anchor-id="dioxyde-de-soufre-libre-free.sulfur.dioxide">1.7 Dioxyde de Soufre Libre (free.sulfur.dioxide)</h3>
+<p>Le dioxyde de soufre libre (SO2 libre) est une forme de dioxyde de soufre (SO2) que l’on trouve naturellement ou que l’on ajoute au vin. C’est la forme active du dioxyde de soufre dans le vin, essentielle pour sa conservation.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-10_7eb214725fa4ddc3b46caea305f3eb46">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">x=</span>free.sulfur.dioxide))<span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">30</span>)<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Teneur en dioxide de soufre libre"</span>)<span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On constate une variabilité importante des teneurs en dioxyde de soufre libre dans nos vins. Le premier quartile à 1 indique que 25% des vins ont une très faible teneur en dioxyde de soufre, (inférieure à 1) tandis que le troisième quartile à 21 révèle que 25% des vins ont une concentration supérieure à 21 en dioxyde de soufre libre. De fait, certains vins possèdent une teneur très élevée en ce dioxyde.</p>
+</section>
+<section id="dioxyde-de-soufre-total-total.sulfur.dioxide" class="level3">
+<h3 class="anchored" data-anchor-id="dioxyde-de-soufre-total-total.sulfur.dioxide">1.8 Dioxyde de Soufre Total (total.sulfur.dioxide)</h3>
+<p>Le dioxyde de soufre total (SO2 total) est l’autre forme de dioxyde de soufre dans le vin. Il est un composé chimique utilisé couramment comme additif dans le processus de vinification.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-11_33e2af76a145ec851cae88c8c832b948">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wine_quality<span class="sc">$</span>total.sulfur.dioxide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   6.00   22.00   38.00   46.47   62.00  289.00 </code></pre>
+</div>
+</div>
+<p>Il y a une grande variabilité des teneurs en dioxyde de soufres totaux pour les vins de cet échantillon. En moyenne, les vins de notre échantillon ont une teneur de 46,47 ce qui est supérieur à la médiane qui s’élève à 38.</p>
+</section>
+<section id="densité-density" class="level3">
+<h3 class="anchored" data-anchor-id="densité-density">1.9 Densité (density)</h3>
+<p>La densité du vin est généralement mesurée en gramme par centimètre cube (g/cm³).</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-12_d701b483cb5c81e21bb177f2c1f4fbb6">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wine_quality<span class="sc">$</span>density)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.9901  0.9956  0.9968  0.9967  0.9978  1.0037 </code></pre>
+</div>
+</div>
+<p>La valeur minimale de 0.9901 indique la présence de vins avec une densité très faible. Le premier quartile à 0.9956 montre que 25% des vins ont une densité inférieure à ce seuil. La médiane à 0.9968 signifie que la moitié des observations sont en dessous de cette valeur. Le troisième quartile à 0.9978 révèle que 25% des vins ont une densité qui dépasse 0.9978. Enfin, la valeur maximale atteint 1.0037, démontrant l’existence de vins avec des densités très élevées.</p>
+</section>
+<section id="ph" class="level3">
+<h3 class="anchored" data-anchor-id="ph">1.10 pH</h3>
+<p>On remarque d’emblée que les vins de cet échantillon présentent des pH relativement homogènes et resserrés. En effet, 50% des observations (l’intervalle entre le 1er et le 3e quartile) sont comprises entre 3,21 et 3,4. De plus, la moyenne de 3,311 et la médiane à 3,31 indiquent une distribution centrée.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-13_c5b16e9f46c73dd3ed9906521ec092f4">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">x=</span>pH))<span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>)<span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Répartition du pH des vins"</span>,<span class="at">x=</span><span class="st">"pH"</span>)<span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Cette faible dispersion des pH autour de la moyenne suggère une certaine cohérence des vins analysés en termes d’acidité. Quelques vins se démarquent avec un pH plus acide (minimum) ou plus basique (maximum), mais l’essentiel des échantillons affiche un pH entre 3,2 et 3,4.</p>
+</section>
+<section id="sulfates-sulphates" class="level3">
+<h3 class="anchored" data-anchor-id="sulfates-sulphates">1.11 Sulfates (sulphates)</h3>
+<p>Les sulfates, ou plus spécifiquement le dioxyde de soufre (SO2), sont couramment utilisés dans l’industrie vinicole comme additif.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-14_7f51bb9aae048378ebfdf650f1d99ea7">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">x=</span>sulphates))<span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>)<span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Répartition du niveau de sulfate des vins"</span>)<span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On observe pour les sulfates une distribution plus dispersée que pour le pH précédemment étudié. Bien que l’intervalle interquartile soit resserré entre 0.55 et 0.73, on observe une valeur minimal de sulphates de 0.33 à 2.00 au maximum.</p>
+<p>Cette amplitude plus large induit une moyenne de 0.6581 plus éloignée de la médiane à 0.62. Cette variabilité plus marquée des sulfates pourrait supposer que les vins analysés présentent des concentrations diverses en cet élément. Si la majorité affiche une teneur groupée entre 0.55 et 0.73, certains vins s’en distinguent avec des sulfates très faibles ou au contraire particulièrement élevés.</p>
+</section>
+<section id="alcool-alcohol" class="level3">
+<h3 class="anchored" data-anchor-id="alcool-alcohol">1.12 Alcool (alcohol)</h3>
+<p>La teneur en alcool est l’une des caractéristiques les plus importantes du vin.</p>
+<p>On constate que la concentration en alcool présente une distribution relativement étalée au sein de l’échantillon. La moyenne de 10.42, légèrement supérieure à la médiane de 10.2, confirme une asymétrie positive de la distribution. De fait, certains vins se démarquent donc avec des degrés d’alcool marqués, au-delà de 14°, quand d’autres restent sur une teneur plus modérée.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-15_7db318ca61bb808725bb0f2b7c509071">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wine_quality,<span class="fu">aes</span>(<span class="at">x=</span>alcohol))<span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>)<span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Concentration en alcool"</span>)<span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="analyse-visuelle-bivariée-entre-les-variables" class="level2">
+<h2 class="anchored" data-anchor-id="analyse-visuelle-bivariée-entre-les-variables">2. Analyse visuelle bivariée entre les variables</h2>
+<section id="les-relations-entre-les-variables-explicatives" class="level3">
+<h3 class="anchored" data-anchor-id="les-relations-entre-les-variables-explicatives">2.1 Les relations entre les variables explicatives :</h3>
+<p>L’analyse graphique des relations entre les variables explicatives montre que la majorité des couples de variables ne présentent pas de relation linéaire visible. Cependant, quelques exceptions apparaissent avec des corrélations linéaires visuelles notables :</p>
+<ul>
+<li><p>Une relation positive entre fixed.acidity (acidité fixe) et citric.acid (acidité citrique) : quand l’acidité fixe augmente, l’acidité citrique a tendance à augmenter aussi.</p></li>
+<li><p>Une relation linéaire positive également entre fixed.acidity et density (densité) : plus l’acidité fixe est élevée, plus la densité du vin a tendance à être importante.</p></li>
+<li><p>A l’inverse, une relation linéaire négative semble se dégager entre fixed.acidity et le pH des vins : le pH diminue lorsque l’acidité fixe croît.</p></li>
+</ul>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-16_dfed2885df970f455257c91db99ec07d">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(wine_quality[,<span class="sc">-</span><span class="dv">12</span>], <span class="at">pch =</span> <span class="st">"."</span>,<span class="at">upper.panel =</span> <span class="cn">NULL</span>, </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">main=</span><span class="st">"Visualisation des relations entre les variables explicatives"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="box">
+<p>Cette analyse graphique préliminaire met en évidence quelques relations linéaires visuelles intéressantes entre certains couples de variables explicatives. Des analyses complémentaires comme des tests devraient être effectuées afin de confirmer et quantifier précisément ces relations.</p>
+</div>
+</section>
+<section id="les-variables-qui-influent-sur-la-qualité-du-vin" class="level3">
+<h3 class="anchored" data-anchor-id="les-variables-qui-influent-sur-la-qualité-du-vin">2.2 Les variables qui influent sur la qualité du vin</h3>
+<p>Puisque la variable à prédire (la note du vin) est discrète avec de une étendue de valeurs prises basse, il est pertinent de la considérer comme une variable catégorielle pour l’analyse graphique. L’objectif étant d’évaluer visuellement l’influence des variables explicatives sur cette note qualitative, la représentation adaptée n’est pas un nuage de points.</p>
+<p>En effet, un nuage de points convient pour analyser des relations continues entre variables quantitatives continues. La visualisation la plus appropriée consistera donc à représenter la distribution de chaque variable explicative en fonction des classes de la variable à prédire, à savoir les différentes notes de qualité des vins.</p>
+<p>On utilisera pour cela des boîtes à moustaches (boxplots) pour chaque variable explicative, en utilisant les note de qualité comme modalité.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-17_329ae75df7aa1aa1280f15eb18a5f044">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>wine_quality <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">quality =</span> <span class="fu">as.factor</span>(quality)) <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">melt</span>(<span class="at">id_vars=</span><span class="st">'quality'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>quality, <span class="at">y=</span>value)) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.size =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Boxplot selon la qualité des vins'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>L’analyse visuelle préliminaire semble mettre en évidence plusieurs variables potentiellement prédictives de la note de qualité des vins :</p>
+<ul>
+<li><p>La teneur en acide volatile (volatile.acidity) semble négativement corrélée aux bonnes notes de qualité de vins.</p></li>
+<li><p>L’acidité citrique (citric.acid) est quant à elle positivement corrélée à la note.</p></li>
+<li><p>Le degré d’alcool (alcohol) semble être positivement lié à la note de qualité.</p></li>
+<li><p>La densité (density) semble elle aussi négativement corrélée à la qualité du vin.</p></li>
+<li><p>Enfin, la concentration en sulfates (sulphates) est positivement corrélée à la note de qualité.</p></li>
+</ul>
+<div class="box">
+<p>Bien que nécessitant confirmation, ces relations visuelles fournissent de premières pistes intéressantes sur les facteurs qui influent potentiellement la qualité du vin. Par la suite, nous allons effectuer un modèle d’arbre cart de régression. Cela nous permettra d’avoir un indicateur sur les variables qui influent bel et bien sur la qualité du vin.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="partie-2-construction-des-échantillons-entraînement-des-modèles" class="level1">
+<h1>Partie 2 : Construction des échantillons, entraînement des modèles</h1>
+<section id="construction-des-échantillons" class="level2">
+<h2 class="anchored" data-anchor-id="construction-des-échantillons">1. Construction des échantillons</h2>
+<p>Comme observé au 1.1, les notes de qualité des vins dans notre jeu de données présentent une distribution déséquilibrée, avec une forte majorité de vins ayant une note entre 5 et 6. Afin d’obtenir des échantillons représentatifs pour l’entraînement et les tests, nous devons <strong>stratifier</strong> les données en fonction de cette variable cible.</p>
+<p>Nous allons ainsi constituer nos jeux de données de sorte à conserver la même proportion des différentes notes de qualité dans l’échantillon d’apprentissage et de test avec la fonction <code>createDataPartition</code> de la library <code>caret</code>. Cette stratification selon la variable cible permettra d’obtenir des échantillons représentatifs.</p>
+<p>Pour le découpage, nous avons arbitrairement choisi d’allouer 70% des données à l’ensemble d’entraînement, qui servira à l’apprentissage du modèle prédictif. Les 30% restants formeront l’échantillon test, qui permettra d’évaluer la performance de nos différents modèles sur des données inconnues.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-18_c3bff9aaf1ba1d4a28a5919e7e3d027d">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2023</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>splitIndex <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(wine_quality<span class="sc">$</span>quality, <span class="at">p =</span> <span class="fl">0.7</span>, </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Création des ensembles d'apprentissage et de test en maintenant la proportion de chaque niveau de qualité</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> wine_quality[splitIndex, ]</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> wine_quality[<span class="sc">-</span>splitIndex, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="algorithme-cart-classification-and-regression-trees" class="level2">
+<h2 class="anchored" data-anchor-id="algorithme-cart-classification-and-regression-trees">2. Algorithme CART (Classification And Regression Trees)</h2>
+<section id="entrainement-de-larbre-cart" class="level3">
+<h3 class="anchored" data-anchor-id="entrainement-de-larbre-cart">2.1 Entrainement de l’arbre CART</h3>
+<p>L’acronyme CART signifie Classification And Regression Trees. Il désigne une méthode statistique qui construit des prédicteurs par arbre aussi bien en régression qu’en classification. Ici, il sera utilisé pour de la régression.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-19_2d241c5ce4bec75864e7f933867137a6">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Entrainement d'un arbre CART</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>arbre_cart<span class="ot">&lt;-</span><span class="fu">rpart</span>(quality<span class="sc">~</span>.,<span class="at">data=</span>train,<span class="at">method=</span><span class="st">"anova"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>En modèle CART, l’hyper paramètre à optimiser est la complexité qui permet l’élagage des arbres. En effet, lorsque l’arbre CART est maximal, notre prédicteur a une très grande variance et un biais faible. A contrario, lorsque l’arbre est constitué uniquement de la racine (qui engendre alors un prédicteur constant), on a a une très petite variance mais un biais élevé.</p>
+<p>L’élagage est une procédure de sélection de modèles, où les modèles sont les sous-arbres élagués de l’arbre maximal. Cette procédure minimise un critère pénalisé où la pénalité est proportionnelle au nombre de feuilles de l’arbre.</p>
+<p>Selon le graphique ci-dessous, la complexité permettant de faire un bon compromis biais-variance est une complexité <span class="math inline">\(0,01\)</span>. Nous allons donc re-entrainé notre arbre CART avec cet hyper paramètre.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-20_23892a9f9d43d122b45c71e9d0819ac8">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotcp</span>(arbre_cart)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-21_5c9d4b8f0259d6430ea5bc4bf4a07d56">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Re-entrainement de l'arbre CART</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>arbre_cart<span class="ot">&lt;-</span><span class="fu">rpart</span>(quality<span class="sc">~</span>.,<span class="at">data=</span>train,<span class="at">method=</span><span class="st">"anova"</span>,<span class="at">cp=</span><span class="fl">0.01</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="divisions-équireductrices-et-equidivisantes" class="level3">
+<h3 class="anchored" data-anchor-id="divisions-équireductrices-et-equidivisantes">2.2 Divisions équireductrices et equidivisantes</h3>
+<p>L’entrainement de l’arbre CART sur notre échantillon d’apprentissage nous permet de prédire des nouvelles valeurs en se basant sur la connaissance de certaines valeurs de certaines variables.</p>
+<p>Le premier noeud formé par l’entrainement de l’arbre CART est le noeud racine qui contient toutes les 1120 observations. Cette première division est basée sur la teneur en alcool des vins de notre échantillon d’apprentissage.</p>
+<p>Ainsi, si la teneur en alcool est inférieure à 10.525, alors l’observation va à gauche. C’est la meilleure division car elle offre la plus grande amélioration. Il existe également d’autres variables qui lorsqu’elles sont divisées à un certain seuil, fournissent la meilleure amélioration (diminution) de l’erreur (ou de l’impureté). Ce sont les divisions équiréductrices(<strong>Primary splits</strong>) comme sulphates, volatile.acidity etc.</p>
+<p>S’il manque des valeurs pour cette variable, l’arbre CART se basera sur d’autres variables comme des divisions équidivisantes (<strong>Surrogate splits</strong>) comme density, chlorides, etc., pour décider de la division et donc prédire un nouveau vin.</p>
+<p>Pour prédire un nouveau vin pour lequel le taux d’alcool et la densité n’aurait pas été mesurée et serait donc manquants, l’arbre CART se basera donc sur la concentration en chlore pour effectuer la première coupure.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-22_c29e05f0c33f9e87ee81c585ea50c288">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Afficher le résumé de l'apprentissage de notre modèle</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(arbre_cart) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<pre><code>### Extrait de la sortie de summary(arbre_rpart) ###
+Node number 1: 1120 observations,    complexity param=0.1738621
+  mean=5.632143, MSE=0.6486097 
+  left son=2 (684 obs) right son=3 (436 obs)
+  Primary splits:
+      alcohol          &lt; 10.525   to the left,  improve=0.17386210, (0 missing)
+      sulphates        &lt; 0.645    to the left,  improve=0.12939930, (0 missing)
+      volatile.acidity &lt; 0.405    to the right, improve=0.12619650, (0 missing)
+      citric.acid      &lt; 0.295    to the left,  improve=0.07021357, (0 missing)
+      density          &lt; 0.995565 to the right, improve=0.06232750, (0 missing)
+  Surrogate splits:
+      density          &lt; 0.995575 to the right, agree=0.763, adj=0.392, (0 split)
+      chlorides        &lt; 0.0685   to the right, agree=0.686, adj=0.193, (0 split)
+      volatile.acidity &lt; 0.375    to the right, agree=0.666, adj=0.142, (0 split)
+      fixed.acidity    &lt; 6.75     to the right, agree=0.651, adj=0.103, (0 split)
+      sulphates        &lt; 0.705    to the left,  agree=0.640, adj=0.076, (0 split)</code></pre>
+</section>
+<section id="visualisation-du-résultat" class="level3">
+<h3 class="anchored" data-anchor-id="visualisation-du-résultat">2.3 Visualisation du résultat</h3>
+<p>L’arbre CART nous permet de d’avoir la prédiction de la qualité du vin avec de nouvelle valeur. L’arbre démarre avec la valeur de 5.6, qui est la note moyenne de tous les vins et se lit assez intuitivement. Selon l’arbre, les variables les plus informatives sur la qualité du vin sont la concentration en alcool, en sulfates, l’acidité volatile ainsi que le pH.</p>
+<p>Par exemple, si nous avons un nouveau vin avec les caractéristiques suivantes <code>alcohol = 11.5</code>, <code>pH = 2</code>, <code>free.sulfur.dioxide = 7.6</code>, <code>sulphates =0.42</code>, <code>volatile.acidity = 0.98</code>, nous aurions obtenu la note de <span class="math inline">\(4\)</span>.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-23_2fabfd3f28df375db3a7f4379f340ed3">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(arbre_cart)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="erreur-de-généralisation-et-comparer-les-vraies-valeurs-aux-prédictions" class="level3">
+<h3 class="anchored" data-anchor-id="erreur-de-généralisation-et-comparer-les-vraies-valeurs-aux-prédictions">2.4 Erreur de généralisation et comparer les vraies valeurs aux prédictions</h3>
+<p>L’Erreur Quadratique Moyenne est la métrique de performance que nous utiliserons pour évaluer la qualité des modèles de régression. Elle mesure la moyenne des carrés des erreurs, c’est-à-dire la moyenne des carrés des différences entre les valeurs prédites et les valeurs réelles. Plus celle-ci est faible, plus le modèle est bien ajusté à nos données et donc plus précis.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-24_5c3a34a73a85851470372cc3138578a2">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Erreur de prédictions</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>predictions_cart <span class="ot">&lt;-</span> <span class="fu">predict</span>(arbre_cart, test)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((predictions_cart <span class="sc">-</span> test<span class="sc">$</span>quality )<span class="sc">^</span><span class="dv">2</span>) </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Erreur de généralisation (RMSE) : "</span>, <span class="fu">sqrt</span>(mse)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Erreur de généralisation (RMSE) :  0.678171784937612"</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-25_0d5f1df84ce25938ee21647a49a30996">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">TrueValues =</span> test<span class="sc">$</span>quality, <span class="at">PredictedValues =</span> predictions_cart)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> TrueValues, <span class="at">y =</span> PredictedValues)) <span class="sc">+</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"vraies valeurs"</span>, <span class="at">y =</span> <span class="st">"prédictions"</span>, <span class="at">title =</span> <span class="st">"Predictions de la qualité du vin"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="robustesse" class="level3">
+<h3 class="anchored" data-anchor-id="robustesse">2.5 Robustesse</h3>
+<p>Les arbres CART, bien que puissants pour la modélisation et la visualisation, présentent une sensibilité notable à de petits changements dans les données. Cela peut se traduire par une grande variabilité dans la structure de l’arbre pour de légères modifications du jeu de données.</p>
+<p>En observant les quatre arbres ci dessous, nous pouvons constater que chaque arbre diffère dans sa structure, ses nœuds de division et ses critères de division, malgré le fait qu’ils soient issus de jeux de données très similaires ou de sous-ensembles de données. Cette variabilité souligne le <strong>manque de robustesse</strong> des arbres CART.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-26_cdbc6fa1d7d599802b65cf47779cbcd6">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>num_trees <span class="ot">&lt;-</span> <span class="dv">4</span>  <span class="co"># Nombre d'arbres à générer</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Créez une liste pour stocker les arbres</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>arbres <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Générez et stockez les arbres dans la liste</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_trees) {</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(wine_quality<span class="sc">$</span>quality, <span class="at">p =</span> <span class="fl">0.5</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  training_sample <span class="ot">&lt;-</span> wine_quality[index, ]</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  arbres[[i]] <span class="ot">&lt;-</span> <span class="fu">rpart</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> training_sample)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))  <span class="co"># Crée une grille pour afficher plusieurs arbres</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Affichez chaque arbre dans la grille</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_trees) {</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(arbres[[i]], <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"Arbre"</span>, i))</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="box">
+<p>En pratique, pour obtenir des modèles plus robustes et moins sensibles aux variations, on utilise souvent les forêts aléatoires. Les forêts aléatoires, en combinant plusieurs arbres CART (où chaque arbre est formé à partir d’un sous-ensemble de données et d’un sous-ensemble de variables), permettent de “moyenner” les prédictions et d’atténuer les effets des instabilités individuelles des arbres.</p>
+</div>
+</section>
+</section>
+<section id="forêt-aléatoire" class="level2">
+<h2 class="anchored" data-anchor-id="forêt-aléatoire">3. Forêt aléatoire</h2>
+<section id="validation-croisée" class="level3">
+<h3 class="anchored" data-anchor-id="validation-croisée">3.1 Validation croisée</h3>
+<p>Le package ranger est utilisé pour entraîner des forêts aléatoires. Voici quelques hyperparamètres importants de ranger que vous pouvez ajuster :</p>
+<ul>
+<li>mtry: Nombre d’arbre à insérer dans la forêt aléatoire</li>
+<li>min.node.size: Taille minimale du nœud (critère de changement d’un noeud en feuille)</li>
+<li>splitrule: le critère de pureté (“gini”, “extratrees”, “variance” ,etc.).</li>
+</ul>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-27_98a7b6821f4e07126e0a9f4f0f208828">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelLookup</span>(<span class="st">"ranger"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["parameter"],"name":[2],"type":["chr"],"align":["left"]},{"label":["label"],"name":[3],"type":["chr"],"align":["left"]},{"label":["forReg"],"name":[4],"type":["lgl"],"align":["right"]},{"label":["forClass"],"name":[5],"type":["lgl"],"align":["right"]},{"label":["probModel"],"name":[6],"type":["lgl"],"align":["right"]}],"data":[{"1":"ranger","2":"mtry","3":"#Randomly Selected Predictors","4":"TRUE","5":"TRUE","6":"TRUE","_rn_":"1"},{"1":"ranger","2":"splitrule","3":"Splitting Rule","4":"TRUE","5":"TRUE","6":"TRUE","_rn_":"2"},{"1":"ranger","2":"min.node.size","3":"Minimal Node Size","4":"TRUE","5":"TRUE","6":"TRUE","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Afin de les optimiser, nous allons réaliser une validation croisée.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/cv_bdcb7f62861e66bd1d5b977f9f02b200">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configuration de la validation croisée</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"cv"</span>, <span class="at">number =</span> <span class="dv">5</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Nouvelle grille d'hyperparamètres</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mtry =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">splitrule =</span> <span class="fu">c</span>(<span class="st">"variance"</span>, <span class="st">"extratrees"</span>),</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.node.size =</span><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="co"># modèle via validation croisée</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>foret_aleatoire <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  quality <span class="sc">~</span> .,</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> train,</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"ranger"</span>,</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> control,</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuneGrid =</span> grid</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>foret_aleatoire<span class="sc">$</span>bestTune</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["mtry"],"name":[1],"type":["int"],"align":["right"]},{"label":["splitrule"],"name":[2],"type":["fct"],"align":["left"]},{"label":["min.node.size"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"8","2":"extratrees","3":"1","_rn_":"76"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Nous avons utilisé l’erreur quadratique moyenne (RMSE) pour choisir le meilleur modèle par validation croisée. Les hyperparamètres optimaux sont <code>mtry = 6</code>, <code>splitrule = extratrees</code>, et <code>min.node.size = 2</code>, ce qui assure un bon équilibre entre performance et risque de surajustement.</p>
+</section>
+<section id="re-entrainement-du-modèle" class="level3">
+<h3 class="anchored" data-anchor-id="re-entrainement-du-modèle">3.2 Re-entrainement du modèle</h3>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-28_4cef4662b757552cd5edd8f4a2fadb50">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-entrainement du modele avec valeurs optimales</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>foret_aleatoire_final <span class="ot">&lt;-</span> <span class="fu">ranger</span>(quality <span class="sc">~</span> ., </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> train, </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">mtry =</span> foret_aleatoire<span class="sc">$</span>bestTune<span class="sc">$</span>mtry, </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">splitrule =</span> foret_aleatoire<span class="sc">$</span>bestTune<span class="sc">$</span>splitrule,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">min.node.size =</span> foret_aleatoire<span class="sc">$</span>bestTune<span class="sc">$</span>min.node.size, </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">importance =</span> <span class="st">'permutation'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Selon notre modèle de forêt aléatoire, l’alcool est de loin la variable la plus influente pour prédire la qualité du vin, suivi de l’acidité volatile et du sulfate etc. Cela correspond plus ou moins aux variables que nous avons identifié dans l’analyse visuelle préliminaire 2.2 .</p>
+<p>Les autres variables comme le chlorures et le sucre résiduel ont une moindre influence sur la qualité du vin. Ces résultats peuvent orienter nos prochains tests sur les facteurs clés affectant la qualité du vin.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-29_55f99e9f8de603ada46a16e2f79e66ce">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualisation de l'importance des variables</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(foret_aleatoire_final<span class="sc">$</span>variable.importance, <span class="at">decreasing=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             alcohol     volatile.acidity            sulphates 
+          0.29968914           0.13309690           0.11818299 
+total.sulfur.dioxide              density          citric.acid 
+          0.06834531           0.06113796           0.05774871 
+       fixed.acidity                   pH  free.sulfur.dioxide 
+          0.04428113           0.03737898           0.03737879 
+           chlorides       residual.sugar 
+          0.03435503           0.02516916 </code></pre>
+</div>
+</div>
+</section>
+<section id="erreur-de-généralisation-et-erreur-out-of-bag" class="level3">
+<h3 class="anchored" data-anchor-id="erreur-de-généralisation-et-erreur-out-of-bag">3.3 Erreur de généralisation et erreur Out-Of-Bag</h3>
+<p>L’erreur OOB est une estimation de l’erreur de généralisation obtenue en utilisant chaque observation pour évaluer un modèle qui n’a pas été formé avec cette observation. C’est l’un des avantages des forêts aléatoires; elles fournissent une estimation interne de l’erreur de généralisation.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-30_68a773e99caafc8e73ed3ac8b24bf1b3">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>predictions_rf <span class="ot">&lt;-</span> <span class="fu">predict</span>(foret_aleatoire_final, <span class="at">data =</span> test)<span class="sc">$</span>predictions</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((predictions_rf <span class="sc">-</span> test<span class="sc">$</span>quality)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Erreur de généralisation (MSE): "</span>, mse))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Erreur de généralisation (MSE):  0.336074897703549"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Erreur Out-Of-Bag (OOB): "</span>, foret_aleatoire_final<span class="sc">$</span>prediction.error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Erreur Out-Of-Bag (OOB):  0.342473480056595"</code></pre>
+</div>
+</div>
+<p>Nous constatons qu’il y a une faible différence entre l’erreur de généralisation et l’erreur Out-Of-Bag (environ <span class="math inline">\(0,01\)</span>).</p>
+<p>La proximité de ces deux erreurs suggère que notre modèle de forêt aléatoire est robuste et généralise bien aux nouvelles données, sans signe apparent de sur ajustement.</p>
+<p>En bref, notre modèle semble performant et fiable pour la prédiction de la qualité du vin.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-31_83ff2cfdf1d1d19be6b46be964bc60f2">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">TrueValues =</span> test<span class="sc">$</span>quality, <span class="at">PredictedValues =</span> predictions_rf)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> TrueValues, <span class="at">y =</span> PredictedValues)) <span class="sc">+</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"vraies valeurs"</span>, <span class="at">y =</span> <span class="st">"prédictions"</span>, <span class="at">title =</span> <span class="st">"Predictions de la qualité du vin"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mda-importance-mean-decreasing-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="mda-importance-mean-decreasing-accuracy">3.4 MDA importance (Mean decreasing accuracy)</h3>
+<p>L’idée principale de la MDA repose sur le fait que si une variable explicative n’est pas importante pour prédire la cible, qu’on la prenne en compte ou non dans la construction de la forêt ne devrait pas changer l’erreur de généralisation.</p>
+<p>Elle se calcule de la manière suivante :</p>
+<p><span class="math display">\[MDA(X_j) = \frac{1}{n_{\text{test}}} \sum_{i=1}^{n_{\text{test}}} l(y^*_i, \frac{1}{B} \sum_{b=1}^{B} g^{(-j)}_b(x^*_i)) - l(y^*_i, \frac{1}{B} \sum_{b=1}^{B} g_b(x^*_i)) \]</span> où <span class="math inline">\(g^{-j}_b\)</span> désigne la forêt aléatoire construite sans la j-ième variable explicative.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/mda_c891c53ae5db1d15fe3c48fdfa6c3ca5">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> foret_aleatoire_final<span class="sc">$</span>num.trees</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>n_test <span class="ot">&lt;-</span> <span class="fu">nrow</span>(test)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>original_preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(foret_aleatoire_final, <span class="at">data =</span> test)<span class="sc">$</span>predictions</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>original_loss <span class="ot">&lt;-</span> <span class="fu">mean</span>((original_preds <span class="sc">-</span> test[[<span class="st">"quality"</span>]])<span class="sc">^</span><span class="dv">2</span>) <span class="co"># MSE</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>feature_names <span class="ot">&lt;-</span> <span class="fu">names</span>(test)</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>feature_names <span class="ot">&lt;-</span> feature_names[feature_names <span class="sc">!=</span> <span class="st">"quality"</span>]</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>MDA_values <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(feature_names))</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="fu">seq_along</span>(feature_names)) {</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>  temp_data <span class="ot">&lt;-</span> train[, <span class="sc">-</span>j, with <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>  temp_forest <span class="ot">&lt;-</span> <span class="fu">ranger</span>(quality <span class="sc">~</span>., <span class="at">data =</span> temp_data, <span class="at">num.trees =</span> B)</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>  permuted_preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(temp_forest, <span class="at">data =</span> test)<span class="sc">$</span>predictions</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>  permuted_loss <span class="ot">&lt;-</span> <span class="fu">mean</span>((permuted_preds <span class="sc">-</span> test<span class="sc">$</span>quality)<span class="sc">^</span><span class="dv">2</span>) <span class="co"># MSE après suppression de variable j</span></span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>  MDA_values[feature_names[j]] <span class="ot">&lt;-</span> (permuted_loss <span class="sc">-</span> original_loss) </span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(MDA_values[MDA_values <span class="sc">!=</span> <span class="dv">0</span>],<span class="at">decreasing =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           sulphates              alcohol     volatile.acidity 
+        0.0366279588         0.0264460487         0.0144637845 
+total.sulfur.dioxide              density        fixed.acidity 
+        0.0075565892         0.0073128653         0.0051167717 
+                  pH            chlorides       residual.sugar 
+        0.0050919154         0.0034444456         0.0034389022 
+         citric.acid  free.sulfur.dioxide 
+        0.0021225963         0.0009107246 </code></pre>
+</div>
+</div>
+<p>La sortie MDA montre l’importance des variables dans un modèle de forêt aléatoire. Les “sulphates” et “alcohol” ont les valeurs MDA les plus élevées, ce qui signifie qu’ils sont les plus importants pour la précision du modèle. Les variables comme “total.sulfur.dioxide” et “density” ont une importance moindre mais intéressante à savoir.</p>
+<p>A l’inverse, des variables comme “fixed.acidity” et “citric.acid” etc. ont des valeurs MDA négatives, cela signifirait que les supprimer du modèle ferait baisser notre erreur de généralisation ce qui pourrait indiquer qu’elles ne sont pas très utiles dans ce modèle.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-32_1bd34c218e4d96d3abcf0cbfe73edb20">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(foret_aleatoire_final<span class="sc">$</span>variable.importance,<span class="at">decreasing =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             alcohol     volatile.acidity            sulphates 
+          0.29968914           0.13309690           0.11818299 
+total.sulfur.dioxide              density          citric.acid 
+          0.06834531           0.06113796           0.05774871 
+       fixed.acidity                   pH  free.sulfur.dioxide 
+          0.04428113           0.03737898           0.03737879 
+           chlorides       residual.sugar 
+          0.03435503           0.02516916 </code></pre>
+</div>
+</div>
+<p>Dans la sortie d’importance de notre modèle constitué de toutes les variables explicatives, “Alcohol” prend la première place, suivi de “sulphates” et “volatile.acidity”.</p>
+<p>Dans les deux cas, “alcohol”, “sulphates”, et “volatile.acidity” se démarquent comme les variables les plus influentes, mais leur ordre d’importance change. “Alcohol” est devenu plus dominant dans la sortie donné directement par le modèle.</p>
+</section>
+</section>
+</section>
+<section id="bonus-projection-umap" class="level1">
+<h1>Bonus : Projection UMAP</h1>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/importpy_a3007514f36e9473541a2c968d95fabe">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> umap <span class="im">import</span> UMAP</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="validation-croisée-des-paramètres-umap" class="level3">
+<h3 class="anchored" data-anchor-id="validation-croisée-des-paramètres-umap">1. Validation croisée des paramètres UMAP</h3>
+<p>UMAP, acronyme de “Uniform Manifold Approximation and Projection”, est une méthode avancée de réduction de dimensionnalité.</p>
+<p>Dans le cadre de notre étude utilisant un modèle de forêt aléatoire, cette technique nous permettra de simplifier la complexité de nos variables explicatives multidimensionnelles. Plus précisément, nous allons projeter ces variables sur deux axes seulement, facilitant ainsi leur visualisation et leur interprétation.</p>
+<p>Etant utilisé très souvent en apprentissage supervisé, nous allons faire une validation croisée afin de selectionner les meilleurs hyper paramètres de cette méthode.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/umap_547388130cdafa8490a056f561bb633d">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pd.DataFrame(r.train)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Séparer la variable d'intérêt et les features</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df_train.drop([<span class="st">'quality'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df_train[<span class="st">'quality'</span>]</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Normaliser les données</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>X_normalized <span class="op">=</span> scaler.fit_transform(X)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Grid de paramètres à tester</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>n_neighbors <span class="op">=</span> [<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>]</span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>min_dist <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>]</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Entraîner UMAP pour toutes les combinaisons de paramètres</span></span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>best_score <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>best_params <span class="op">=</span> {}</span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> n_neighbors:</span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> d <span class="kw">in</span> min_dist:</span>
+<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a>      umap <span class="op">=</span> UMAP(n_neighbors<span class="op">=</span>k, min_dist<span class="op">=</span>d)</span>
+<span id="cb52-21"><a href="#cb52-21" aria-hidden="true" tabindex="-1"></a>      projection <span class="op">=</span> umap.fit_transform(X_normalized, y<span class="op">=</span>y)</span>
+<span id="cb52-22"><a href="#cb52-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-23"><a href="#cb52-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Calculer le score silhouette</span></span>
+<span id="cb52-24"><a href="#cb52-24" aria-hidden="true" tabindex="-1"></a>      score <span class="op">=</span> silhouette_score(projection, y)</span>
+<span id="cb52-25"><a href="#cb52-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-26"><a href="#cb52-26" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> score <span class="op">&gt;</span> best_score:</span>
+<span id="cb52-27"><a href="#cb52-27" aria-hidden="true" tabindex="-1"></a>        best_score <span class="op">=</span> score</span>
+<span id="cb52-28"><a href="#cb52-28" aria-hidden="true" tabindex="-1"></a>        best_params <span class="op">=</span> {<span class="st">"n_neighbors"</span>: k, <span class="st">"min_dist"</span>: d}</span>
+<span id="cb52-29"><a href="#cb52-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-30"><a href="#cb52-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Meilleurs paramètres:"</span>, best_params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Meilleurs paramètres: {'n_neighbors': 25, 'min_dist': 0.1}</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Score silhouette:"</span>, best_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Score silhouette: 0.48484257</code></pre>
+</div>
+</div>
+<p>Dans UMAP, les axes n’ont pas de signification intrinsèque claire, car la méthode vise à préserver la structure locale des données plutôt qu’à expliquer la variance.</p>
+<p>Toutefois, UMAP préserve les relations locales entre les points. Ainsi, la proximité entre les points dans la projection UMAP peut être interprétée comme une similarité dans l’espace de données d’origine.</p>
+<p>Dans la projection de nos variables explicatives labellisées avec notre variables cible, nous constatons que les vins ayant eu une mauvaise note de qualité semble avoir des caractéristiques similaires qui diffèrent des vins ayant un bon qualité.</p>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/umap1_b74a196da850315bbc0494607a04d01e">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Re entraîner le meilleur modèle</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>umap_model <span class="op">=</span> UMAP(n_neighbors<span class="op">=</span>best_params[<span class="st">'n_neighbors'</span>], min_dist<span class="op">=</span>best_params[<span class="st">'min_dist'</span>], n_components<span class="op">=</span><span class="dv">2</span>, target_metric<span class="op">=</span><span class="st">'l1'</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> umap_model.fit_transform(X_normalized, y<span class="op">=</span>y)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualisation</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(embedding[:, <span class="dv">0</span>], embedding[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'viridis'</span>)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>plt.colorbar(label<span class="op">=</span><span class="st">'Quality'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;matplotlib.colorbar.Colorbar object at 0x7fcc5994cfa0&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Projection UMAP '</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'UMAP 1'</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'UMAP 2'</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/umap1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="projection-inverse-et-denormalisation" class="level3">
+<h3 class="anchored" data-anchor-id="projection-inverse-et-denormalisation">2. Projection inverse et denormalisation</h3>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/invproj_edb1a975e87ef155c989193c97999958">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Déterminer les limites de l'espace projeté</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>x_min, x_max <span class="op">=</span> embedding[:, <span class="dv">0</span>].<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>, embedding[:, <span class="dv">0</span>].<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>y_min, y_max <span class="op">=</span> embedding[:, <span class="dv">1</span>].<span class="bu">min</span>() <span class="op">-</span> <span class="dv">1</span>, embedding[:, <span class="dv">1</span>].<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une grille 100x100</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(np.linspace(x_min, x_max, <span class="dv">100</span>),</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>                     np.linspace(y_min, y_max, <span class="dv">100</span>))</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplatir la grille pour l'inverse de la transformation</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> np.c_[xx.ravel(), yy.ravel()]</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculer la projection inverse</span></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>inverse_proj <span class="op">=</span> umap_model.inverse_transform(grid)</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Dé-normaliser les valeurs</span></span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>inverse_proj_denorm <span class="op">=</span> scaler.inverse_transform(inverse_proj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="prédictions-de-la-forêt-aléatoire-pour-ces-points" class="level3">
+<h3 class="anchored" data-anchor-id="prédictions-de-la-forêt-aléatoire-pour-ces-points">3. Prédictions de la forêt aléatoire pour ces points</h3>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/predinv_03451e5a628b77df16c278308bcff71a">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>inverse_proj_denorm <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(py<span class="sc">$</span>inverse_proj_denorm)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(inverse_proj_denorm)<span class="ot">&lt;-</span><span class="fu">colnames</span>(train[,<span class="sc">-</span><span class="dv">12</span>])</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>predictions_umap_denorm<span class="ot">&lt;-</span> <span class="fu">predict</span>(foret_aleatoire_final, <span class="at">data =</span> inverse_proj_denorm)<span class="sc">$</span>predictions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="Tp_Cheryl_Kouadio_cache/html/unnamed-chunk-33_4b044b447998dff52f06e28b13103c2b">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transformer les prédictions en une matrice 100x100</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> np.array(r.predictions_umap_denorm).reshape(<span class="dv">100</span>, <span class="dv">100</span>)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualiser les prédictions dans l'espace UMAP</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>plt.scatter(inverse_proj_denorm[:, <span class="dv">0</span>], inverse_proj_denorm[:, <span class="dv">1</span>], c<span class="op">=</span>predictions.ravel(), cmap<span class="op">=</span><span class="st">'viridis'</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>plt.colorbar(label<span class="op">=</span><span class="st">'Valeur de Prédiction'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;matplotlib.colorbar.Colorbar object at 0x7fcc5a1576a0&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Prédictions de la Forêt Aléatoire dans l</span><span class="ch">\'</span><span class="st">Espace UMAP 2D'</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'UMAP 1'</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'UMAP 2'</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
