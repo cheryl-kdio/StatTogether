@@ -6,13 +6,13 @@ author:
 categories: [risque, finance, gdr]
 execute: 
   cache: true
-jupyter: python3
 bibliography: ../../references.bib
+jupyter: python3
 ---
 
 # Introduction
 
-Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes potentielles d'un portefeuille d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def))
+Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes potentielles d'un portefeuille  d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def))
 
 # Import des données
 
@@ -192,9 +192,11 @@ round((len(list_exceptions_gaus)/test_size)*100,2)
 
 ## VaR historique
 
+La VaR historique est basée sur les rendements historiques. Elle est définie comme l'opposé du quantile de niveau $1-\alpha$ des rendements logarithmiques historiques. En implémentant celà, nous obtenons que la VaR historique à horizon 1 jour est d'environ 0.0404 (0.1278 pour un horizon de 10 jours)
+
 ```{python}
 def historical_var(PnL, seuil):
-    return -np.percentile(PnL, (1 - seuil) * 100)
+    return - np.percentile(PnL, (1 - seuil) * 100)
 
 VaR_historique = historical_var(train_close["log_return"],seuil)
 round(VaR_historique,4)
@@ -219,7 +221,10 @@ plt.title(f"Historical VaR at {seuil * 100}% Var: {VaR_historique:.4f}")
 plt.show()
 ```
 
+### Backtesting
+
 ```{python}
+import matplotlib.pyplot as plt
 plt.plot(ts_close.index[0:train_size], train_close['log_return'], label="historical train log returns", color = 'gray')
 plt.plot(ts_close.index[train_size:], test_close['log_return'], label="historical test log returns", color = 'blue')
 plt.plot(ts_close.index[train_size:], [-VaR_historique for i in range(test_size)], label="historical VaR", color = 'red')
@@ -232,11 +237,37 @@ plt.legend()
 plt.show()
 ```
 
+Nous pouvons compter le nombre d'exceptions pour la VaR à horizon 1 jour qui est égale à 14 et en déduisons que le taux d'exception est 0.65%.
+```{python}
+round((len(list_exceptions_hist)/test_size)*100,2) 
+```
+
 
 ## VaR Monte Carlo
-
+La VaR Monte Carlo est basée sur la simulation de trajectoires de rendements. Nous allons simuler 1000 trajectoires de rendements logarithmiques et calculer la VaR à horizon 1 jour en supposant que le prix de la clôture suit une distribution normale.
 
 ```{python}
+def monte_carlo_var(Close,PnL,seuil, num_simulations):
+  mean = np.mean(PnL)
+  std = np.std(PnL)
+  # Generate random scenarios of future returns
+  simulated_returns = np.random.normal(mean, std, size=(len(PnL), num_simulations))
+
+  # Calculate portfolio values for each scenario
+  portfolio_values = (Close.iloc[-1] * (1 + simulated_returns)).cumprod()
+
+  # Convert portfolio_values into a DataFrame
+  portfolio_values = pd.DataFrame(portfolio_values)
+
+  # Calculate portfolio returns for each scenario
+  portfolio_returns = portfolio_values.pct_change()
+
+  # Calculate VaR
+  if len(portfolio_returns.iloc[-1].dropna()) > 0:
+      var = -np.percentile(portfolio_returns.iloc[-1].dropna(), (1 - confidence_level) * 100)
+  else:
+      var = 0
+  return var
 
 def bootstrap_var(PnL, seuil, num_simulations, alpha_IC, B):
     VaRs_boot = np.zeros(num_simulations)
@@ -254,6 +285,9 @@ def bootstrap_var(PnL, seuil, num_simulations, alpha_IC, B):
     return VaR, IC
 
 VaR_boostrap, IC = bootstrap_var(train_close["log_return"], seuil, 5000, 0.95, train_size)
+VaR_boostrap
+VaR_monte_carlo = monte_carlo_var(train_close["Close"],train_close["log_return"], seuil, 5000)
+VaR_monte_carlo
 ```
 
 

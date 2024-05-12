@@ -459,4 +459,5 @@ Cette étude nous permettra de determiner pour quelle(s) combinaison(s) de coeff
 **Attention** : les estimations des utilités sont fondamentales car celles-ci influent sur les critères d'évaluation d’un traitement. Ainsi changer les utilités peut amener à changer de traitement pour un même traitement. Ce sont des estimations car nous ne possédons pas de table dans notre base de données avec les utilités de chaque patient, ni de leur ressenti Pour avoir une meilleure fiabilité des estimations des écarts-types, nous pouvons utiliser des méthodes de : bootstrapping non-paramétrique ou encore de ré-échantillonnage numérique.
 
 # Rapport entier
+
 ![](rapport_2A.pdf){fig-align="center" width="1000" height="1000"}

@@ -1,6 +1,5 @@
 project:
   type: website
-  output-dir: docs
 
 execute:
   cache: true
@@ -44,7 +43,7 @@ website:
                 text : 1-La réglementation prudentielle
               - href : articles/GDR/var.qmd
                 text : 2-La valeur en risque
-              - href : articles/GDR/VaR_eg.qmd
+              - href : articles/GDR/VaR_eg.ipynb
                 text : 2.1 - Application VaR
       - section: "Articles"
         contents:
