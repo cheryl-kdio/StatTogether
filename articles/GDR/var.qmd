@@ -7,8 +7,7 @@ categories: [finance, gdr]
 bibliography: ../../references.bib
 ---
 
-{#sec-var-def}
-La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s'agit dans cette section de développer la notion de VaR pour des portefeuilles linéaires et non linéaires.
+{#sec-var-def} La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s'agit dans cette section de développer la notion de VaR pour des portefeuilles linéaires et non linéaires.
 
 # Définition
 
@@ -56,6 +55,31 @@ Pour calculer la VaR, il faut identifier les $m$ facteurs de marché $F_1, \dots
 
 Le comité de Bâle impose une période détention de dix jours pour calculer les fonds propres et une période de détention d'un jour pour l'exercice de backtesting. Ainsi, tous les jours, l'établissemnt financier doit calculer la VaR sur un jour et les fonds propres associés. Néanmoins, les autorités de supervision autorisent les banques à convertir la VaR sur un jour en VaR sur d'autres périodes de détention en utilisant la règle de la racine carrée ou scaling. Par exemple, pour obtenir la VaR sur 10 jours, il suffit de multiplier la VaR sur un jour par $\sqrt{10}$.
 
+## Le backtesting
+
+Le backtesting est un contrôle de la qualité de la VaR pour un horizon de 1 jour. Il permet de vérifier si la VaR est bien calibrée. Pour cela, on compare la VaR calculée avec la perte réelle. Si la VaR est bien calibrée, la perte réelle ne doit pas dépasser la VaR dans 99,99% des cas. La commission bancaire utilise un nombre d'exception pour valider le modèle. Notons PnL le profit and loss du portefeuille et VaR la valeur à risque. Nous avons : 
+$$
+P(PnL<-VaR)=1-\alpha
+$$
+
+Considérons maintenant la variable de bernoulli $I$ qui vaut 1 si le PnL est inférieur à l'opposé de la VaR avec probabilité $1-\alpha$ (une exception) et 0 sinon. Pour une période ouvré comptant n jours, la probabilité d'avoir $i$ exceptions est donnée par la loi binomiale $\mathcal{text{Bin}}(n,1-\alpha)$. La probabilité d'avoir plus de $k$ exceptions est donnée par la loi binomiale cumulative $\mathcal{B}(n,1-\alpha)$. La probabilité d'avoir au plus de $i$ exceptions est donnée par : 
+$$
+P(N_{ex}\leq i)=\sum_{j=0}^{i} \binom{n}{j}(1-\alpha)^j \alpha^{n-j}
+$$
+
+Pour tester que la probabilité d'exception n'excède pas $1-\alpha$, nous pouvons utiliser un test de proportion. Si la proportion d'exceptions empirique est supérieur à celui attendu, le modèle est rejeté :
+
+$$
+H_0: P(PnL<-VaR)=1-\alpha=p_0 \quad \text{vs} \quad H_1: P(PnL<-VaR)>1-\alpha=p_0
+$$
+
+La statistique de test est donnée par (sous $H_0$) :
+$$
+T= \frac{1}{n} \sum_{i=1}^{n} I_{Pnl<-VaR} \sim \mathcal{N}(p_0,\frac{p_0(1-p_0)}{n})
+$$
+qui donne la proportion d'exceptions observée lorsque $np>5$ et $n(1-p)>5$. 
+
+La p-valeur est donnée par $P(T>t|H_0)=1-\phi(t)$ où $t$ est la valeur observée de la statistique de test et $\phi$ est la fonction de répartition de la loi normale.
 # La VaR analytique
 
 ## Cas général
@@ -109,19 +133,24 @@ Nous considérons un portefeuille de $n$ actifs et une fonction de tarification 
 P(t; \theta) = \sum_{i=1}^n \theta_i P_{i}(t)
 $$
 
-Ici, $P_{i,t}$ est connu tandis que $P_{i,t+h}$ est stochastique. La première idée est de choisir les facteurs comme étant les prix futurs.Dans cette approche, les rendements des actifs sont les facteurs de risque du marché et chaque actif possède son propre facteur de risque.
+Ici, $P_i(t)$ est connu tandis que $P_i(t+h)$ est stochastique. La première idée est de choisir les facteurs comme étant les prix futurs.Dans cette approche, les rendements des actifs sont les facteurs de risque du marché et chaque actif possède son propre facteur de risque.
 
 Le problème est que les prix sont loin d'être stationnaires, ce qui nous amène à devoir affronter certains problèmes pour modéliser la distribution $F_t$. Une autre idée est de récrire le prix futur comme suit : $$
-P_{i,t+h} = P_{i,t} (1 + R_{i,t+h})
-$$ où $R_{i,t+h}$ est le retour de l'actif entre $t$ et $t+h$.
+P_i(t+h) = P_i(t) (1 + R_i(t;h))
+$$ où $R_i(t;h)$ est le retour de l'actif entre $t$ et $t+h$.
 
-Nous déduisons que le PnL aléatoire est : \begin{align*}
+Nous déduisons que le PnL aléatoire est :
+
+```{=tex}
+\begin{align*}
 PnL &= P(t+h,\theta) - P(t,\theta) \\
 &= \sum_{i=1}^n \theta_i P_i(t+h) - \sum_{i=1}^n \theta_i P_i(t) \\
 &= \sum_{i=1}^n\theta_i P_i(t) (1 - R_i(t,h))  - \sum_{i=1}^n \theta_i P_i(t) \\
 &= \sum_{i=1}^n \theta_i P_i(t)  R_i(t,h) \\
 &= \sum_{i=1}^n W_i(t)  R_i(t,h)
-\end{align*} où $W_i = \theta_i P_i(t)$ est le montant investi (ou l'exposition nominale)dans l'actif $i$.
+\end{align*}
+```
+où $W_i = \theta_i P_i(t)$ est le montant investi (ou l'exposition nominale)dans l'actif $i$.
 
 \textbf{Le modèle de covariance}
 
@@ -139,13 +168,84 @@ Dans cette approche, nous avons seulement besoin d'estimer la matrice de covaria
 
 Considérons l'exemple des entreprises d'Apple et de Coca-Cola. Les expositions nominales sont de 1 093,3\$ pour Apple et de 842,8\$ pour Coca-Cola. Si nous prenons en compte les prix historiques du 7 janvier 2014 au 2 janvier 2015, l'écart type estimé des rendements quotidiens est de 1,3611 % pour Apple et de 0,9468 % pour Coca-Cola, tandis que la corrélation croisée est égale à 12,0787 %. Il s'ensuit que :
 
-
+```{=tex}
 \begin{align*}
-\sigma^2(\Pi) &= W_t^T \Sigma W_t = 1093.3^2 \left(\frac{1.3611}{100}\right)^2 + 842.8^2 \left(\frac{0.9468}{100}\right)^2 \\
+\sigma^2(PnL) &= W_t^T \Sigma W_t = 1093.3^2 \left(\frac{1.3611}{100}\right)^2 + 842.8^2 \left(\frac{0.9468}{100}\right)^2 \\
 &+ 2 \times 12.0787 \times \frac{1.0933 \times 842.8 \times 1.3611 \times 0.9468}{10000} = 313.80
 \end{align*}
+```
+Si nous omettons le terme de rendement attendu $-W_t^T \mu$, nous déduisons que la valeur à risque quotidienne à 99% est de 41,21 \$. Nous obtenons une figure inférieure à celle de la valeur à risque historique, qui était de 47,39 \$. Nous expliquons ce résultat par le fait que la distribution gaussienne sous-estime la probabilité des événements extrêmes et n'est donc pas adaptée à des calculs précis de risque dans des situations de marché volatiles.
 
-Si nous omettons le terme de rendement attendu $-W_t^T \mu$, nous déduisons que la valeur à risque quotidienne à 99 % est de 41,21 \$. Nous obtenons une figure inférieure à celle de la valeur à risque historique, qui était de 47,39 \$. Nous expliquons ce résultat par le fait que la distribution gaussienne sous-estime la probabilité des événements extrêmes et n'est donc pas adaptée à des calculs précis de risque dans des situations de marché volatiles.
+### Exemple de portefeuille linéaire d'actifs
+
+Considérons un portefeuille linéaire composé de trois actifs A (2 titres positions longues donc $\theta_A=2$), B(1 titre position courte donc $\theta_B=-1$) et C(1 titre position longue donc $\theta_C=1$) dont les rendements journaliers sont en moyenne égaux à : $$
+\mu = 
+\begin{pmatrix}
+50pb\\
+30pb \\
+20pb 
+\end{pmatrix} 
+= \begin{pmatrix}
+0.005\\
+0.003 \\
+0.002 
+\end{pmatrix}
+$$
+
+Les volatilités journalières sont égales à 2%, 3% et 1%. Quant aux prix des actifs, ils sont respectivement de 244€, 135€,315€. La matrice de corrélation est donnée par : $$
+\mu = 
+\begin{pmatrix}
+1 &\\
+0.5 & 1 & \\
+0.25 & 0.6 & 1 
+\end{pmatrix} 
+$$
+
+Nous obtenons que:
+
+$$
+VaR(99\%)=2.3263 \times \sqrt{82.1176} - 2.665 = 18.42
+$$
+
+La perte maximale de ce portefeuille en une journée est donc de 18.42€ avec un risque 1% de se tromper.
+
+#### Implémentation en R
+
+```{r}
+calculate_VaR <- function(mu,W_t,std_devs,correlation_matrix, alpha) {
+  # Dimensions de la matrice
+  n <- nrow(correlation_matrix)
+  
+  # Convertir les écarts-types et les corrélations en matrice de covariance
+  cov_matrix <- matrix(0, nrow = n, ncol = n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      cov_matrix[i, j] <- std_devs[i] * std_devs[j] * correlation_matrix[i, j]
+    }
+  }
+  
+  q<-qnorm(alpha, mean = 0, sd = 1)
+
+  VaR<- -t(W_t) %*% mu + 2.3263*sqrt(t(W_t) %*% cov_matrix %*% W_t)
+
+  return(VaR)
+}
+
+
+W_t <- matrix(c(2*244, -1*135, 1*315),nrow = 3)
+mu <- matrix(c(50,30,20),nrow = 3)/10000
+std_devs<- c(2,3,1)/100
+
+# Matrice de corrélation
+correlation_matrix <- matrix(c(
+1,0.5,0.25,
+0.5,1,0.6,
+0.25,0.6,1
+), nrow = 3, byrow = TRUE)
+
+VaR<- calculate_VaR(mu,W_t,std_devs,correlation_matrix,0.99)
+VaR
+```
 
 ## Modèles factoriels de risque
 
@@ -161,8 +261,7 @@ Supposons maintenant que le portefeuille soit linéaire par rapport aux facteurs
 
 \begin{align*}
 R(t,h)&= B F(t,h) + \epsilon(t,h) \\
-\end{align*}
-où $B$ est la matrice des sensibilités du portefeuille aux facteurs de risque (interne, commun) et $F(t,h)$ est le vecteur des facteurs de risque à l'horizon h avec $E(F)=\mu(F)$ et $cov(F)=\Omega$. De plus, $\epsilon(t,h)$ est le vecteur des erreurs qui sont des variables aléatoires gaussiennes indépendantes avec $E(\epsilon)=0$ et $cov(\epsilon)=D$.
+\end{align*} où $B$ est la matrice des sensibilités du portefeuille aux facteurs de risque (interne, commun) et $F(t,h)$ est le vecteur des facteurs de risque à l'horizon h avec $E(F)=\mu(F)$ et $cov(F)=\Omega$. De plus, $\epsilon(t,h)$ est le vecteur des erreurs qui sont des variables aléatoires gaussiennes indépendantes avec $E(\epsilon)=0$ et $cov(\epsilon)=D$.
 
 Si le retour des actifs est gaussien, nous en deduisons que le PnL est une variable aléatoire gaussienne:
 
@@ -180,13 +279,11 @@ Nous considérons une exposition sur une obligation américaine à \$t=\$31 déc
 
 Nous notons $B_t(T)$ le prix d'une obligation zéro coupon (montant qu'un investisseur serait prêt à payer aujourd'hui pour recevoir un paiement fixe à une date future : combien me rapport un euro à maturité $T$ aujourd'hui?) au temps $t$ pour l'échéance $T$. Nous avons $B_t(T) = e^{-(T - t)R_t(T)}$ où $R_t(T)$ est le taux de rendement zéro coupon.
 
-La valeur de l'obligation est donc : 
-$$
+La valeur de l'obligation est donc : $$
 P(t) =  \sum_{m=1}^{n_C} C(t_m) B_t(t_m)
 $$
 
-On en déduit que le PnL est :
-\begin{align*}
+On en déduit que le PnL est : \begin{align*}
 PnL &=  ( \sum_{m=1}^{n_C} C(t_m) B_{t+h}(t_m) - \times \sum_{m=1}^{n_C} C(t_m) B_t(t_m) )\\
 &=  -\sum_{m=1}^{n_C} C(t_m) (t_m - t) B_{t}(t_m) \Delta R(t+h,t_m)) \\
 &=  \sum_{m=1}^{n_C} W_t(tm) \Delta R(t+h,t_m) \\
@@ -194,16 +291,15 @@ PnL &=  ( \sum_{m=1}^{n_C} C(t_m) B_{t+h}(t_m) - \times \sum_{m=1}^{n_C} C(t_m) 
 
 où $W_t(t_m) = -C(t_m)(t_m-t) B_t(t_m)$ est le montant investi dans l'obligation $m$ et $\Delta R(t+h,t_m)$ est le rendement de l'obligation $m$ entre $t$ et $t+h$.
 
-| $t_m - t$   | $C(t_m)$   | $R_t(t_m)$   | $B_t(t_m)$   | $W_{t_m}$   |
-|-------------|------------|--------------|--------------|-------------|
-| 1           | 5          | 0.431%       | 0.996        | -4.978      |
-| 2           | 5          | 0.879%       | 0.983        | -9.826      |
-| 3           | 5          | 1.276%       | 0.962        | -14.437     |
-| 4           | 5          | 1.569%       | 0.939        | -18.783     |
-| 5           | 105        | 1.777%       | 0.915        | -480.356    |
+| $t_m - t$ | $C(t_m)$ | $R_t(t_m)$ | $B_t(t_m)$ | $W_{t_m}$ |
+|-----------|----------|------------|------------|-----------|
+| 1         | 5        | 0.431%     | 0.996      | -4.978    |
+| 2         | 5        | 0.879%     | 0.983      | -9.826    |
+| 3         | 5        | 1.276%     | 0.962      | -14.437   |
+| 4         | 5        | 1.569%     | 0.939      | -18.783   |
+| 5         | 105      | 1.777%     | 0.915      | -480.356  |
 
-Nous en déduisons que le prix de l'obligation est de $P(t)=115,47 \$$ et l'exposition totale est de 1 154 706 \$. En utilisant la période historique de l'année 2014, nous estimons la matrice de covariance entre les variations quotidiennes des cinq taux d'intérêt à coupon zéro sachant que l'écart-type est respectivement de 0,746 pb pour $\Delta_h R_t(t + 1)$, 2,170 pb pour $\Delta_h R_t(t + 2)$, 3,264 pb pour $\Delta_h R_t(t + 3)$, 3,901 pb pour $\Delta_h R_t(t + 4)$ et 4,155 pb pour $\Delta_h R_t(t + 5)$, où $h$ correspond à un jour de bourse.
-Pour la matrice de corrélation en pb (points de base), nous obtenons :
+Nous en déduisons que le prix de l'obligation est de $P(t)=115,47 \$$ et l'exposition totale est de 1 154 706 \$. En utilisant la période historique de l'année 2014, nous estimons la matrice de covariance entre les variations quotidiennes des cinq taux d'intérêt à coupon zéro sachant que l'écart-type est respectivement de 0,746 pb pour $\Delta_h R_t(t + 1)$, 2,170 pb pour $\Delta_h R_t(t + 2)$, 3,264 pb pour $\Delta_h R_t(t + 3)$, 3,901 pb pour $\Delta_h R_t(t + 4)$ et 4,155 pb pour $\Delta_h R_t(t + 5)$, où $h$ correspond à un jour de bourse. Pour la matrice de corrélation en pb (points de base), nous obtenons :
 
 $$
 \rho = 
@@ -216,16 +312,15 @@ $$
 \end{pmatrix}
 $$
 
-
-Nous en déduisons que la valeur à risque à 99% est (en supposant que la moyenne du PnL est nulle):
-$$
+Nous en déduisons que la valeur à risque à 99% est (en supposant que la moyenne du PnL est nulle): $$
 VaR= 2.33 * \sqrt{W_t^T \Sigma W_t}
-$$
-Nous obtenons une valeur à risque de 4978\$ pour une période de détention d'un jour.
+$$ Nous obtenons une valeur à risque de 4970\$ pour une période de détention d'un jour.
+
+#### Implémentation en R
 
 ```{r}
 # Définition des écarts-types en points de base convertis en pourcentage
-std_devs <- c(0.746, 2.170, 3.264, 3.901, 4.155)/100
+std_devs <- c(0.746, 2.170, 3.264, 3.901, 4.155)/10000
 
 # Matrice de corrélation
 correlation_matrix <- matrix(c(
@@ -236,28 +331,12 @@ correlation_matrix <- matrix(c(
   71.944, 92.110, 96.556, 99.219, 100
 ), nrow = 5, byrow = TRUE)/100
 
+W_tm <- matrix(c(-4.978, -9.826, -14.437, -18.783, -480.356),nrow = 5)*10000
+mu<-rep(0,5)
 
-# Initialisation de la matrice de stockage pour les résultats
-cov_matrix <- matrix(0, nrow = 5, ncol = 5)
-
-# Boucles pour calculer et stocker les valeurs dans la matrice
-for (i in 1:5) {
-  for (j in 1:5) {
-    # Calcul de la covariance en utilisant les écarts-types et la matrice de corrélation
-    cov_matrix[i, j] <- std_devs[i] * std_devs[j] * correlation_matrix[i, j]
-  }
-}
-
-# Afficher la matrice résultante
-print("Covariance matrix:")
-print(cov_matrix)
-
-W_tm <- matrix(c(-4.978, -9.826, -14.437, -18.783, -480.356),nrow = 5)
-
-VaR<- 2.33*sqrt(t(W_tm) %*% cov_matrix %*% W_tm)*100
+VaR<-calculate_VaR(mu,W_tm,std_devs,correlation_matrix,0.99)
 VaR
 ```
-
 
 # La VaR historique
 
@@ -273,9 +352,14 @@ Par la suite, nous estimons la VaR en prenant l'opposé de la $n \times (1-\alph
 VaR(\alpha) = - PnL_{n \times (1-\alpha):n}
 $$
 
-Lorsque $n \times (1-\alpha)$ n'est pas entier, il faut procéder par interpolation linéaire : $$
-VaR(\alpha) = - PnL_{\lfloor n \times (1-\alpha) \rfloor:n} + (n \times (1-\alpha) - \lfloor n \times (1-\alpha) \rfloor) \times (PnL_{\lfloor n \times (1-\alpha) \rfloor+1:n} - PnL_{\lfloor n \times (1-\alpha) \rfloor:n})
-$$ où $\lfloor x \rfloor$ est la partie entière de $x$. Par exemple, pour un échantillon de taille 1000, la VaR à 99% est la 10ème plus petite valeur de l'échantillon.
+Lorsque $n \times (1-\alpha)$ n'est pas entier, il faut procéder par interpolation linéaire :
+
+```{=tex}
+\begin{align*}
+VaR(\alpha) &= - PnL_{\lfloor n \times (1-\alpha) \rfloor:n} + (n \times (1-\alpha) - \lfloor n \times (1-\alpha) \rfloor) \times (PnL_{\lfloor n \times (1-\alpha) \rfloor+1:n} - PnL_{\lfloor n \times (1-\alpha) \rfloor:n})
+\end{align*}
+```
+où $\lfloor x \rfloor$ est la partie entière de $x$. Par exemple, pour un échantillon de taille 1000, la VaR à 99% est la 10ème plus petite valeur de l'échantillon.
 
 # La VaR Monte-Carlo
 
@@ -316,7 +400,7 @@ Comme $VaR_{\text{gaussienne}}=\Phi^{-1}(\alpha) \times \sigma(L)$ (puisque $\mu
 \end{align*}
 ```
 |           |                     | Symétrique | Symétrique | Asymétrique | Asymétrique |
-|-----------|---------------------|------------|------------|-------------|-------------|
+|------------|------------|------------|------------|------------|------------|
 | $\alpha$  | $\Phi^{-1}(\alpha)$ | $k$        | $\kappa$   | $k$         | $\kappa$    |
 | 90.00     | 1.28                | 2.24       | 1.74       | 3.16        | 2.47        |
 | 95.00     | 1.64                | 3.16       | 1.92       | 4.47        | 2.72        |
@@ -347,6 +431,3 @@ VaR(\alpha) = z_{\alpha}(\gamma_1,\gamma_2) \times \sigma
 $$
 
 avec $z_{\alpha}(\gamma_1,\gamma_2) = z_{\alpha} + \frac{1}{6}(z_{\alpha}^2 -1)\gamma_1+ \frac{1}{24}(z_{\alpha}^3-3z_{\alpha})\gamma_2) -  \frac{1}{36}(2z_{\alpha}^3 -5z_{\alpha})\gamma_1^2+\dots$ et $z_{\alpha}=\Phi^{-1}(\alpha)$. Cette formule est l'expansion de corner-fisher.
-
-# Backtesting
-...

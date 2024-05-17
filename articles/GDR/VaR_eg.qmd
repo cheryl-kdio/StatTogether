@@ -1,10 +1,13 @@
 ---
-title: "Application de la VaR"
+title: Application de la VaR
 sidebar: auto
 author:
   - Cheryl Kouadio
-categories: [risque, finance, gdr]
-execute: 
+categories:
+  - risque
+  - finance
+  - gdr
+execute:
   cache: true
 bibliography: ../../references.bib
 jupyter: python3
@@ -12,16 +15,15 @@ jupyter: python3
 
 # Introduction
 
-Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes potentielles d'un portefeuille  d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def))
+Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes maximales potentielles d'un portefeuille  d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def))
 
 # Import des données
 
-Nous utilisons les données du cac 40 du 01/03/1990 au 10/05/2024. Le CAC 40 (Cotation Assistée en Continu) est l'indice boursier le plus important de la Bourse de Paris. Son nom signifie que c'est un indice composé des 40 sociétés françaises les plus significatives et les plus liquides cotées sur Euronext Paris, qui est l'une des principales places boursières en Europe.
+Nous utilisons les données du CAC 40 du 01/03/1990 au 10/05/2024. Le CAC 40 (Cotation Assistée en Continu) est l'indice boursier le plus important de la Bourse de Paris. Son nom signifie que c'est un indice composé des 40 sociétés françaises les plus significatives et les plus liquides cotées sur Euronext Paris, qui est l'une des principales places boursières en Europe.
 
 ```{python}
 # Librairie où importer les données
 import yfinance as yf
-
 cac_40 = yf.Ticker("^FCHI")
 ts_data = cac_40.history("max")
 ts_data.index = ts_data.index.strftime('%Y-%m-%d')
@@ -30,34 +32,26 @@ ts_data.columns
 
 Nous  nous interesserons plus particulièrement au prix de la clôture, c'est à dire, le prix final de l'indice à la fin de la session de trading sur Euronext Paris, qui est la bourse où l'indice est coté. Celà reflète l'impact des nouvelles économiques, des performances des entreprises comprises dans l'indice, et des mouvements généraux du marché.
 
-Dans notre cas, nous l'utiliserons pour calculer le rendement logarithmique.
-Le rendement logarithmique est le logarithme naturel du rapport entre le prix final et le prix initial d'un actif. Voici la formule mathématique :
+Pour implémenter la VaR, nous avons besoin des rendements.Nous utiliserons les rendements arithmétiques définis comme suit entre le temps $t$ et $t-1$ :
 
-$$ R_{\text{log}} = \ln\left(\frac{P_{\text{fin}}}{P_{\text{début}}}\right) $$
+$$
+R_{t} = \frac{P_{t}-P_{t-1}}{P_{t-1}}
+$$
 
-où :
-\begin{itemize}
-  \item $R_{\text{log}}$ est le rendement logarithmique,
-  \item $\ln$ représente le logarithme naturel,
-  \item $P_{\text{fin}}$ est la valeur de clôture de l'actif à la fin de la période,
-  \item $P_{\text{début}}$ est la valeur de clôture de l'actif au début de la période.
-\end{itemize}
+où $P_{t}$ est le prix de clôture à la date $t$.
 
 ```{python}
 import warnings
 warnings.filterwarnings('ignore')
-ts_close = ts_data[[ 'Close']]
+ts_data = ts_data[[ 'Close']]
 import pandas as pd
 import numpy as np
 
-#Nbre de NA
-ts_close.isna().sum()
 
-ts_close['log_return'] = np.log(ts_close['Close'] / ts_close['Close'].shift(1))
-ts_close = ts_close.dropna(subset=['log_return'])
-print(ts_close.head())
+ts_data['Return'] = ts_data["Close"].pct_change()
+ts_data = ts_data.dropna(subset=['Return'])
+print(ts_data.head())
 ```
-
 
 # Test de stationarité du log-rendement
 
@@ -70,21 +64,21 @@ plt.figure(figsize=(6, 4))
 fig, ax = plt.subplots(1)
 
 ax.set_xlabel('Date')
-ax.set_ylabel('historical log returns')
-ax.plot(ts_close.index, ts_close['log_return'], color='blue')
+ax.set_ylabel('Historical Returns')
+ax.plot(ts_data.index, ts_data['Return'], color='grey')
 ax.tick_params(axis='y')
 
-plt.title('Historical Log-returns of CAC40')
+plt.title('Historical Returns of CAC40')
 plt.show()
 ```
 
-Il semblerait que la série des rendements logarithmiques est stationnaire. Nous allons tout de même en observant l'ACF et le PACF mais aussi effectuer un test de stationarité pour confirmer cette hypothèse.
+Il semblerait que la série des rendements est stationnaire. Nous allons tout de même en observant l'ACF et le PACF mais aussi effectuer un test de stationarité pour confirmer cette hypothèse.
 
 ```{python}
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 fig, ax = plt.subplots(1,2, figsize=(8, 4))
-plot_acf(ts_close['log_return'].dropna(), ax=ax[0],title='ACF')
-plot_pacf(ts_close['log_return'].dropna(), ax=ax[1],title='PACF')
+plot_acf(ts_data['Return'].dropna(), ax=ax[0],title='ACF')
+plot_pacf(ts_data['Return'].dropna(), ax=ax[1],title='PACF')
 plt.show()
 ```
 
@@ -95,13 +89,12 @@ Pour plus de certitude, nous allons effectuer un test de Dickey-Fuller augmenté
 $$ 
 H_0=\rho = 1, \alpha=0
 $$ 
+
 Dans le cas d'une série AR(1)($X_t = \alpha + \rho X_{t-1} + \xi_t$) avec intercept, la série est non stationnaire si $\rho = 1$ et stationnaire si $\rho < 1.  Dans le cas contraire, il faudrait considérer la série de différences pour la rendre stationnaire.
-
-
 
 ```{python}
 from statsmodels.tsa.stattools import adfuller
-adf_result = adfuller(ts_close['log_return'].dropna(), regression='c')
+adf_result = adfuller(ts_data['Return'].dropna(), regression='c')
 print(f"ADF Statistic: {round(adf_result[0],2)} and p-value: {adf_result[1]}")
 ```
 
@@ -112,24 +105,23 @@ La p-value du test de dickey fuller est environ égale à 0, ce qui signifie que
 Pour modéliser la VaR, nous considérons un échantillon d'apprentissage avec 75% des données et 25% pour l'échantillon de test.
 
 ```{python}
-train_size = int(len(ts_close)*0.75)
-test_size = len(ts_close)-train_size
+train_size = int(len(ts_data)*0.75)
+test_size = len(ts_data)-train_size
 
-train_close = ts_close.iloc[0:train_size,:].dropna()
-test_close = ts_close.iloc[train_size:len(ts_close),:]
+train_close = ts_data.iloc[0:train_size,:].dropna()
+test_close = ts_data.iloc[train_size:len(ts_data),:]
 print("Taille de l'ensemble d'apprentissage :", len(train_close))
 print("Taille de l'ensemble de test :", len(test_close))
-pd.isna(train_close).sum()
 ```
+
 ## VaR analytique
 
-Pour rappel, la VaR analytique ou gaussienne est basée sur la distribution des rendements. Nous allons utiliser la distribution normale pour calculer la VaR à horizon 1 jour. La VaR à horizon 1 jour est définie comme suit :
+Pour rappel, la VaR analytique ou gaussienne est basée sur la distribution gaussienne des rendements. Nous allons utiliser la distribution normale pour calculer la VaR à horizon 1 jour. La VaR à horizon 1 jour est définie comme suit :
 
 $$
 VaR = -\mu_{PnL} + \Phi^{-1}(\alpha) \times \sigma_{PnL}
 $$
 où $\Phi^{-1}(\alpha)$ est le quantile de la distribution normale du PnL (Profit and Loss) à $\alpha$.
-
 
 ```{python}
 from scipy import stats
@@ -140,22 +132,31 @@ def gaussian_var(PnL, seuil):
     return VaR
 
 seuil = 0.99
-VaR_gaussienne = gaussian_var(train_close['log_return'], seuil)
+prices= train_close["Close"].iloc[-1]*(1+train_close["Return"])
+train_close["PnL"] = prices - train_close["Close"].iloc[-1]
+
+
+VaR_gaussienne = gaussian_var(train_close["PnL"], seuil)
 
 print(f"La VaR à horizon 1 jour est de {round(VaR_gaussienne, 4)}")
 ```
 
-La VaR à horizon 1 jour est de 0.0325€, ce qui signifie que la perte maximale du portefeuille est de 0.0325€ en un jour. 
+La VaR à horizon 1 jour est de 159€, ce qui signifie que la perte maximale du portefeuille est de 159€ en un jour. 
 
-Sur 10 jours, la VaR est de $VaR_{1j} \times \sqrt{10}=$ 0.1029€.
+Sur 10 jours, la VaR est de $VaR_{1j} \times \sqrt{10}=$ 0.504€.
 
 ```{python}
 # Plot histogram of returns
-plt.hist(train_close["log_return"], bins=50, density=True, alpha=0.7)
+plt.hist(train_close["PnL"], bins=50, density=True, alpha=0.7,color="grey")
 
 # Plot VaR line
-plt.axvline(x=-VaR_gaussienne, color="red", linestyle="--", linewidth=2)
+plt.axvline(x=-VaR_gaussienne, color="orange", linestyle="--", linewidth=1)
 plt.axvline(x=0, color="grey",  linewidth=1)
+
+# Add text for Loss and Gain
+plt.text(-100, plt.ylim()[1] * 0.9, 'Pertes', horizontalalignment='right', color='red')
+plt.text(100, plt.ylim()[1] * 0.9, 'Gains', horizontalalignment='left', color='green')
+
 
 # Add labels and title
 plt.xlabel("Returns")
@@ -171,11 +172,14 @@ plt.show()
 Pour backtester la VaR, nous allons comparer dans l'échantillon test les rendements logarithmiques du portefeuille avec la VaR à horizon 1 jour. Si le rendement est inférieur à la VaR, alors la VaR est violée et celà correspond à une exception.
 
 ```{python}
-plt.plot(ts_close.index[0:train_size], train_close['log_return'], label="historical train log returns", color = 'gray')
-plt.plot(ts_close.index[train_size:], test_close['log_return'], label="historical test log returns", color = 'blue')
-plt.plot(ts_close.index[train_size:], [-VaR_gaussienne for i in range(test_size)], label="gaussian VaR", color = 'red')
-list_exceptions_gaus = [i for i in range(len(test_close['log_return'])) if test_close['log_return'][i]<-VaR_gaussienne]
-plt.scatter(test_close.index[list_exceptions_gaus], test_close['log_return'][list_exceptions_gaus], color='red', label='Exceptions')
+prices= test_close["Close"].iloc[-1]*(1+test_close["Return"])
+test_close["PnL"] = prices - test_close["Close"].iloc[-1] 
+
+plt.plot(ts_data.index[0:train_size], train_close['PnL'], label="historical train returns", color = 'gray')
+plt.plot(ts_data.index[train_size:], test_close['PnL'], label="historical test returns", color = 'blue')
+plt.plot(ts_data.index[train_size:], [-VaR_gaussienne for i in range(test_size)], label="gaussian VaR", color = 'red')
+list_exceptions_gaus = [i for i in range(len(test_close['PnL'])) if test_close['PnL'][i]<-VaR_gaussienne]
+plt.scatter(test_close.index[list_exceptions_gaus], test_close['PnL'][list_exceptions_gaus], color='red', label='Exceptions')
 plt.title('CAC40')
 plt.ylabel('Values')
 plt.plot()
@@ -183,33 +187,66 @@ plt.legend()
 plt.show()
 ```
 
-Nous pouvons compter le nombre d'exceptions pour la VaR à horizon 1 jour et en déduisons que le taux d'exception est 1.38%.
+Nous pouvons compter le nombre d'exceptions pour la VaR à horizon 1 jour qui est égale à 77 et en déduisons que le taux d'exception est 3.58%.
+
 ```{python}
 round((len(list_exceptions_gaus)/test_size)*100,2) 
 ```
 
+Pour savoir si ce taux d'exception est significativement inférieur à 1%, nous pouvons effectuer un test binomial. La p-value est d'environ 0.0344, ce qui signifie que le taux d'exception est significativement inférieur à 1% au risque de 5% de se tromper. Il est possible d'utiliser la fonction `stats.binomtest` pour effectuer ce test.
 
+```{python}
+num_simulations = 1000
+tboot = np.zeros(num_simulations)
+
+for i in range(num_simulations):
+  sample = np.random.choice(test_close["PnL"], test_size, replace=True)
+  p0=1-seuil
+  n=len(sample)
+  variance=p0*(1-p0)/n
+  list_exceptions=[i for i in range(n) if sample[i]<-VaR_gaussienne]
+
+  p=(len(list_exceptions)/n)
+  tboot[i]=(p-p0)/np.sqrt(variance)
+
+t = np.mean(tboot)
+
+lower_bound = np.percentile(tboot,100*(1-seuil)/2)
+upper_bound = np.percentile(tboot,100*(1-(1-seuil)/2))
+IC = (lower_bound, upper_bound)
+print(t)
+pvaleur=1-stats.norm.cdf(t)
+print(pvaleur)
+print(IC)
+
+stats.binomtest(len(list_exceptions_gaus), test_size, p = 0.01).pvalue
+```
 
 ## VaR historique
 
-La VaR historique est basée sur les rendements historiques. Elle est définie comme l'opposé du quantile de niveau $1-\alpha$ des rendements logarithmiques historiques. En implémentant celà, nous obtenons que la VaR historique à horizon 1 jour est d'environ 0.0404 (0.1278 pour un horizon de 10 jours)
+La VaR historique est basée sur les rendements historiques. Elle est définie comme l'opposé du quantile de niveau $1-\alpha$ des rendements logarithmiques historiques. En implémentant celà, nous obtenons que la VaR historique à horizon 1 jour est d'environ 0.0396 (0.1252 pour un horizon de 10 jours)
 
 ```{python}
 def historical_var(PnL, seuil):
-    return - np.percentile(PnL, (1 - seuil) * 100)
+    return -np.percentile(PnL, (1 - seuil) * 100)
 
-VaR_historique = historical_var(train_close["log_return"],seuil)
+prices= train_close["Close"].iloc[-1]*(1+train_close["Return"])
+PnL = prices - train_close["Close"].iloc[-1]
+
+VaR_historique = historical_var(PnL,seuil)
 round(VaR_historique,4)
-
 ```
 
 ```{python}
 # Plot histogram of returns
-plt.hist(train_close["log_return"], bins=50, density=True, alpha=0.7)
+plt.hist(train_close["Return"], bins=50, density=True, alpha=0.7,color="grey")
 
 # Plot VaR line
-plt.axvline(x=-VaR_historique, color="red", linestyle="--", linewidth=2)
+plt.axvline(x=-VaR_historique, color="orange", linestyle="--", linewidth=1)
 plt.axvline(x=0, color="grey",  linewidth=1)
+# Add text for Loss and Gain
+plt.text(- 0.01, plt.ylim()[1] * 0.9, 'Pertes', horizontalalignment='right', color='red')
+plt.text(0.01, plt.ylim()[1] * 0.9, 'Gains', horizontalalignment='left', color='green')
 
 
 # Add labels and title
@@ -223,13 +260,15 @@ plt.show()
 
 ### Backtesting
 
+En ce qui concerne le backtesting, nous pouvons voir que la VaR historique est violée 14 fois dans l'échantillon test. Le taux d'exception est de 0.64%.
+
 ```{python}
 import matplotlib.pyplot as plt
-plt.plot(ts_close.index[0:train_size], train_close['log_return'], label="historical train log returns", color = 'gray')
-plt.plot(ts_close.index[train_size:], test_close['log_return'], label="historical test log returns", color = 'blue')
-plt.plot(ts_close.index[train_size:], [-VaR_historique for i in range(test_size)], label="historical VaR", color = 'red')
-list_exceptions_hist = [i for i in range(len(test_close['log_return'])) if test_close['log_return'][i]<-VaR_historique]
-plt.scatter(test_close.index[list_exceptions_hist], test_close['log_return'][list_exceptions_hist], color='red', label='Exceptions')
+plt.plot(ts_data.index[0:train_size], train_close['PnL'], label="historical train log returns", color = 'gray')
+plt.plot(ts_data.index[train_size:], test_close['Return'], label="historical test log returns", color = 'blue')
+plt.plot(ts_data.index[train_size:], [-VaR_historique for i in range(test_size)], label="historical VaR", color = 'red')
+list_exceptions_hist = [i for i in range(len(test_close['Return'])) if test_close['Return'][i]<-VaR_historique]
+plt.scatter(test_close.index[list_exceptions_hist], test_close['Return'][list_exceptions_hist], color='red', label='Exceptions')
 plt.title('CAC40')
 plt.ylabel('Values')
 plt.plot()
@@ -237,37 +276,34 @@ plt.legend()
 plt.show()
 ```
 
-Nous pouvons compter le nombre d'exceptions pour la VaR à horizon 1 jour qui est égale à 14 et en déduisons que le taux d'exception est 0.65%.
+Nous pouvons compter le nombre d'exceptions pour la VaR à horizon 1 jour qui est égale à 14 et en déduisons que le taux d'exception est 0.65%. Ce taux d'exception est statistiquement supérieur à 1% (car la pvaleur est d'environ 0.95). Ainsi, la VaR historique est performante pour la période considérée.
+
 ```{python}
 round((len(list_exceptions_hist)/test_size)*100,2) 
-```
+p0=1-seuil
+variance=p0*(1-p0)/test_size
+p=(len(list_exceptions_hist)/test_size)
 
+t=(p-p0)/np.sqrt(variance)
+pvaleur=1-stats.norm.cdf(t)
+pvaleur
+```
 
 ## VaR Monte Carlo
 La VaR Monte Carlo est basée sur la simulation de trajectoires de rendements. Nous allons simuler 1000 trajectoires de rendements logarithmiques et calculer la VaR à horizon 1 jour en supposant que le prix de la clôture suit une distribution normale.
 
 ```{python}
-def monte_carlo_var(Close,PnL,seuil, num_simulations):
-  mean = np.mean(PnL)
-  std = np.std(PnL)
+def monte_carlo_var(Close,Return,seuil, num_simulations):
+  mean = np.mean(Return)
+  std = np.std(Return)
   # Generate random scenarios of future returns
-  simulated_returns = np.random.normal(mean, std, size=(len(PnL), num_simulations))
+  simulated_returns = np.random.normal(mean, std, size=num_simulations)
+  simulated_prices = Close.iloc[-1] * (1+simulated_returns)
+  simulated_pnl = simulated_prices - Close.iloc[-1]
 
   # Calculate portfolio values for each scenario
-  portfolio_values = (Close.iloc[-1] * (1 + simulated_returns)).cumprod()
-
-  # Convert portfolio_values into a DataFrame
-  portfolio_values = pd.DataFrame(portfolio_values)
-
-  # Calculate portfolio returns for each scenario
-  portfolio_returns = portfolio_values.pct_change()
-
-  # Calculate VaR
-  if len(portfolio_returns.iloc[-1].dropna()) > 0:
-      var = -np.percentile(portfolio_returns.iloc[-1].dropna(), (1 - confidence_level) * 100)
-  else:
-      var = 0
-  return var
+    
+  return historical_var(simulated_pnl,seuil)
 
 def bootstrap_var(PnL, seuil, num_simulations, alpha_IC, B):
     VaRs_boot = np.zeros(num_simulations)
@@ -284,22 +320,22 @@ def bootstrap_var(PnL, seuil, num_simulations, alpha_IC, B):
 
     return VaR, IC
 
-VaR_boostrap, IC = bootstrap_var(train_close["log_return"], seuil, 5000, 0.95, train_size)
+VaR_boostrap, IC = bootstrap_var(train_close["Return"], seuil, 5000, 0.95, train_size)
 VaR_boostrap
-VaR_monte_carlo = monte_carlo_var(train_close["Close"],train_close["log_return"], seuil, 5000)
+VaR_monte_carlo = monte_carlo_var(train_close["Close"],train_close["Return"], seuil, 100)
 VaR_monte_carlo
 ```
 
-
 ```{python}
-plt.plot(ts_close.index[0:train_size], train_close['log_return'], label="historical train log returns", color = 'gray')
-plt.plot(ts_close.index[train_size:], test_close['log_return'], label="historical test log returns", color = 'blue')
-plt.plot(ts_close.index[train_size:], [-VaR_boostrap for i in range(test_size)], label="Non parametric Bootstrap VaR", color = 'red')
-list_exceptions_np_boot = [i for i in range(len(test_close['log_return'])) if test_close['log_return'][i]<-VaR_boostrap]
-plt.scatter(test_close.index[list_exceptions_np_boot], test_close['log_return'][list_exceptions_np_boot], color='red', label='Exceptions')
+plt.plot(ts_data.index[0:train_size], train_close['Return'], label="historical train log returns", color = 'gray')
+plt.plot(ts_data.index[train_size:], test_close['Return'], label="historical test log returns", color = 'blue')
+plt.plot(ts_data.index[train_size:], [-VaR_boostrap for i in range(test_size)], label="Non parametric Bootstrap VaR", color = 'red')
+list_exceptions_np_boot = [i for i in range(len(test_close['Return'])) if test_close['Return'][i]<-VaR_boostrap]
+plt.scatter(test_close.index[list_exceptions_np_boot], test_close['Return'][list_exceptions_np_boot], color='red', label='Exceptions')
 plt.title('CAC40')
 plt.ylabel('Values')
 plt.plot()
 plt.legend()
 plt.show()
 ```
+
