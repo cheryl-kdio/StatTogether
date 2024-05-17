@@ -304,7 +304,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./articles/GDR/VaR_eg.html" class="sidebar-item-text sidebar-link">
+  <a href="./articles/GDR/VaR_eg.ipynb" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2.1 - Application VaR</span></a>
   </div>
 </li>
@@ -373,7 +373,7 @@ window.Quarto = {
   </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="risque,finance,gdr" data-listing-file-modified-sort="1715435221884" data-listing-reading-time-sort="6" data-listing-word-count-sort="1096">
+<div class="quarto-post image-right" data-index="0" data-categories="risque,finance,gdr" data-listing-file-modified-sort="1715862913227" data-listing-reading-time-sort="8" data-listing-word-count-sort="1416">
 <div class="thumbnail">
 <p><a href="./articles/GDR/VaR_eg.html" class="no-external"></a></p><a href="./articles/GDR/VaR_eg.html" class="no-external">
 <p class="card-img-top"><img src="articles/GDR/VaR_eg_files/figure-html/cell-4-output-2.png"  class="thumbnail-image card-img"/></p>
@@ -542,7 +542,7 @@ Cheryl Kouadio
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="5" data-categories="finance,gdr" data-listing-file-modified-sort="1715435221884" data-listing-reading-time-sort="18" data-listing-word-count-sort="3576">
+<div class="quarto-post image-right" data-index="5" data-categories="finance,gdr" data-listing-file-modified-sort="1715798624632" data-listing-reading-time-sort="20" data-listing-word-count-sort="3933">
 <div class="thumbnail">
 <p><a href="./articles/GDR/var.html" class="no-external"></a></p><a href="./articles/GDR/var.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
@@ -564,7 +564,7 @@ gdr
 </div>
 </div>
 <div class="listing-description">
-<a href="./articles/GDR/var.html" class="no-external">La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s’agit dans cette sction…</a>
+<a href="./articles/GDR/var.html" class="no-external">{#sec-var-def} La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s’agit…</a>
 </div>
 </div>
 <div class="metadata">
@@ -575,7 +575,7 @@ Cheryl Kouadio
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="6" data-categories="finance,gdr" data-listing-file-modified-sort="1715435221884" data-listing-reading-time-sort="10" data-listing-word-count-sort="1865">
+<div class="quarto-post image-right" data-index="6" data-categories="finance,gdr" data-listing-file-modified-sort="1715522862358" data-listing-reading-time-sort="10" data-listing-word-count-sort="1865">
 <div class="thumbnail">
 <p><a href="./articles/GDR/reglementation_prudentielle.html" class="no-external"></a></p><a href="./articles/GDR/reglementation_prudentielle.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
@@ -669,7 +669,7 @@ Cheryl Kouadio
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="9" data-categories="R,Médecine personnalisée,Temps de survie,Qualité de vie,Ensai2A" data-listing-file-modified-sort="1715435221968" data-listing-reading-time-sort="26" data-listing-word-count-sort="5100">
+<div class="quarto-post image-right" data-index="9" data-categories="R,Médecine personnalisée,Temps de survie,Qualité de vie,Ensai2A" data-listing-file-modified-sort="1715507009324" data-listing-reading-time-sort="26" data-listing-word-count-sort="5100">
 <div class="thumbnail">
 <p><a href="./projets/LAL/lal.html" class="no-external"></a></p><a href="./projets/LAL/lal.html" class="no-external">
 <p class="card-img-top"><img src="projets/LAL/essai_graph.png"  class="thumbnail-image card-img"/></p>
@@ -761,7 +761,7 @@ Cheryl Kouadio
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="12" data-categories="R,Apprentissage supervisé,Ensai2A,Random forest,CART,UMAP" data-listing-file-modified-sort="1715435222012" data-listing-reading-time-sort="24" data-listing-word-count-sort="4624">
+<div class="quarto-post image-right" data-index="12" data-categories="R,Apprentissage supervisé,Ensai2A,Random forest,CART,UMAP" data-listing-file-modified-sort="1715507015341" data-listing-reading-time-sort="24" data-listing-word-count-sort="4624">
 <div class="thumbnail">
 <p><a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html" class="no-external"></a></p><a href="./projets/app_supervise/Tp_Cheryl_Kouadio.html" class="no-external">
 <p class="card-img-top"><img src="projets/app_supervise/Tp_Cheryl_Kouadio_files/figure-html/unnamed-chunk-4-1.png"  class="thumbnail-image card-img"/></p>
@@ -961,7 +961,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/cheryl-kdio\.github\.io\/cherry-stats\/");
+      var filterRegex = new RegExp('/' + window.location.host + '/');
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
