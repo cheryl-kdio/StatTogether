@@ -44,7 +44,7 @@ website:
                 text : 1-La réglementation prudentielle
               - href : articles/GDR/var.qmd
                 text : 2-La valeur en risque
-              - href : articles/GDR/VaR_eg.ipynb
+              - href : articles/GDR/VaR_eg.qmd
                 text : 2.1 - Application VaR
       - section: "Articles"
         contents:
