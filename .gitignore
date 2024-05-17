@@ -5,3 +5,5 @@
 .venv
 /.quarto/
 /_site/
+/_freeze/
+/renv/
