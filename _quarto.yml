@@ -29,7 +29,6 @@ website:
             contents:
               - href : projets/TS/ts1.Rmd
                 text : Series temporelles 1
-      #- section: "Projets 3A"
       - section: "Ensai 3A - Gestion des risques"
         contents:
           - href : articles/GDR/bilan_entreprise.qmd
