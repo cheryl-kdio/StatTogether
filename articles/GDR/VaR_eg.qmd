@@ -7,10 +7,7 @@ categories:
   - risque
   - finance
   - gdr
-execute:
-  cache: true
 bibliography: ../../references.bib
-jupyter: python3
 ---
 
 # Introduction
