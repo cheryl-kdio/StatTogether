@@ -291,12 +291,57 @@ ptest(0.01,test_size,len(list_exceptions_hist))
 
 ## VaR Monte Carlo
 
-La VaR Monte Carlo est basée sur la simulation de trajectoires de rendements. Nous allons simuler 1000 trajectoires de rendements et calculer la VaR à horizon 1 jour en posant une hypothèse de normalité sur la distribution des rendements.
+La VaR Monte Carlo est basée sur la simulation de trajectoires de rendements. Nous allons simuler jusqu'à 10000 scénarios de rendements et calculer la VaR à horizon 1 jour en posant une hypothèse de normalité sur la distribution des rendements afin de voir quand est ce que la VaR se stabilise.
 
 ```{python}
-num_simulations = 1000
+VaR_results = []
+
+num_simulations_list = range(10, 10000 + 1, 1)
 mean=train_close["Return"].mean()
 std = train_close["Return"].std()
+
+for num_simulations in num_simulations_list:
+  # Generate random scenarios of future returns
+  simulated_returns = np.random.normal(mean, std, size= num_simulations)
+
+  # Calculate portfolio values for each scenario
+  portfolio_values = (train_close["Close"].iloc[-1] * (1 + simulated_returns))
+
+  # Convert portfolio_values into a DataFrame
+  portfolio_values = pd.DataFrame(portfolio_values)
+
+  # Calculate portfolio returns for each scenario
+  portfolio_returns = portfolio_values.pct_change()
+  portfolio_returns=portfolio_returns.dropna()
+  portfolio_returns=portfolio_returns.mean(axis=1)
+
+
+  # Calculate VaR
+  if portfolio_returns.iloc[-1] != 0:
+      VaR_monte_carlo =  historical_var(portfolio_returns,seuil)
+  else:
+      VaR_monte_carlo = 0
+  
+  VaR_results.append(VaR_monte_carlo)
+```
+
+```{python}
+# Plotting the results
+plt.figure(figsize=(10, 6))
+plt.xticks(np.arange(0,10000 + 1, 1000))
+plt.plot(num_simulations_list, VaR_results, linestyle='-')
+plt.xlabel('Number of Simulations')
+plt.ylabel('Value at Risk (VaR)')
+plt.title('VaR vs Number of Simulations')
+plt.grid(True)
+plt.show()
+# Customize x-axis ticks
+```
+
+Visuellement, la VaR se stabilise à partir de 3000 scénarios. Nous utiliserons donc 3000 simulations de rendements. Nous en déduisons que la perte maximale en terme de rendements du portefeuille est de 4.31% en un jour (soit 13.98% en 10jours)
+
+```{python}
+num_simulations = 3000
 
 # Generate random scenarios of future returns
 simulated_returns = np.random.normal(mean, std, size= num_simulations)
@@ -319,10 +364,8 @@ if portfolio_returns.iloc[-1] != 0:
 else:
     VaR_monte_carlo = 0
 
-print(f"La VaR monte carlo à horizon 1 jour est de {round(VaR_monte_carlo, 4)}")
+VaR_monte_carlo
 ```
-
-Nous en déduisons que la perte maximale en terme de rendements du portefeuille est de 4.42% en un jour (soit 13.98% en 10jours)
 
 
 ```{python}
@@ -348,7 +391,7 @@ plt.show()
 
 ### Backtesting
 
-En ce qui concerne le backtesting, nous pouvons voir que la VaR historique est beaucoup moins violée dans l'échantillon test que les deux autres VaRs. En effet, le taux d'exception est de 0.37%.
+En ce qui concerne le backtesting, nous pouvons voir que la VaR historique est beaucoup moins violée dans l'échantillon test que les deux autres VaRs. En effet, le taux d'exception est de  37%.
 
 ```{python}
 plt.plot(ts_data.index[0:train_size], train_close['Return'], label="historical train log returns", color = 'gray')
