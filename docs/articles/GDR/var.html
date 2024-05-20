@@ -450,10 +450,9 @@ P(N_{ex}\leq i)=\sum_{j=0}^{i} \binom{n}{j}(1-\alpha)^j \alpha^{n-j}
 H_0: P(PnL&lt;-VaR)=1-\alpha=p_0 \quad \text{vs} \quad H_1: P(PnL&lt;-VaR)&gt;1-\alpha=p_0
 \]</span></p>
 <p>La statistique de test est donnée par (sous <span class="math inline">\(H_0\)</span>) : <span class="math display">\[
-T= \frac{1}{n} \sum_{i=1}^{n} I_{Pnl&lt;-VaR}
-\]</span> où <span class="math inline">\(\hat{p}=\frac{1}{n} \sum_{i=1}^{n} I_{Pnl&lt;-VaR}\)</span> est la proportion d’exceptions observée. L’équivalence n’est possible que lorsque <span class="math inline">\(n\)</span> est suffisamment grand (<span class="math inline">\(np&gt;5\)</span> et <span class="math inline">\(n(1-p)&gt;5\)</span>).</p>
-<p>Si <span class="math inline">\(Z&gt;q_{1-\alpha}\)</span>, on rejette l’hypothèse nulle.</p>
-<p>La p-valeur est donnée par <span class="math inline">\(P(T&gt;t)=1-\phi(t)\)</span> où <span class="math inline">\(t\)</span> est la valeur observée de la statistique de test et <span class="math inline">\(\phi\)</span> est la fonction de répartition de la loi binomiale. Lorsque n est assez grand (<span class="math inline">\(np&gt;5\)</span> et <span class="math inline">\(n(1-p)&gt;5\)</span>), la statistique de test suit une loi normale standard. # La VaR analytique</p>
+T= \frac{1}{n} \sum_{i=1}^{n} I_{Pnl&lt;-VaR} \sim \mathcal{N}(p_0,\frac{p_0(1-p_0)}{n})
+\]</span> qui donne la proportion d’exceptions observée lorsque <span class="math inline">\(np&gt;5\)</span> et <span class="math inline">\(n(1-p)&gt;5\)</span>.</p>
+<p>La p-valeur est donnée par <span class="math inline">\(P(T&gt;t|H_0)=1-\phi(t)\)</span> où <span class="math inline">\(t\)</span> est la valeur observée de la statistique de test et <span class="math inline">\(\phi\)</span> est la fonction de répartition de la loi normale. # La VaR analytique</p>
 </section>
 <section id="cas-général" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="cas-général"><span class="header-section-number">2.2</span> Cas général</h2>
