@@ -391,7 +391,7 @@ plt.show()
 
 ### Backtesting
 
-En ce qui concerne le backtesting, nous pouvons voir que la VaR historique est beaucoup moins violée dans l'échantillon test que les deux autres VaRs. En effet, le taux d'exception est de  37%.
+En ce qui concerne le backtesting, nous pouvons voir que la VaR historique est beaucoup moins violée dans l'échantillon test que les deux autres VaRs. En effet, le taux d'exception est de 0.37%.
 
 ```{python}
 plt.plot(ts_data.index[0:train_size], train_close['Return'], label="historical train log returns", color = 'gray')
