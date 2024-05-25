@@ -1,7 +1,6 @@
 ---
 title: Application de la VaR
 sidebar: auto
-date : today
 author:
   - Cheryl Kouadio
 categories:
