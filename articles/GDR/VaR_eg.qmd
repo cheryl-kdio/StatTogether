@@ -10,7 +10,7 @@ categories:
 bibliography: ../../references.bib
 ---
 
-# Introduction
+# Introduction  
 
 Nous allons ici nous intéresser aux applications de la Value at Risk (VaR) en finance. La VaR est une mesure de risque qui permet d'estimer les pertes maximales potentielles d'un portefeuille  d'actifs financiers sur un horizon de temps donné, à un certain niveau de confiance. Elle est largement utilisée par les institutions financières pour évaluer et gérer les risques de marché, de crédit et de liquidité (cf. [Value at-Risk](var.qmd#sec-var-def)).
 
@@ -136,7 +136,7 @@ Celà est plus visible avec le QQ-plot ci dessous qui montre clairement que les 
 
 ```{python}
 ## Analyse graphique avec le QQ-plot
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(8, 6))
 probplot = stats.probplot(train_close["Return"], 
                         sparams = (np.mean(train_close["Return"]), np.std(train_close["Return"])), 
                         dist='norm', plot=plt)

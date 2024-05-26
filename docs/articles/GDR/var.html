@@ -194,6 +194,10 @@ window.Quarto = {
     <a class="dropdown-item" href="../../projets/TS/ts1.html">
  <span class="dropdown-text">Séries temporelles 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../projets/regression_lin/regression_lineaire.html">
+ <span class="dropdown-text">Regression linéaire</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -290,7 +294,7 @@ window.Quarto = {
     <h2 id="toc-title">Sur cette page</h2>
    
   <ul>
-  <li><a href="#définition" id="toc-définition" class="nav-link active" data-scroll-target="#définition"><span class="header-section-number">1</span> Définition</a></li>
+  <li><a href="#sec-var-def" id="toc-sec-var-def" class="nav-link active" data-scroll-target="#sec-var-def"><span class="header-section-number">1</span> Définition</a></li>
   <li><a href="#calcul-de-la-var" id="toc-calcul-de-la-var" class="nav-link" data-scroll-target="#calcul-de-la-var"><span class="header-section-number">2</span> Calcul de la VaR</a>
   <ul class="collapse">
   <li><a href="#le-backtesting" id="toc-le-backtesting" class="nav-link" data-scroll-target="#le-backtesting"><span class="header-section-number">2.1</span> Le backtesting</a></li>
@@ -350,8 +354,8 @@ window.Quarto = {
 </header>
 
 
-<p>{#sec-var-def} La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s’agit dans cette section de développer la notion de VaR pour des portefeuilles linéaires et non linéaires.</p>
-<section id="définition" class="level1" data-number="1">
+<p>La mesure de risque réglementaire correspond à la valeur en risque ou value at-risk (VaR) qui est le quantile de perte (ou perte maximale subie). Il s’agit dans cette section de développer la notion de VaR pour des portefeuilles linéaires et non linéaires.</p>
+<section id="sec-var-def" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Définition</h1>
 <p>La VaR est une mesure de perte (potentielle) qui peut survenir à la suite de variations du marché. Elle permet de réponde à la question : combien l’établissement financier peut-il perdre au maximum avec une probabilité <span class="math inline">\(\alpha\)</span> sur un horizon de temps fixé à <span class="math inline">\(h\)</span>?</p>
 <p>Pour bien interpréter la Valeur à Risque (VaR), il est donc nécessaire de prendre en compte deux éléments clés, à savoir, la période de détention et le seuil de confiance.</p>

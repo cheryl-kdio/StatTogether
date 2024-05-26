@@ -31,6 +31,8 @@ website:
             href: projets/np_stat/np_stat_notes.qmd
           - text: "Séries temporelles 1"
             href: projets/TS/ts1.Rmd
+          - text: "Regression linéaire"
+            href: projets/regression_lin/regression_lineaire.qmd
       - text: "Gestion des risques"
         menu:
           - text: "i - Le bilan d'entreprise"
