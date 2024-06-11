@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Cheryl Kouadio">
 
-<title>La régression linéaire</title>
+<title>Hello, Quarto</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,28 +20,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../favicon.ico" rel="icon">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,10 +155,10 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../logo2.png" alt="" class="navbar-logo">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./logo2.png" alt="" class="navbar-logo">
     </a>
-    <a class="navbar-brand" href="../../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">StatTogether</span>
     </a>
   </div>
@@ -141,27 +174,27 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-ensai-2a">    
         <li>
-    <a class="dropdown-item" href="../../projets/LAL/lal.html">
+    <a class="dropdown-item" href="./projets/LAL/lal.html">
  <span class="dropdown-text">Projet statistique</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../projets/app_supervise/Tp_Cheryl_Kouadio.html">
+    <a class="dropdown-item" href="./projets/app_supervise/Tp_Cheryl_Kouadio.html">
  <span class="dropdown-text">Apprentissage supervisé</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../projets/micro/micro_notes.html">
+    <a class="dropdown-item" href="./projets/micro/micro_notes.html">
  <span class="dropdown-text">Microénométrie</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../projets/np_stat/np_stat_notes.html">
+    <a class="dropdown-item" href="./projets/np_stat/np_stat_notes.html">
  <span class="dropdown-text">Statistiques non paramétriques</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../projets/TS/ts1.html">
+    <a class="dropdown-item" href="./projets/TS/ts1.html">
  <span class="dropdown-text">Séries temporelles 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../projets/regression_lin/regression_lineaire.html">
+    <a class="dropdown-item" href="./projets/regression_lin/regression_lineaire.html">
  <span class="dropdown-text">Regression linéaire</span></a>
   </li>  
     </ul>
@@ -172,27 +205,27 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-gestion-des-risques">    
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/bilan_entreprise.html">
+    <a class="dropdown-item" href="./articles/GDR/bilan_entreprise.html">
  <span class="dropdown-text">i - Le bilan d’entreprise</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/resume_reglementation.html">
+    <a class="dropdown-item" href="./articles/GDR/resume_reglementation.html">
  <span class="dropdown-text">ii - Les Accords de Bâle</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/risque_def.html">
+    <a class="dropdown-item" href="./articles/GDR/risque_def.html">
  <span class="dropdown-text">iii - Définition du risque</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/reglementation_prudentielle.html">
+    <a class="dropdown-item" href="./articles/GDR/reglementation_prudentielle.html">
  <span class="dropdown-text">1-La réglementation prudentielle</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/var.html">
+    <a class="dropdown-item" href="./articles/GDR/var.html">
  <span class="dropdown-text">2-La valeur en risque</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/GDR/VaR_eg.html">
+    <a class="dropdown-item" href="./articles/GDR/VaR_eg.html">
  <span class="dropdown-text">2.1 - Application VaR</span></a>
   </li>  
     </ul>
@@ -203,11 +236,11 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-divers">    
         <li>
-    <a class="dropdown-item" href="../../articles/ISR/ISR.html">
+    <a class="dropdown-item" href="./articles/ISR/ISR.html">
  <span class="dropdown-text">Investissement socialement responsable</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../articles/4-3-2/fluency.html">
+    <a class="dropdown-item" href="./articles/4-3-2/fluency.html">
  <span class="dropdown-text">Improve Speaking Fluency</span></a>
   </li>  
     </ul>
@@ -215,7 +248,7 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">A propos</span></a>
   </li>  
   <li class="nav-item compact">
@@ -260,9 +293,9 @@ window.Quarto = {
     <h2 id="toc-title">Sur cette page</h2>
    
   <ul>
-  <li><a href="#estimation-des-paramètres" id="toc-estimation-des-paramètres" class="nav-link active" data-scroll-target="#estimation-des-paramètres">Estimation des paramètres</a></li>
-  <li><a href="#evaluation-du-modèle" id="toc-evaluation-du-modèle" class="nav-link" data-scroll-target="#evaluation-du-modèle">Evaluation du modèle</a></li>
-  <li><a href="#application" id="toc-application" class="nav-link" data-scroll-target="#application">Application</a></li>
+  <li><a href="#markdown" id="toc-markdown" class="nav-link active" data-scroll-target="#markdown">Markdown</a></li>
+  <li><a href="#code-cell" id="toc-code-cell" class="nav-link" data-scroll-target="#code-cell">Code Cell</a></li>
+  <li><a href="#equation" id="toc-equation" class="nav-link" data-scroll-target="#equation">Equation</a></li>
   </ul>
 </nav>
 </nav>
@@ -275,19 +308,13 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">La régression linéaire</h1>
+<h1 class="title">Hello, Quarto</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Cheryl Kouadio </p>
-          </div>
-  </div>
     
   
     
@@ -298,53 +325,32 @@ window.Quarto = {
 </header>
 
 
-<p>La régression linéaire est une méthode d’apprentissage supervisé qui vise à évaluer, lorsqu’il existe, la relation linéaire entre une variable d’intérêt et des variables explicatives.</p>
-<p>Pour un ensemble <span class="math inline">\((y_i,x_i)\)</span> de données constitué de n échantillons iid (indépendant et identiquement distribué), le modèle de regression linéaire s’écrit comme suit :</p>
-<p><span class="math display">\[\begin{align}
-y_i&amp;= \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip} + \xi_i\\
-&amp;= X_i \beta + \xi_i
-\end{align}\]</span></p>
-<p>où <span class="math inline">\(y_i\)</span> est la variable cible, <span class="math inline">\(x_{i1}, \dots, x_{ip}\)</span> sont les variables explicatives et <span class="math inline">\(\xi_i\)</span> est l’erreur, l’information que les autres variables explicatives ne donnent pas.</p>
-<p>L’hypothèse fondamentale de la régression linéaire est l’existence d’une relation linéaire entre la variable cible et les variables explicatives. Pour s’assurer de la pertinence de cette hypothèse avant de procéder à la régression linéaire (à l’aide de visualisation ou de tests- spearman, pearson, etc.)</p>
-<p>L’hypothèse de rang plein est la seconde plus grande hypothèse, elle stipule que les variables explicatives ne soient pas corrélées entre elles. Cette condition est nécessaire pour garantir l’unicité des estimations des paramètres du modèle et ainsi l’identifiabilité du modèle étudié</p>
-<p>Par ailleurs pour que les estimations des paramètres du modèle linéaire soient fiables, les erreurs du modèle, représentées par <span class="math inline">\(\xi_i\)</span>, doivent répondre à plusieurs critères :</p>
+<section id="markdown" class="level2">
+<h2 class="anchored" data-anchor-id="markdown">Markdown</h2>
+<p>Markdown is an easy to read and write text format:</p>
 <ul>
-<li><strong>Erreurs centrées</strong> : La moyenne attendue des erreurs doit être nulle, soit <span class="math inline">\(E[\xi_i] = 0\)</span>. Cela signifie que le modèle ne présente pas de biais systématique dans les prédictions.</li>
-<li><strong>Homoscédasticité</strong> : La variance des erreurs doit être constante pour toutes les observations, exprimée par <span class="math inline">\(V[\xi_i] = \sigma^2\)</span>. Cette propriété garantit que la précision des estimations est uniforme à travers la gamme des valeurs prédites.</li>
-<li><strong>Décorrélation des erreurs</strong> : Les erreurs doivent être mutuellement indépendantes, c’est-à-dire que la covariance entre toute paire d’erreurs est nulle, <span class="math inline">\(Cov(\xi_i, \xi_j) = 0\)</span> pour <span class="math inline">\(1\leq i \neq j \leq n\)</span>. Cette condition est essentielle pour éviter les biais dans les estimations des paramètres et pour que les tests statistiques sur les coefficients soient valides.</li>
+<li>It’s <em>plain text</em> so works well with version control</li>
+<li>It can be <strong>rendered</strong> into HTML, PDF, and more</li>
+<li>Learn more at: <a href="https://quarto.org/docs/authoring/" class="uri">https://quarto.org/docs/authoring/</a></li>
 </ul>
-<p>Il est courant d’observer une hypothèse supplémentaire sur la loi des erreurs. En effet, les erreurs sont souvent supposées suivre une loi normale, c’est à dire que <span class="math inline">\(\xi_i \sim N(0, \sigma^2)\)</span>. Celà nous permet de faire des inférences sur les paramètres du modèle et de construire des intervalles de confiance.</p>
-<section id="estimation-des-paramètres" class="level2">
-<h2 class="anchored" data-anchor-id="estimation-des-paramètres">Estimation des paramètres</h2>
-<p>Toutes les hypothèses étant respectées, l’estimateur <span class="math inline">\(\hat \beta\)</span> de <span class="math inline">\(\beta\)</span> obtenus par moindre carré ordinaire est donné par la formule suivante :</p>
-<p><span class="math display">\[
-\hat \beta = (X^T X)^{-1} X^T y
-\]</span></p>
-<p>Elle n’est valide que lorsque la matrice <span class="math inline">\(X^T X\)</span> est inversible, c’est à dire que l’hypothèse de rang plein est respectée.</p>
-<p>De ce fait, nous pouvons calculer la variance de cet estimateur : <span class="math display">\[
-VAR(\hat \beta) = \sigma^2 (X^T X)^{-1}
-\]</span></p>
-<p>D’après le théorème de Gauss-Markov, l’estimateur <span class="math inline">\(\hat \beta\)</span> est le meilleur estimateur linéaire non biaisé des paramètres du modèle. En effet, il est l’estimateur avec la plus petite variance, parmi les estimateurs linéaires sans biais qui existent. Cet estimateur est ainsi appelé BLUE (Best Linear Unbiased Estimator).</p>
-<p>Lorsque les erreurs sont supposées suivre une loi normale, l’estimateur <span class="math inline">\(\hat \beta\)</span> est également l’estimateur du maximum de vraisemblance des paramètres du modèle et suit une loi normale <span class="math inline">\(\hat \beta \sim N(\beta, \sigma^2 (X^T X)^{-1})\)</span>.</p>
-<p>L’estimateur de la variance des erreurs <span class="math inline">\(\sigma^2\)</span> est donné par :</p>
-<p><span class="math display">\[
-\hat \sigma^2 = \frac{1}{n-p} \sum_{i=1}^{n} \hat \xi_i^2 = \frac{SCR}{n-p}
-\]</span> avec SCR qui signifie somme des carrés des résidus.</p>
 </section>
-<section id="evaluation-du-modèle" class="level2">
-<h2 class="anchored" data-anchor-id="evaluation-du-modèle">Evaluation du modèle</h2>
-<p>Dans l’optique de mesurer la qualité du modèle, plusieurs métriques sont utilisées : le R², le R² ajusté, l’erreur quadratique moyenne (MSE) etc.</p>
-<p>Le coefficient de détermination <span class="math inline">\(R^2\)</span> est une mesure de la proportion de la variance de la variable cible qui est expliquée par le modèle. Il est défini comme suit :</p>
-<p><span class="math display">\[
-R^2 = 1 - \frac{SCR}{SCT}
-\]</span> avec SCT qui est la somme des carrés totaux (<span class="math inline">\(SCT = \sum_{i=1}^{n} (y_i - \bar y)^2\)</span>) et SCR qui est la somme des carrés des résidus.</p>
-<p>Néanmoins, le <span class="math inline">\(R^2\)</span> n’est pas une mesure parfaite de la qualité du modèle. En effet, il augmente avec le nombre de variables explicatives, même si ces variables n’ont pas de lien avec la variable cible. Pour pallier à ce problème, le <span class="math inline">\(R^2\)</span> ajusté est utilisé. Il est défini comme suit :</p>
-<p><span class="math display">\[
-R^2_a = 1 - \frac{SCR/(n-p)}{SCT/(n-1)}
-\]</span></p>
+<section id="code-cell" class="level2">
+<h2 class="anchored" data-anchor-id="code-cell">Code Cell</h2>
+<p>Here is a Python code cell:</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>os.cpu_count()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>6</code></pre>
+</div>
+</div>
 </section>
-<section id="application" class="level1">
-<h1>Application</h1>
+<section id="equation" class="level2">
+<h2 class="anchored" data-anchor-id="equation">Equation</h2>
+<p>Use LaTeX to write equations:</p>
+<p><span class="math display">\[
+\chi' = \sum_{i=1}^n k_i s_i^2
+\]</span></p>
 
 
 </section>

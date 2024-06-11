@@ -9,29 +9,71 @@ bibliography: ../../references.bib
 La régression linéaire est une méthode d'apprentissage supervisé qui vise à évaluer, lorsqu'il existe, la relation linéaire entre une variable d'intérêt et des variables explicatives.
 
 
-# Le modèle
+Pour un ensemble $(y_i,x_i)$ de données constitué de n échantillons iid (indépendant et identiquement distribué), le modèle de regression linéaire s'écrit comme suit : 
 
-Pour un ensemble $(y_i,x_i)$ de données constitué de n échantillons iid (indépendant et identiquement distribué), le  modèle de regression linéaire s'écrit comme suit :
+\begin{align}
+y_i&= \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip} + \xi_i\\
+&= X_i \beta + \xi_i
+\end{align}
+
+où $y_i$ est la variable cible, $x_{i1}, \dots, x_{ip}$ sont les variables explicatives et $\xi_i$ est l'erreur, l'information que les autres variables explicatives ne donnent pas.
+
+
+L'hypothèse fondamentale de la régression linéaire est l'existence d'une relation linéaire entre la variable cible et les variables explicatives. Pour s'assurer de la pertinence de cette hypothèse avant de procéder à la régression linéaire (à l'aide de visualisation ou de tests- spearman, pearson, etc.)
+
+L'hypothèse de rang plein est la seconde plus grande hypothèse, elle stipule que les variables explicatives ne soient pas corrélées entre elles. Cette condition est nécessaire pour garantir l'unicité des estimations des paramètres du modèle et ainsi l'identifiabilité du modèle étudié
+
+Par ailleurs pour que les estimations des paramètres du modèle linéaire soient fiables, les erreurs du modèle, représentées par $\xi_i$, doivent répondre à plusieurs critères :
+
+-   **Erreurs centrées** : La moyenne attendue des erreurs doit être nulle, soit $E[\xi_i] = 0$. Cela signifie que le modèle ne présente pas de biais systématique dans les prédictions.
+-   **Homoscédasticité** : La variance des erreurs doit être constante pour toutes les observations, exprimée par $V[\xi_i] = \sigma^2$. Cette propriété garantit que la précision des estimations est uniforme à travers la gamme des valeurs prédites.
+-   **Décorrélation des erreurs** : Les erreurs doivent être mutuellement indépendantes, c’est-à-dire que la covariance entre toute paire d'erreurs est nulle, $Cov(\xi_i, \xi_j) = 0$ pour $1\leq i \neq j \leq n$. Cette condition est essentielle pour éviter les biais dans les estimations des paramètres et pour que les tests statistiques sur les coefficients soient valides.
+
+Il est courant d'observer une hypothèse supplémentaire sur la loi des erreurs. En effet, les erreurs sont souvent supposées suivre une loi normale, c'est à dire que $\xi_i \sim N(0, \sigma^2)$. Celà nous permet de faire des inférences sur les paramètres du modèle et de construire des intervalles de confiance.
+
+
+## Estimation des paramètres
+
+Toutes les hypothèses étant respectées, l'estimateur $\hat \beta$ de $\beta$ obtenus par moindre carré ordinaire est donné par la formule suivante :
+
 $$
-y_i= \beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip} + \xi_i
+\hat \beta = (X^T X)^{-1} X^T y
 $$
 
-où $y_i$ est la variable cible, $x_{i1}, \dots, x_{ip}$ sont les variables explicatives et $\xi_i$ est l'erreur, l'information que les autres variables explicatives ne donnent pas. 
+Elle n'est valide que lorsque la matrice $X^T X$ est inversible, c'est à dire que l'hypothèse de rang plein est respectée.
 
-## Hypothèses
+De ce fait, nous pouvons calculer la variance de cet estimateur :
+$$
+VAR(\hat \beta) = \sigma^2 (X^T X)^{-1}
+$$
 
-### Relation Linéaire
-L'hypothèse fondamentale de la régression linéaire est l'existence d'une relation linéaire entre la variable cible et les variables explicatives. Pour s'assurer de la pertinence de cette hypothèse avant de procéder à la régression linéaire, il est recommandé de :
+D'après le théorème de Gauss-Markov, l'estimateur $\hat \beta$ est le meilleur estimateur linéaire non biaisé des paramètres du modèle. En effet, il est l'estimateur avec la plus petite variance, parmi les estimateurs linéaires sans biais qui existent.
+Cet estimateur est ainsi appelé BLUE (Best Linear Unbiased Estimator).
 
-- **Visualisation des données** : Utiliser un nuage de points pour chaque paire de variables explicatives et la variable cible. Cette visualisation aide à détecter la présence et la forme de relations potentielles, guidant ainsi la décision d'utiliser ou non un modèle linéaire.
-- **Tests de corrélation** :
-  - **Corrélation de Pearson** : Ce test mesure la corrélation linéaire entre deux variables, fournissant un coefficient dont la valeur absolue proche de 1 indique une forte corrélation linéaire.
-  - **Corrélation de Spearman** : Ce test de rang est utilisé pour évaluer la corrélation monotone entre deux variables, utile notamment lorsque les données ne respectent pas les conditions de normalité requises pour le test de Pearson.
+Lorsque les erreurs sont supposées suivre une loi normale, l'estimateur $\hat \beta$ est également l'estimateur du maximum de vraisemblance des paramètres du modèle et suit une loi normale $\hat \beta \sim N(\beta, \sigma^2 (X^T X)^{-1})$.
 
-### Propriétés des Erreurs
-Pour que les estimations des paramètres du modèle linéaire soient fiables, tles erreurs du modèle, représentées par $\xi_i$, doivent répondre à plusieurs critères :
+L'estimateur de la variance des erreurs $\sigma^2$ est donné par :
 
-- **Erreurs centrées** : La moyenne attendue des erreurs doit être nulle, soit $E[\xi_i] = 0$. Cela signifie que le modèle ne présente pas de biais systématique dans les prédictions.
-- **Homoscédasticité** : La variance des erreurs doit être constante pour toutes les observations, exprimée par $V[\xi_i] = \sigma^2$. Cette propriété garantit que la précision des estimations est uniforme à travers la gamme des valeurs prédites.
-- **Décorrélation des erreurs** : Les erreurs doivent être mutuellement indépendantes, c’est-à-dire que la covariance entre toute paire d'erreurs est nulle, $Cov(\xi_i, \xi_j) = 0$ pour $1\leq i \neq j \leq n$. Cette condition est essentielle pour éviter les biais dans les estimations des paramètres et pour que les tests statistiques sur les coefficients soient valides.
+$$
+\hat \sigma^2 = \frac{1}{n-p} \sum_{i=1}^{n} \hat \xi_i^2 = \frac{SCR}{n-p}
+$$
+avec SCR qui signifie somme des carrés des résidus.
 
+## Evaluation du modèle
+
+Dans l'optique de mesurer la qualité du modèle, plusieurs métriques sont utilisées : le R², le R² ajusté, l'erreur quadratique moyenne (MSE) etc.
+
+Le coefficient de détermination $R^2$ est une mesure de la proportion de la variance de la variable cible qui est expliquée par le modèle. Il est défini comme suit :
+
+$$
+R^2 = 1 - \frac{SCR}{SCT}
+$$
+avec SCT qui est la somme des carrés totaux ($SCT = \sum_{i=1}^{n} (y_i - \bar y)^2$) et SCR qui est la somme des carrés des résidus.
+
+Néanmoins, le $R^2$ n'est pas une mesure parfaite de la qualité du modèle. En effet, il augmente avec le nombre de variables explicatives, même si ces variables n'ont pas de lien avec la variable cible. Pour pallier à ce problème, le $R^2$ ajusté est utilisé. Il est défini comme suit :
+
+$$
+R^2_a = 1 - \frac{SCR/(n-p)}{SCT/(n-1)}
+$$
+
+# Application

@@ -1,5 +1,5 @@
 ---
-title: "Notes de statistique non paramétrique"
+title: "Notes de statistiques non paramétriques"
 sidebar: auto
 author:
   - Cheryl Kouadio
@@ -11,4 +11,8 @@ format:
 bibliography: ../../references.bib
 ---
 
-![](np%20stat%20notes.pdf){fig-align="center" width="1000" height="1000"}
+Les statistiques non paramétriques sont des méthodes statistiques qui ne font pas d'hypothèses sur la distribution des données. Elles sont utilisées lorsque les données ne sont pas normalement distribuées ou que l'échantillon est trop petit pour que les tests paramétriques soient valides. Elles permettent de comparer des groupes de données, de tester des hypothèses et de modéliser des relations entre les variables en faisant le moins d'hypothèses possibles sur la distribution des données.
+
+Vous trouverez ci-dessous un résumé des principales méthodes de statistiques non paramétriques.
+
+![](np_stat_notes.pdf){fig-align="center" width="1000" height="1000"}
