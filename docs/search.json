@@ -397,5 +397,12 @@
     "title": "La régression linéaire",
     "section": "Evaluation du modèle",
     "text": "Evaluation du modèle\nDans l’optique de mesurer la qualité du modèle, plusieurs métriques sont utilisées : le R², le R² ajusté, l’erreur quadratique moyenne (MSE) etc.\nLe coefficient de détermination \\(R^2\\) est une mesure de la proportion de la variance de la variable cible qui est expliquée par le modèle. Il est défini comme suit :\n\\[\nR^2 = 1 - \\frac{SCR}{SCT}\n\\] avec SCT qui est la somme des carrés totaux (\\(SCT = \\sum_{i=1}^{n} (y_i - \\bar y)^2\\)) et SCR qui est la somme des carrés des résidus.\nNéanmoins, le \\(R^2\\) n’est pas une mesure parfaite de la qualité du modèle. En effet, il augmente avec le nombre de variables explicatives, même si ces variables n’ont pas de lien avec la variable cible. Pour pallier à ce problème, le \\(R^2\\) ajusté est utilisé. Il est défini comme suit :\n\\[\nR^2_a = 1 - \\frac{SCR/(n-p)}{SCT/(n-1)}\n\\]"
+  },
+  {
+    "objectID": "projets/regression_lin/regression_lineaire.html#simulation-1-relation-linéaire",
+    "href": "projets/regression_lin/regression_lineaire.html#simulation-1-relation-linéaire",
+    "title": "La régression linéaire",
+    "section": "Simulation 1 : Relation linéaire",
+    "text": "Simulation 1 : Relation linéaire\n\nn&lt;-200\nX&lt;-runif(n,0,10)\n\nsigma2&lt;-1.6\nepsilon&lt;-rnorm(n,0,sigma2)\nY&lt;- 2 + 3*X + epsilon\n\nsim1&lt;-data.frame(X,Y)"
   }
 ]

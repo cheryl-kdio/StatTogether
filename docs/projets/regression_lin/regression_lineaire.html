@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -262,7 +296,10 @@ window.Quarto = {
   <ul>
   <li><a href="#estimation-des-paramètres" id="toc-estimation-des-paramètres" class="nav-link active" data-scroll-target="#estimation-des-paramètres">Estimation des paramètres</a></li>
   <li><a href="#evaluation-du-modèle" id="toc-evaluation-du-modèle" class="nav-link" data-scroll-target="#evaluation-du-modèle">Evaluation du modèle</a></li>
-  <li><a href="#application" id="toc-application" class="nav-link" data-scroll-target="#application">Application</a></li>
+  <li><a href="#application" id="toc-application" class="nav-link" data-scroll-target="#application">Application</a>
+  <ul class="collapse">
+  <li><a href="#simulation-1-relation-linéaire" id="toc-simulation-1-relation-linéaire" class="nav-link" data-scroll-target="#simulation-1-relation-linéaire">Simulation 1 : Relation linéaire</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -345,8 +382,22 @@ R^2_a = 1 - \frac{SCR/(n-p)}{SCT/(n-1)}
 </section>
 <section id="application" class="level1">
 <h1>Application</h1>
+<p>Pour évaluer l’intérêt de la regréssion linéaire, nous allons simuler deux échantillons de taille n=200. Dans le premier jeu de données, nous allons simuler une relation linéaire entre la variable cible et une variable explicative. Dans le second jeu de données, nous allons simuler une relation non linéaire.</p>
+<section id="simulation-1-relation-linéaire" class="level2">
+<h2 class="anchored" data-anchor-id="simulation-1-relation-linéaire">Simulation 1 : Relation linéaire</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n<span class="ot">&lt;-</span><span class="dv">200</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>X<span class="ot">&lt;-</span><span class="fu">runif</span>(n,<span class="dv">0</span>,<span class="dv">10</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sigma2<span class="ot">&lt;-</span><span class="fl">1.6</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>epsilon<span class="ot">&lt;-</span><span class="fu">rnorm</span>(n,<span class="dv">0</span>,sigma2)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>Y<span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>X <span class="sc">+</span> epsilon</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sim1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(X,Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 </section>
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
